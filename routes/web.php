@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
@@ -25,6 +26,8 @@ Route::post('login', [LoginController::class, 'store']);
 Route::get('register', [RegisterController::class, 'create'])->name('register');
 Route::post('register', [RegisterController::class, 'store']);
 
-Route::get('admin', function () {
-    return 'Admin Page';
-})->middleware('auth', 'admin');
+Route::resource('categories', CategoryProductController::class);
+
+// Route::get('admin', function () {
+//     return 'Admin Page';
+// })->middleware('auth', 'admin');
