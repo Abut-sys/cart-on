@@ -4,8 +4,13 @@
     <div class="container mt-4">
 
         <div class="card mb-4 shadow-sm" style="background-color: #f0f0f0;"> <!-- Light gray background -->
-            <div class="card-header" style="background-color: #d3d3d3;"> <!-- Light gray header -->
+            <div class="card-header d-flex justify-content-between" style="background-color: #d3d3d3;">
+                <!-- Light gray header -->
                 <h2 class="mb-0" style="color: black;">Add Product Category</h2> <!-- Black header text -->
+                <a href="{{ route('categories.index') }}" class="btn btn-danger"
+                    style="background-color: #ff0000; color: black;">
+                    <i class="fas fa-arrow-left"></i> Return
+                </a>
             </div>
             <div class="card-body">
                 <form action="{{ route('categories.store') }}" method="POST">
@@ -33,10 +38,6 @@
                             <!-- Bright green button -->
                             Confirm
                         </button>
-                        <a href="{{ route('categories.index') }}" class="btn back-btn"
-                            style="background-color: #ff0000; color: black;"> <!-- Red Back button -->
-                            Back
-                        </a>
                     </div>
                 </form>
             </div>

@@ -36,16 +36,13 @@
         </div>
     </div>
     <div class="nav-item">
-        <a href="#"><i class="fas fa-ticket-alt icon"></i> Voucher</a>
+        <a href="{{ route('vouchers.index') }}"><i class="fas fa-ticket-alt icon"></i> Voucher</a>
     </div>
     <div class="nav-item">
         <a href="#"><i class="fas fa-shopping-cart icon"></i> Orders</a>
     </div>
     <div class="nav-item">
         <a href="#"><i class="fas fa-users icon"></i> Customers</a>
-    </div>
-    <div class="nav-item">
-        <a href="#"><i class="fas fa-truck icon"></i> Package Status</a>
     </div>
     <div class="nav-item">
         <a href="#"><i class="fas fa-cog icon"></i> Settings</a>

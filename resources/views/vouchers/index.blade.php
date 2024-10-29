@@ -5,49 +5,45 @@
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center"
                 style="background-color: #d3d3d3; color: black;">
-                <!-- Title and Add Button in Header -->
-                <h2 class="mb-0">List Of Product Category</h2>
-                <a href="{{ route('categories.create') }}" class="btn btn-success me-2"
+                <h2 class="mb-0">Voucher List</h2>
+                <a href="{{ route('vouchers.create') }}" class="btn btn-success me-2"
                     style="background-color: #00FF00; color: black;">
-                    <i class="fas fa-plus"></i> Add Category
+                    <i class="fas fa-plus"></i> New Voucher
                 </a>
             </div>
             <div class="card-body">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Main Category</th>
-                            <th>Sub-Category</th>
+                            <th>Code</th>
+                            <th>Discount</th>
+                            <th>Start-Date</th>
+                            <th>End-Date</th>
+                            <th>Usage-Limit</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($categories as $category)
+                        @foreach ($vouchers as $voucher)
                             <tr>
-                                <td>{{ $category->id }}</td>
-                                <td>{{ $category->name }}</td>
+                                <td>{{ $voucher->code }}</td>
+                                <td>{{ $voucher->discount_value }}</td>
+                                <td>{{ $voucher->start_date }}</td>
+                                <td>{{ $voucher->end_date }}</td>
+                                <td>{{ $voucher->usage_limit }}</td>
+                                <td>{{ $voucher->status }}</td>
                                 <td>
-                                    <ul class="list-unstyled mb-0">
-                                        @foreach ($category->subCategories as $subCategory)
-                                            <li>{{ $subCategory->name }}</li>
-                                        @endforeach
-                                    </ul>
-                                </td>
-                                <td>
-                                    <!-- Icons for Edit and Delete actions -->
-                                    <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-primary btn-sm"
+                                    <a href="{{ route('vouchers.edit', $voucher) }}" class="btn btn-primary btn-sm"
                                         style="background-color: #0000FF; color: white;" title="Edit">
-                                        <!-- Blue for Edit Category -->
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
+                                    <form action="{{ route('vouchers.destroy', $voucher) }}" method="POST"
                                         style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm"
                                             style="background-color: #FF0000; color: white;" title="Delete">
-                                            <!-- Red for Delete Category -->
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>

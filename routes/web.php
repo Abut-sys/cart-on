@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,8 @@ Route::post('register', [RegisterController::class, 'store']);
 Route::resource('brands', BrandController::class);
 
 Route::resource('categories', CategoryProductController::class);
+
+Route::resource('vouchers', VoucherController::class);
 
 // Route::get('admin', function () {
 //     return 'Admin Page';
