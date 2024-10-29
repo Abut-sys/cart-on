@@ -54,30 +54,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('add-subcategory').addEventListener('click', function() {
-            const subcategoryList = document.getElementById('subcategory-list');
-            const newSubcategoryItem = document.createElement('li');
-            newSubcategoryItem.className = 'd-flex justify-content-between align-items-center mb-2';
-            newSubcategoryItem.innerHTML = `
-                <input type="text" class="form-control mb-3" name="new_subcategories[]" required
-                    style="background-color: #dcdcdc; border-color: #c0c0c0;"> <!-- Gray input with mb-3 -->
-                <button type="button" class="btn btn-link text-danger" onclick="removeSubcategory(this)">Hapus</button>
-            `;
-            subcategoryList.appendChild(newSubcategoryItem);
-        });
-
-        function removeSubcategory(button, subCategoryId = null) {
-            if (subCategoryId) {
-                // Mark the subcategory for deletion
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'deleted_subcategories[]';
-                hiddenInput.value = subCategoryId;
-                button.closest('form').appendChild(hiddenInput);
-            }
-            button.parentElement.remove();
-        }
-    </script>
 @endsection

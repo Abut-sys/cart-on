@@ -29,9 +29,9 @@
         <a href="#" id="products-link"><i class="fas fa-boxes icon"></i> Products</a>
     </div>
     <div class="nav-item">
-        <a href="#" class="category-link"><i class="fas fa-shapes icon"></i> Category</a>
+        <a href="#" class="category-link"><i class="fas fa-shapes icon"></i>Category <i class="fa-solid fa-caret-down px-2"></i></a>
         <div class="dropdown">
-            <a href="#" class="dropdown-item">Product Category</a>
+            <a href="{{ route('categories.index') }}" class="dropdown-item">Product Category</a>
             <a href="#" class="dropdown-item">Brand Category</a>
         </div>
     </div>
