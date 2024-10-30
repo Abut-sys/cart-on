@@ -19,3 +19,6 @@ class product extends Model
         'image_path'
     ];
 }
+
+
+
