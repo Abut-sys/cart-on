@@ -18,18 +18,17 @@ class RegisterController extends Controller
         $request->validate([
             'name' => ['required', 'string'],
             'email' => ['required', 'unique:users', 'email'],
-            'phone_number' => ['required',],
             'password' => ['required', 'min:8'],
+            'phone_number' => ['required', 'string', 'unique:users'] // Validasi agar phone_number unik
         ]);
 
         User::create([
-            'username' => $request->username,
             'name' => $request->name,
             'email' => $request->email,
-            'phone_number' => $request->phone,
+            'phone_number' =>  $request->phone_number,
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect('/home');
+        return redirect('login')->with('msg', 'Registration successful. Please log in.');
     }
 }

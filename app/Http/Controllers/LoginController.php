@@ -23,7 +23,7 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($attributes)) {
-            return redirect('/home');
+            return redirect('/')->with('msg', 'sudah selesai');;
         }
 
         throw ValidationException::withMessages([
