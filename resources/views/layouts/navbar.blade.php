@@ -10,14 +10,26 @@
         <i class="fas fa-bell notification-icon"></i>
     </div>
     <div class="user-info">
-        <a href="#" class="username" id="adminToggle">Admin</a>
-        <div class="user-dropdown" id="userDropdown">
-            <a href="#" class="dropdown-item"><i class="fas fa-user-circle"></i> Profile</a>
-            <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-        </div>
+        @if (Auth::check())
+            <a href="#" class="username" id="adminToggle">{{ Auth::user()->name }}</a>
+            <div class="user-dropdown" id="userDropdown">
+                <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                    <i class="fas fa-user-edit"></i> Profile
+                </a>
+                <a href="{{ route('logout') }}" class="dropdown-item"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            </div>
+        @else
+            <a href="{{ route('login') }}" class="username">Login</a>
+            <a href="{{ route('register') }}" class="username">Register</a>
+        @endif
     </div>
 </nav>
-
 
 <div class="sidebar" id="sidebar">
     <div class="logo">
@@ -57,9 +69,11 @@
             <i class="fas fa-users icon"></i> Customers
         </a>
     </div>
-    <div class="nav-item">
-        <a href="{{ url('settings') }}" class="{{ request()->is('settings') ? 'active' : '' }}">
-            <i class="fas fa-cog icon"></i> Settings
-        </a>
-    </div>
+    @if (Auth::check())
+        <div class="nav-item">
+            <a href="{{ url('settings') }}" class="{{ request()->is('settings') ? 'active' : '' }}">
+                <i class="fas fa-cog icon"></i> Settings
+            </a>
+        </div>
+    @endif
 </div>

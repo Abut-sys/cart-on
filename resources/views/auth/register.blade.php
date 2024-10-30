@@ -3,9 +3,9 @@
 @section('title', 'Register')
 
 @section('content')
-    <div class="container mt-5">
+    <div class="container-fluid mt-14">
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-20">
                 <!-- Card with rounded corners -->
                 <div class="card shadow-lg border-0 rounded" style="border-radius: 20px;">
 
@@ -58,16 +58,16 @@
 
                             <!-- Phone Number Field with Icon -->
                             <div class="form-group mb-4 position-relative">
-                                <label for="phone" class="form-label">{{ __('Phone Number') }}</label>
+                                <label for="phone_number" class="form-label">{{ __('Phone Number') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-right-0">
                                         <i class="fas fa-phone"></i>
                                     </span>
-                                    <input id="phone" type="tel"
-                                        class="form-control form-control-lg @error('phone') is-invalid @enderror"
-                                        name="phone" value="{{ old('phone') }}" required
+                                    <input id="phone_number" type="tel"
+                                        class="form-control form-control-lg @error('phone_number') is-invalid @enderror"
+                                        name="phone_number" value="{{ old('phone_number') }}" required
                                         placeholder="Enter your phone number">
-                                    @error('phone')
+                                    @error('phone_number')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
