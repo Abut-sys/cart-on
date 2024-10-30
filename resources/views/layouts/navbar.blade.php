@@ -33,7 +33,7 @@
 
 <div class="sidebar" id="sidebar">
     <div class="logo">
-        <img src="{{ asset('image/Oon.png') }}" alt="Logo" />
+        <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" />
     </div>
     <div class="nav-item">
         <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">
@@ -50,10 +50,14 @@
             <i class="fas fa-shapes icon"></i> Category
         </a>
         <div class="dropdown">
-            <a href="{{ route('categories.index') }}" class="dropdown-item">Product Category</a>
-            <a href="{{ route('brands.index') }}" class="dropdown-item">Brand Category</a>
+            <a href="{{ route('categories.index') }}" class="dropdown-item">
+                <i class="fas fa-tag"></i> Product Category
+            </a>
+            <a href="{{ route('brands.index') }}" class="dropdown-item">
+                <i class="fas fa-star"></i> Brand Category
+            </a>
         </div>
-    </div>
+    </div>    
     <div class="nav-item">
         <a href="{{ route('vouchers.index') }}" class="{{ request()->is('vouchers') ? 'active' : '' }}">
             <i class="fas fa-ticket-alt icon"></i> Voucher
