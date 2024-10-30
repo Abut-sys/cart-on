@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
@@ -32,13 +33,17 @@ Route::middleware(['auth'])->group(function () {
         return view('home');
     });
 
-    Route::get('/home', function () {
-        return view('home');
-    });
+Route::get('login', [LoginController::class, 'create'])->name('login');
+Route::post('login', [LoginController::class, 'store']);
 
-    Route::resource('brands', BrandController::class);
+Route::get('register', [RegisterController::class, 'create'])->name('register');
+Route::post('register', [RegisterController::class, 'store']);
 
-    Route::resource('categories', CategoryProductController::class);
+//rute brand
+
+Route::resource('brands', BrandController::class);
+
+Route::resource('categories', CategoryProductController::class);
 
     Route::resource('vouchers', VoucherController::class);
 
