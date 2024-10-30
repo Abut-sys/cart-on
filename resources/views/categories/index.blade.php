@@ -1,7 +1,7 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center"
                 style="background-color: #d3d3d3; color: black;">
@@ -13,49 +13,52 @@
                 </a>
             </div>
             <div class="card-body">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Main Category</th>
-                            <th>Sub-Category</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($categories as $category)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover w-100">
+                        <thead>
                             <tr>
-                                <td>{{ $category->id }}</td>
-                                <td>{{ $category->name }}</td>
-                                <td>
-                                    <ul class="list-unstyled mb-0">
-                                        @foreach ($category->subCategories as $subCategory)
-                                            <li>{{ $subCategory->name }}</li>
-                                        @endforeach
-                                    </ul>
-                                </td>
-                                <td>
-                                    <!-- Icons for Edit and Delete actions -->
-                                    <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-primary btn-sm"
-                                        style="background-color: #0000FF; color: white;" title="Edit">
-                                        <!-- Blue for Edit Category -->
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm"
-                                            style="background-color: #FF0000; color: white;" title="Delete">
-                                            <!-- Red for Delete Category -->
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </td>
+                                <th>ID</th>
+                                <th>Main Category</th>
+                                <th>Sub-Category</th>
+                                <th>Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($categories as $category)
+                                <tr>
+                                    <td>{{ $category->id }}</td>
+                                    <td>{{ $category->name }}</td>
+                                    <td>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($category->subCategories as $subCategory)
+                                                <li>{{ $subCategory->name }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <!-- Icons for Edit and Delete actions -->
+                                        <a href="{{ route('categories.edit', $category->id) }}"
+                                            class="btn btn-primary btn-sm" style="background-color: #0000FF; color: white;"
+                                            title="Edit">
+                                            <!-- Blue for Edit Category -->
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                style="background-color: #FF0000; color: white;" title="Delete">
+                                                <!-- Red for Delete Category -->
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
