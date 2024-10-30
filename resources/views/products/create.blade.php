@@ -41,8 +41,6 @@
 </div>
 
 
-
-
 {{-- <h1>Tambah Produk Baru</h1>
 <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf

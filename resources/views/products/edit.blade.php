@@ -46,7 +46,6 @@
     </div>
 </div>
 
-
 {{-- <h1>Edit Produk</h1>
 <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
