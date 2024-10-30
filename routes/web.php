@@ -23,10 +23,6 @@ use App\Http\Controllers\VoucherController;
 
 //rute brand
 
-
-
-
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/', function () {
         return view('home');
