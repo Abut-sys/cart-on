@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
@@ -28,10 +29,9 @@ Route::post('login', [LoginController::class, 'store']);
 Route::get('register', [RegisterController::class, 'create'])->name('register');
 Route::post('register', [RegisterController::class, 'store']);
 
-//rute brand
 
 Route::resource('brands', BrandController::class);
-
+Route::resource('products', ProductController::class);
 Route::resource('categories', CategoryProductController::class);
 
 Route::resource('vouchers', VoucherController::class);

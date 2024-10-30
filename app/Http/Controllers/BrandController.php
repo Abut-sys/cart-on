@@ -33,6 +33,7 @@ class BrandController extends Controller
         $request->validate([
             'name' => 'required',
             'logo' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
+            'description'=> 'nullable',
         ]);
 
         $data = $request->except('_token');
@@ -71,6 +72,7 @@ class BrandController extends Controller
         $request->validate([
             'name' => 'required',
             'logo' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
+            'description'=> 'nullable',
         ]);
 
         $data = $request->all();
