@@ -5,30 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
 {
     public function create()
     {
-        return view('auth.register');
+        return view('auth.register'); // Your registration view
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'string'],
-            'email' => ['required', 'unique:users', 'email'],
-            'password' => ['required', 'min:8'],
-            'phone_number' => ['required', 'string', 'unique:users'] // Validasi agar phone_number unik
+        $attributes = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users'],
+            'phone_number' => ['required', 'string', 'unique:users'],
+            'password' => ['required', 'string', 'confirmed', 'min:8'], // Minimum password length
         ]);
 
+        // Create a new user
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' =>  $request->phone_number,
-            'password' => Hash::make($request->password),
+            'name' => $attributes['name'],
+            'email' => $attributes['email'],
+            'phone_number' => $attributes['phone_number'],
+            'password' => Hash::make($attributes['password']), // Hash the password
         ]);
 
-        return redirect('login')->with('msg', 'Registration successful. Please log in.');
+        // Redirect to login with a success message
+        return redirect()->route('login')->with('msg', 'Registration successful! Please login.');
     }
 }
