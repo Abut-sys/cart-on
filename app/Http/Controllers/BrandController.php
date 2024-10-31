@@ -45,7 +45,7 @@ class BrandController extends Controller
         }
 
         Brand::create($data);
-        return redirect()->route('brands.index')->with('success', 'Brand berhasil dibuat.');
+        return redirect()->route('brands.index')->with('success', 'Brand Created Successfully.');
     }
 
     /**
@@ -89,7 +89,7 @@ class BrandController extends Controller
         }
 
         $brand->update($data);
-        return redirect()->route('brands.index')->with('success', 'Brand berhasil diperbarui.');
+        return redirect()->route('brands.index')->with('success', 'Brand Updated Successfully.');
     }
 
 
@@ -103,6 +103,6 @@ class BrandController extends Controller
         }
 
         $brand->delete();
-        return redirect()->route('brands.index')->with('success', 'Brand berhasil dihapus.');
+        return redirect()->route('brands.index')->with('success', 'Brand Deleted Successfully.');
     }
 }
