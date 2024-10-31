@@ -16,19 +16,22 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-        $attributes = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users'],
-            'phone_number' => ['required', 'string', 'unique:users'],
-            'password' => ['required', 'string', 'confirmed', 'min:8'], // Minimum password length
+        // Validasi input
+        $request->validate([
+            'name' => ['required', 'string'],
+            'email' => ['required', 'unique:users', 'email'],
+            'password' => ['required', 'min:8'],
+            'phone_number' => ['required', 'string', 'unique:users'], // Validasi agar phone_number unik
+            'role' => ['required', 'string', 'in:user,admin'], // Validasi agar role hanya 'user' atau 'admin'
         ]);
 
-        // Create a new user
+        // Membuat pengguna baru
         User::create([
-            'name' => $attributes['name'],
-            'email' => $attributes['email'],
-            'phone_number' => $attributes['phone_number'],
-            'password' => Hash::make($attributes['password']), // Hash the password
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'password' => Hash::make($request->password),
+            'role' => $request->role, // Simpan role pengguna
         ]);
 
         // Redirect to login with a success message

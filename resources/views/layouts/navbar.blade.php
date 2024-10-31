@@ -57,7 +57,7 @@
                 <i class="fas fa-star"></i> Brand Category
             </a>
         </div>
-    </div>    
+    </div>
     <div class="nav-item">
         <a href="{{ route('vouchers.index') }}" class="{{ request()->is('vouchers') ? 'active' : '' }}">
             <i class="fas fa-ticket-alt icon"></i> Voucher
