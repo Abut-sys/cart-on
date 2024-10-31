@@ -1,81 +1,138 @@
-@extends('layouts.index')
+<html>
 
-@section('title', 'Login')
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background: url('image/background.png') no-repeat center center fixed;
+            background-size: cover;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
 
-@section('content')
-    <div class="container-fluid mt-14">
-        <div class="row justify-content-center">
-            <div class="col-md-20">
-                <div class="card shadow-lg border-0 rounded-3">
-                    <div class="card-header bg-white text-center border-0">
-                        <img src="{{ asset('image/logo.png') }}" alt="Logo" style="width: 200px;">
-                        <h1 class="font-weight-bold">{{ __('Login') }}</h1>
-                    </div>
-                    <div class="card-body p-5">
-                        <form method="POST" action="{{ route('login') }}">
-                            @csrf
+        .login-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            padding: 40px 30px;
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-                            <!-- Email Field with Icon -->
-                            <div class="form-group mb-4">
-                                <label for="email" class="form-label">{{ __('Email Address') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-envelope"></i> <!-- Email Icon -->
-                                    </span>
-                                    <input id="email" type="email"
-                                        class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}" required autofocus
-                                        placeholder="Enter your email">
-                                    @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 15px;
+        }
 
-                            <!-- Password Field with Icon -->
-                            <div class="form-group mb-4">
-                                <label for="password" class="form-label">{{ __('Password') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-lock"></i> <!-- Password Icon -->
-                                    </span>
-                                    <input id="password" type="password"
-                                        class="form-control form-control-lg @error('password') is-invalid @enderror"
-                                        name="password" required placeholder="Enter your password">
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
 
-                            <div class="form-group d-flex justify-content-between mb-4">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                                    <label class="form-check-label" for="remember">{{ __('Remember Me') }}</label>
-                                </div>
-                                <a href="{{ url('/kirimemail') }}">{{ __('Forgot Password?') }}</a>
-                            </div>
+        .form-control {
+            border-radius: 30px;
+            padding: 10px 15px;
+            border: 1px solid #99bc85;
+        }
 
-                            <!-- Submit Button with Icon -->
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-success btn-lg btn-block shadow-sm rounded-pill">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    {{ __('Login') }}
-                                </button>
-                            </div>
+        .form-control:focus {
+            border-color: #66a3a1;
+            box-shadow: 0 0 5px rgba(102, 163, 161, 0.5);
+        }
 
-                            <div class="text-center mt-4">
-                                <p class="text-muted">Don't have an account yet? <a href="{{ route('register') }}"
-                                        class="text-primary font-weight-bold">{{ __('Sign up') }}</a></p>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+        .btn-login {
+            background: linear-gradient(135deg, #99bc85, #66a3a1);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 15px;
+            color: white;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #66a3a1, #99bc85);
+        }
+
+        .text-muted {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .text-muted a {
+            color: #99bc85;
+            text-decoration: none;
+        }
+
+        .text-muted a:hover {
+            text-decoration: underline;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group-text {
+            background-color: #f7f7f7;
+            border: 1px solid #99bc85;
+            border-radius: 30px 0 0 30px;
+            padding: 10px 15px;
+        }
+
+        .input-group .form-control {
+            border-radius: 0 30px 30px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo">
+        <h3 class="title">Sign In</h3>
+        <form>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" placeholder="Name" required>
             </div>
-        </div>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" placeholder="Password" required>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-login">Sign In</button>
+            </div>
+            <div class="text-center text-muted">
+                <a>Don't have an account?<a href="{{ route('register') }}"> Sign Up</a><a>
+            </div>
+        </form>
     </div>
-@endsection
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    @if (session('msg'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Success!',
+                    text: "{{ session('msg') }}",
+                    icon: 'success',
+                    confirmButtonText: 'Return'
+                });
+            });
+        </script>
+    @endif
+</body>
+
+</html>

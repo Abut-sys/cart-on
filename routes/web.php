@@ -21,18 +21,6 @@ use App\Http\Controllers\VoucherController;
 |
 */
 
-
-
-<<<<<<< HEAD
-
-=======
-Route::resource('brands', BrandController::class);
-Route::resource('products', ProductController::class);
-Route::resource('categories', CategoryProductController::class);
->>>>>>> 9f2868d00f64acae1a3ff514f5179a7be364090c
-
-
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/', function () {
         return view('home');
