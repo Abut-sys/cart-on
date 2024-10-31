@@ -98,44 +98,47 @@
     <div class="register-card">
         <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo">
         <h3 class="title">Sign Up</h3>
-        <form>
+        <form action="{{ route('register') }}" method="POST" id="registerForm">
+            @csrf
             <div class="mb-3 row">
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                        <input type="email" class="form-control" placeholder="Email" required>
+                        <input type="email" class="form-control" placeholder="Email" name="email" required>
                     </div>
                 </div>
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" class="form-control" placeholder="Phone Number" required>
+                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number" required>
                     </div>
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" class="form-control" placeholder="Name" required>
+                    <input type="text" class="form-control" placeholder="Name" name="name" required>
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Password" required>
+                    <input type="password" class="form-control" placeholder="Password" name="password" required>
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Confirm Password" required>
+                    <input type="password" class="form-control" placeholder="Confirm Password" name="password_confirmation" required>
                 </div>
             </div>
             <div class="mb-3">
-                <button type="submit" class="btn btn-register">Sign Up</button>
+                <button type="submit" class="btn btn-register">
+                    {{ __('Sign Up') }}
+                </button>
             </div>
             <div class="text-center text-muted">
-                <a>Already have an account?<a href="{{ route('login') }}"> Sign In</a></a>
+                <span>Already have an account?</span> <a href="{{ route('login') }}"> Sign In</a>
             </div>
         </form>
     </div>
