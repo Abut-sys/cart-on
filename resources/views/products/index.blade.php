@@ -2,20 +2,20 @@
 
 @section('content')
 
-<h1 class="text-center my-4">Daftar Produk</h1>
+{{-- <h1 class="text-center my-4">Daftar Produk</h1>
 <div class="text-center mb-3">
     <a href="{{ route('products.create') }}" class="btn btn-primary">Tambah Produk Baru</a>
-</div>
+</div> --}}
 
-@if(session('success'))
+{{-- @if(session('success'))
     <div class="alert alert-success text-center">
         {{ session('success') }}
     </div>
-@endif
+@endif --}}
 
 
 {{-- no table --}}
-<div class="container">
+{{-- <div class="container">
     <ul class="list-group">
         @foreach ($products as $product)
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -38,10 +38,10 @@
             </li>
         @endforeach
     </ul>
-</div>
+</div> --}}
 
 {{-- with table --}}
-{{-- <div class="container-fluid mt-4">
+<div class="container-fluid mt-4">
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #d3d3d3; color: black;">
             <!-- Title and Add Button in Header -->
@@ -100,7 +100,7 @@
             </div>
         </div>
     </div>
-</div> --}}
+</div>
 
 <style>
     .table-hover tbody tr:hover {

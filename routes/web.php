@@ -32,6 +32,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('brands', BrandController::class);
 
+    Route::resource('products', ProductController::class);
+
     Route::resource('categories', CategoryProductController::class);
 
     Route::resource('vouchers', VoucherController::class);
