@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Verify OTP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -20,12 +20,12 @@
             overflow: hidden;
         }
 
-        .register-card {
+        .otp-card {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             padding: 20px 15px;
-            width: 600px;
+            width: 400px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -57,7 +57,7 @@
             box-shadow: 0 0 5px rgba(102, 163, 161, 0.5);
         }
 
-        .btn-register {
+        .btn-verify {
             background: linear-gradient(135deg, #99bc85, #66a3a1);
             border: none;
             border-radius: 30px;
@@ -67,84 +67,35 @@
             font-weight: bold;
         }
 
-        .btn-register:hover {
+        .btn-verify:hover {
             background: linear-gradient(135deg, #66a3a1, #99bc85);
-        }
-
-        .text-muted {
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .text-muted a {
-            color: #99bc85;
-            text-decoration: none;
-        }
-
-        .text-muted a:hover {
-            text-decoration: underline;
-        }
-
-        .input-group-text {
-            background-color: #f7f7f7;
-            border: 1px solid #99bc85;
-            border-radius: 30px 0 0 30px;
-            padding: 8px 10px;
-        }
-
-        .input-group .form-control {
-            border-radius: 0 30px 30px 0;
         }
     </style>
 </head>
 
 <body>
-    <div class="register-card">
+    <div class="otp-card">
         <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo">
-        <h3 class="title">Sign Up</h3>
-        <form action="{{ url('/register') }}" method="POST" id="registerForm">
+        <h3 class="title">Verify OTP</h3>
+        <form action="{{ route('verify-otp.process') }}" method="POST" id="otpForm">
             @csrf
-            <div class="mb-3 row">
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                        <input type="email" class="form-control" placeholder="Email" name="email" required>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
-                            required>
-                    </div>
-                </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Enter OTP" name="otp" required>
+                <input type="hidden" name="email" value="{{ old('email', session('email')) }}">
             </div>
             <div class="mb-3">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" class="form-control" placeholder="Name" name="name" required>
-                </div>
-            </div>
-            <div class="mb-3">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Password" name="password" required>
-                </div>
-            </div>
-            <div class="mb-3">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Confirm Password"
-                        name="password_confirmation" required>
-                </div>
-            </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-register">
-                    {{ __('Sign Up') }}
+                <button type="submit" class="btn btn-verify">
+                    {{ __('Verify OTP') }}
                 </button>
             </div>
-            <div class="text-center text-muted">
-                <span>Already have an account?</span> <a href="{{ route('login') }}"> Sign In</a>
+        </form>
+        <form action="{{ route('otp.resend') }}" method="POST">
+            @csrf
+            <input type="hidden" name="email" value="{{ old('email', session('email')) }}">
+            <div class="mb-3">
+                <button type="submit" class="btn btn-secondary">
+                    {{ __('Resend OTP') }}
+                </button>
             </div>
         </form>
     </div>
