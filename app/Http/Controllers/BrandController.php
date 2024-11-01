@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\CategoryBrand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
