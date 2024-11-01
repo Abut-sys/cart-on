@@ -165,9 +165,9 @@
                 <button type="submit" class="btn btn-login">Sign In</button>
             </div>
             <di class="text-center text-muted">
-                <a>Don't have an account? <a href="{{ route('register') }}"> Sign Up</a></a>
+                <a>Don't have an account? <a href="{{ route('register') }}"> Sign Up</a><br>
                 <a href="{{ route('forgot-password') }}">Forgot Password?</a>
-            </div>
+            </div>  
         </form>
     </div>
 

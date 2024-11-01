@@ -12,9 +12,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ForgotPasswordController;
-use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
