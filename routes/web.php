@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\CostumersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -68,6 +69,8 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::resource('categories', CategoryProductController::class);
 
     Route::resource('vouchers', VoucherController::class);
+
+    Route::resource('costumers', CostumersController::class);
 });
 
 // Route::get('admin', function () {
