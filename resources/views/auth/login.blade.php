@@ -56,7 +56,8 @@
             border-radius: 20px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             padding: 40px 30px;
-            width: 600px;
+            width: 100%;
+            max-width: 600px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -132,8 +133,19 @@
         .input-group .form-control {
             border-radius: 0 30px 30px 0;
         }
+
+        @media (max-width: 576px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+
+            .title {
+                font-size: 28px;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="background-circle circle1"></div>
     <div class="background-circle circle2"></div>
@@ -164,6 +176,12 @@
             <div class="mb-3">
                 <button type="submit" class="btn btn-login">Sign In</button>
             </div>
+            <div class="mb-3">
+                <a href="{{ route('google.redirect') }}" class="btn btn-danger btn-login"><i
+                        class="fab fa-google me-2"></i> Sign in with Google</a>
+            </div>
+            <div class="text-center text-muted">
+                <span>Don't have an account? <a href="{{ route('register') }}">Sign Up</a></span>
             <di class="text-center text-muted">
                 <a>Don't have an account? <a href="{{ route('register') }}"> Sign Up</a><br>
                 <a href="{{ route('forgot-password') }}">Forgot Password?</a>
@@ -197,4 +215,5 @@
         </script>
     @endif
 </body>
+
 </html>
