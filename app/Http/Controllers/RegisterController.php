@@ -13,76 +13,75 @@ class RegisterController extends Controller
 {
     public function create()
     {
-        return view('auth.register'); // Tampilan pendaftaran
+        return view('auth.register'); // Registration view
     }
 
     public function store(Request $request)
     {
-        // Validasi input
+        // Validate input
         $request->validate([
             'name' => ['required', 'string'],
-            'email' => ['required', 'unique:users,email', 'email'], // Validasi email
+            'email' => ['required', 'unique:users,email', 'email'], // Email validation
             'password' => ['required', 'min:8'],
-            'phone_number' => ['required', 'string', 'unique:users,phone_number'], // Validasi phone_number
+            'phone_number' => ['required', 'string', 'unique:users,phone_number'], // Phone number validation
         ]);
 
-        // Membuat pengguna baru
+        // Create new user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'password' => Hash::make($request->password),
+            'is_verified' => false, // Initially set to false
         ]);
 
-        // Kirim OTP
+        // Send OTP
         $this->sendOtp($user);
 
-        // Arahkan ke halaman verifikasi OTP
+        // Redirect to OTP verification page
         return redirect()->route('verify-otp')->with('msg', 'Registration successful! Please verify your email with the OTP sent to you.');
     }
 
     public function showOtpForm()
     {
-        return view('auth.verify-otp'); // Tampilan verifikasi OTP
+        return view('auth.verify-otp'); // OTP verification view
     }
 
     public function verifyOtp(Request $request)
     {
-        // Validasi input
+        // Validate input
         $request->validate([
-            'otp' => 'required|digits:6', // Validasi OTP
-            'email' => 'required|email' // Validasi email
+            'otp' => 'required|digits:6', // OTP validation
+            'email' => 'required|email' // Email validation
         ]);
 
-        // Periksa apakah OTP valid dan tidak kedaluwarsa
+        // Check if OTP is valid and not expired
         if ($request->otp == session('otp') && $request->email == session('email') && session('otp_created_at') && (time() - session('otp_created_at') < 300)) {
-            // OTP valid, set user sebagai terverifikasi
+            // OTP is valid, mark user as verified
             $user = User::where('email', $request->email)->first();
-            $user->is_verified = true; // Ubah status menjadi terverifikasi
+            $user->is_verified = true; // Change status to verified
             $user->save();
 
-            // Hapus session
-            session()->forget('otp');
-            session()->forget('email');
-            session()->forget('otp_created_at');
+            // Clear session
+            session()->forget(['otp', 'email', 'otp_created_at']);
 
-            // Arahkan pengguna ke halaman login
+            // Redirect user to login page
             return redirect()->route('login')->with('msg', 'Registration successful! You can now login.');
         }
 
-        // Jika OTP tidak valid
+        // If OTP is not valid
         return redirect()->back()->withErrors(['otp' => 'Invalid or expired OTP!']);
     }
 
     public function resendOtp(Request $request)
     {
-        // Validasi email
+        // Validate email
         $request->validate(['email' => 'required|email']);
 
-        // Cek apakah email terdaftar
+        // Check if email is registered
         $user = User::where('email', $request->email)->first();
         if ($user) {
-            // Kirim OTP baru
+            // Send new OTP
             $this->sendOtp($user);
 
             return redirect()->route('verify-otp')->with('msg', 'New OTP has been sent to your email.');
@@ -96,10 +95,10 @@ class RegisterController extends Controller
         // Generate OTP
         $otp = rand(100000, 999999);
 
-        // Kirim OTP ke email
+        // Send OTP to email
         Notification::send($user, new OtpNotification($otp));
 
-        // Simpan OTP di session
-        session(['otp' => $otp, 'email' => $user->email, 'otp_created_at' => time()]); // Simpan waktu pembuatan OTP
+        // Store OTP in session
+        session(['otp' => $otp, 'email' => $user->email, 'otp_created_at' => time()]); // Store OTP creation time
     }
 }

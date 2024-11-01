@@ -6,14 +6,18 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str; // Import Str Class
 
 class LoginController extends Controller
 {
+    // Menampilkan tampilan login
     public function create()
     {
         return view('auth.login'); // Tampilan login
     }
 
+    // Menangani proses login manual
     public function store(Request $request)
     {
         // Validasi input
@@ -41,6 +45,44 @@ class LoginController extends Controller
         throw ValidationException::withMessages([
             'email' => 'Your credentials do not match our records.',
         ]);
+    }
+
+    // Redirect ke Google untuk login
+    public function redirect()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    // Callback setelah Google mengautentikasi pengguna
+    public function GoogleCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->stateless()->user();
+        } catch (\Exception $e) {
+            return redirect('login')->withErrors(['msg' => 'Authentication failed']);
+        }
+
+        // Mencari atau membuat pengguna baru
+        $existingUser = User::where('email', $user->getEmail())->first();
+
+        if ($existingUser) {
+            // Jika pengguna sudah ada, login
+            Auth::login($existingUser);
+        } else {
+            // Jika pengguna baru, buat akun
+            $newUser = User::create([
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+                'phone_number' => null, // Google tidak mengembalikan nomor telepon secara default
+                'password' => bcrypt(Str::random(16)), // Menggunakan Str::random()
+                'role' => 'user', // Atur default role, bisa disesuaikan
+                'is_verified' => true, // Anggap sudah terverifikasi
+                'google_id' => $user->getId(), // Simpan Google ID jika diperlukan
+            ]);
+            Auth::login($newUser);
+        }
+
+        return redirect()->intended(route('home.index'));
     }
 
     // Fungsi untuk redirect pengguna berdasarkan role
