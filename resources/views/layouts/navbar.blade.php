@@ -75,7 +75,7 @@
     </div>
     @if (Auth::check())
         <div class="nav-item">
-            <a href="{{ url('settings') }}" class="{{ request()->is('settings') ? 'active' : '' }}">
+            <a href="" class="{{ request()->is('settings') ? 'active' : '' }}">
                 <i class="fas fa-cog icon"></i> Settings
             </a>
         </div>
