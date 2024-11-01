@@ -20,10 +20,10 @@ class RegisterController extends Controller
     {
         // Validate input
         $request->validate([
-            'name' => ['required', 'string'],
-            'email' => ['required', 'unique:users,email', 'email'], // Email validation
-            'password' => ['required', 'min:8'],
-            'phone_number' => ['required', 'string', 'unique:users,phone_number'], // Phone number validation
+            'name' => ['required', 'string', 'max:255'], // Ensure the name is not too long
+            'email' => ['required', 'email', 'unique:users,email'], // Validate email uniqueness
+            'phone_number' => ['required', 'string', 'unique:users,phone_number'], // Validate unique phone number
+            'password' => ['required', 'string', 'min:8', 'confirmed'], // Confirm password and set a minimum length
         ]);
 
         // Create new user

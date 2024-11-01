@@ -1,23 +1,25 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryProductController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\CostumersController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\SocialController;
 
 /*
 |--------------------------------------------------------------------------
 // Rest of your routes
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 
 // Route untuk halaman utama
@@ -45,15 +47,24 @@ Route::middleware(['guest'])->group(function () {
     Route::get('google', [LoginController::class, 'redirect'])->name('google.redirect');
     Route::get('google/callback', [LoginController::class, 'GoogleCallback'])->name('google.callback');
 
-    Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('forgot-password');
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('forgot-password.send');
+    Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('forgot-password');
+    Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('forgot-password.send');
+
+    Route::get('otp-verify', [ForgotPasswordController::class, 'showOtpForm'])->name('otp.form');
+    Route::post('otp-verify', [ForgotPasswordController::class, 'verifyOtp'])->name('otp.verify');
+
+    Route::get('reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset.form');
+    Route::post('reset-password', [ForgotPasswordController::class, 'reset'])->name('password.update');
 
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
     Route::post('/register', [RegisterController::class, 'store']);
 
+    
     Route::get('/verify-otp', [RegisterController::class, 'showOtpForm'])->name('verify-otp');
     Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('verify-otp.process');
     Route::post('/otp/resend', [RegisterController::class, 'resendOtp'])->name('otp.resend');
+
+    // Route::get('/kirimemail', [MalasngodingController::class, 'index']);
 });
 
 // Route untuk pengguna yang terautentikasi dan berperan admin
@@ -67,6 +78,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('products', ProductController::class);
     Route::resource('categories', CategoryProductController::class);
     Route::resource('vouchers', VoucherController::class);
+
+    Route::resource('costumers', CostumersController::class);
 });
 
 // Route untuk memastikan pengguna yang belum memverifikasi akun mereka tidak dapat mengakses halaman login
