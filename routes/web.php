@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\InformationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +75,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryProductController::class);
     Route::resource('vouchers', VoucherController::class);
     Route::resource('costumers', CostumersController::class);
+
+    Route::resource('informations', InformationController::class);
+
 });
 
 // Route untuk memastikan pengguna yang belum memverifikasi akun mereka tidak dapat mengakses halaman login
