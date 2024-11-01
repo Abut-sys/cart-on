@@ -11,27 +11,25 @@ class RegisterController extends Controller
 {
     public function create()
     {
-        return view('auth.register'); // Your registration view
+        return view('auth.register'); // Return the registration view
     }
 
     public function store(Request $request)
     {
-        // Validasi input
+        // Validate input
         $request->validate([
-            'name' => ['required', 'string'],
-            'email' => ['required', 'unique:users', 'email'],
-            'password' => ['required', 'min:8'],
-            'phone_number' => ['required', 'string', 'unique:users'], // Validasi agar phone_number unik
-            'role' => ['required', 'string', 'in:user,admin'], // Validasi agar role hanya 'user' atau 'admin'
+            'name' => ['required', 'string', 'max:255'], // Ensure the name is not too long
+            'email' => ['required', 'email', 'unique:users,email'], // Validate email uniqueness
+            'phone_number' => ['required', 'string', 'unique:users,phone_number'], // Validate unique phone number
+            'password' => ['required', 'string', 'min:8', 'confirmed'], // Confirm password and set a minimum length
         ]);
 
-        // Membuat pengguna baru
+        // Create a new user
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
-            'password' => Hash::make($request->password),
-            'role' => $request->role, // Simpan role pengguna
+            'password' => Hash::make($request->password), // Hash the password before storing
         ]);
 
         // Redirect to login with a success message
