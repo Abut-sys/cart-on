@@ -41,7 +41,7 @@
         </a>
     </div>
     <div class="nav-item">
-        <a href="{{ url('products') }}" class="{{ request()->is('products') ? 'active' : '' }}">
+        <a href="{{ route('products.index') }} class="{{ request()->is('products') ? 'active' : '' }}">
             <i class="fas fa-boxes icon"></i> Products
         </a>
     </div>
@@ -69,7 +69,7 @@
         </a>
     </div>
     <div class="nav-item">
-        <a href="{{ url('customers') }}" class="{{ request()->is('customers') ? 'active' : '' }}">
+        <a href="{{ route('costumers.index') }}" class="{{ request()->is('customers') ? 'active' : '' }}">
             <i class="fas fa-users icon"></i> Customers
         </a>
     </div>

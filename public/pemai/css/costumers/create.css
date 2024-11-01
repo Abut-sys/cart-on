@@ -1,0 +1,75 @@
+.create-costumers-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.create-costumers-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #2c3e50;
+}
+
+.create-costumers-form-group {
+    margin-bottom: 20px;
+}
+
+.create-costumers-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.create-costumers-form-control {
+    width: 100%;
+    padding: 6px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.create-costumers-form-control:focus {
+    border-color: #99bc85;
+    box-shadow: 0 0 5px rgba(153, 188, 133, 0.5);
+    outline: none;
+}
+
+.create-costumers-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.create-costumers-btn-primary {
+    background-color: #99bc85;
+    color: #fff;
+    border: none;
+}
+
+.create-costumers-btn-primary:hover {
+    background-color: #a5d6a7;
+    transform: translateY(-2px);
+}
+
+.create-costumers-btn-secondary {
+    background-color: #e0e0e0;
+    color: #2c3e50;
+    margin-left: 10px;
+}
+
+.create-costumers-btn-secondary:hover {
+    background-color: #d1d1d1;
+    transform: translateY(-2px);
+}

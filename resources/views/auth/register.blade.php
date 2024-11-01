@@ -1,20 +1,52 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            background: url('image/background.png') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
+            background: linear-gradient(135deg, #66a3a1, #99bc85, #77d1b3);
+            background-size: 300% 300%;
+            animation: gradient-animation 8s ease infinite;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
+            justify-content: center; /* Center the card vertically */
+            align-items: center; /* Center the card horizontally */
             font-family: 'Arial', sans-serif;
             overflow: hidden;
+            position: relative;
         }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .background-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            animation: floating 10s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-15px) translateX(10px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+
+        .circle1 { width: 150px; height: 150px; top: 5%; left: 5%; animation-delay: 0s; }
+        .circle2 { width: 100px; height: 100px; top: 15%; left: 85%; animation-delay: 1s; }
+        .circle3 { width: 120px; height: 120px; top: 50%; left: 5%; animation-delay: 2s; }
+        .circle4 { width: 80px; height: 80px; top: 65%; left: 80%; animation-delay: 3s; }
+        .circle5 { width: 180px; height: 180px; top: 90%; left: 10%; animation-delay: 4s; }
+        .circle6 { width: 90px; height: 90px; top: 5%; left: 65%; animation-delay: 5s; }
 
         .register-card {
             background: rgba(255, 255, 255, 0.9);
@@ -27,6 +59,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            z-index: 1;
         }
 
         .logo {
@@ -95,10 +128,17 @@
 </head>
 
 <body>
+    <div class="background-circle circle1"></div>
+    <div class="background-circle circle2"></div>
+    <div class="background-circle circle3"></div>
+    <div class="background-circle circle4"></div>
+    <div class="background-circle circle5"></div>
+    <div class="background-circle circle6"></div>
+
     <div class="register-card">
         <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo">
         <h3 class="title">Sign Up</h3>
-        <form action="{{ route('register') }}" method="POST" id="registerForm">
+        <form action="{{ url('/register') }}" method="POST" id="registerForm">
             @csrf
             <div class="mb-3 row">
                 <div class="col">
@@ -110,7 +150,8 @@
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number" required>
+                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
+                            required>
                     </div>
                 </div>
             </div>
@@ -129,7 +170,8 @@
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Confirm Password" name="password_confirmation" required>
+                    <input type="password" class="form-control" placeholder="Confirm Password"
+                        name="password_confirmation" required>
                 </div>
             </div>
             <div class="mb-3">
@@ -156,6 +198,17 @@
             });
         </script>
     @endif
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Error!',
+                    text: "{{ $errors->first() }}",
+                    icon: 'error',
+                    confirmButtonText: 'Try Again'
+                });
+            });
+        </script>
+    @endif
 </body>
-
 </html>
