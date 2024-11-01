@@ -41,7 +41,7 @@
         </a>
     </div>
     <div class="nav-item">
-        <a href="{{ route('products.index') }} class="{{ request()->is('products') ? 'active' : '' }}">
+        <a href="{{ route('products.index') }}" class="{{ request()->is('products*') ? 'active' : '' }}">
             <i class="fas fa-boxes icon"></i> Products
         </a>
     </div>

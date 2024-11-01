@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\product;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,7 +23,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        $brands = Brand::all();
+        return view('products.create', compact ('brands'));
     }
 
     /**
@@ -35,17 +37,17 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-            'description'=> 'nullable',
+            'description' => 'nullable',
+            'brands_id' => 'nullable|exists:brands,id' // Corrected validation rule
         ]);
 
-        $data = $request->except('_token');
+        $data = $request->except('_token', 'image');
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('product_images', 'public');
-            $data['image_path'] = $path;
+            $data['image_path'] = $request->file('image')->store('product_images', 'public');
         }
 
-        Product::create($data);
+        Product::create($data); // Removed named argument syntax for compatibility
         return redirect()->route('products.index')->with('success', 'Product Created Successfully.');
     }
 
@@ -53,8 +55,9 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Product $product, )
     {
+        $product = $product->load('brand'); // load the related brand
         return view('products.show', compact('product'));
     }
 
@@ -63,7 +66,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $brands = Brand::all();
+        return view('products.edit', compact('product', 'brands'));
     }
 
     /**
@@ -75,24 +79,26 @@ class ProductController extends Controller
             'name' => 'required',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-            'description'=> 'nullable',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+            'description' => 'nullable',
+            'brands_id' => 'nullable|exists:brands,id', // Corrected validation rule
         ]);
 
-        $data = $request->except('_token');
+        
+
+        $data = $request->except('_token', 'image');
 
         if ($request->hasFile('image')) {
             if ($product->image_path) {
-                Storage::disk('public')->delete($product->image_path);
+                Storage::disk('public')->delete($product->image_path); // Delete old image
             }
-
-            $path = $request->file('image')->store('product_images', 'public');
-            $data['image_path'] = $path;
+            $data['image_path'] = $request->file('image')->store('product_images', 'public'); // Store new image
         }
 
-        $product->update($data);
+        $product->update($data); // Update product with validated data
         return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
     }
+
 
 
     /**
