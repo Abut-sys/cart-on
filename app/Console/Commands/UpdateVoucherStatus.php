@@ -9,48 +9,31 @@ use Carbon\Carbon;
 class UpdateVoucherStatus extends Command
 {
     protected $signature = 'vouchers:update-status';
-    protected $description = 'Update the status of vouchers based on the current date and usage limits';
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    protected $description = 'Update the status of vouchers based on the current date';
 
     public function handle()
     {
-        $currentDate = Carbon::now()->toDateString();
+        $currentDate = Carbon::now();
 
-        // Fetch all vouchers to check their conditions
+        // Ambil semua voucher
         $vouchers = Voucher::all();
 
         foreach ($vouchers as $voucher) {
-            $isActive = $this->checkVoucherConditions($voucher, $currentDate);
-
-            // Update the status if necessary
-            if ($isActive && $voucher->status !== 'active') {
-                $voucher->status = 'active';
-                $voucher->save();
-            } elseif (!$isActive && $voucher->status !== 'inactive') {
+            if ($currentDate->isAfter($voucher->end_date)) {
+                // Jika sudah lewat tanggal berakhir, set status sebagai tidak aktif
+                // Jika Anda menyimpan status sebagai kolom di database, gunakan ini:
                 $voucher->status = 'inactive';
-                $voucher->save();
+            } elseif ($currentDate->isBetween($voucher->start_date, $voucher->end_date, null, '[]')) {
+                // Jika dalam rentang tanggal, set status sebagai aktif
+                $voucher->status = 'active';
+            } else {
+                // Jika di luar rentang tanggal, set status sebagai tidak aktif
+                $voucher->status = 'inactive';
             }
+
+            $voucher->save(); // Simpan perubahan
         }
 
         $this->info('Voucher statuses have been updated successfully.');
-    }
-
-    private function checkVoucherConditions($voucher, $currentDate)
-    {
-        // Check date range
-        if ($currentDate < $voucher->start_date || $currentDate > $voucher->end_date) {
-            return false;
-        }
-
-        // Check usage limit
-        if ($voucher->usage_limit <= 0) {
-            return false;
-        }
-
-        return true;
     }
 }

@@ -32,7 +32,9 @@
                                 <td>{{ $voucher->start_date }}</td>
                                 <td>{{ $voucher->end_date }}</td>
                                 <td>{{ $voucher->usage_limit }}</td>
-                                <td>{{ $voucher->status }}</td>
+                                <td style="color: {{ $voucher->isActive() ? 'green' : 'red' }}">
+                                    {{ $voucher->isActive() ? 'Active' : 'Inactive' }}
+                                </td>
                                 <td>
                                     <a href="{{ route('vouchers.edit', $voucher) }}" class="btn btn-primary btn-sm"
                                         style="background-color: #0000FF; color: white;" title="Edit">

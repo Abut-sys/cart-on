@@ -16,7 +16,7 @@ class CheckIfVerified
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && !Auth::user()->is_verified) {
+        if (Auth::check() && Auth::user()->email_verified_at === null) {
             // Redirect ke halaman verifikasi jika pengguna belum terverifikasi
             return redirect()->route('verify-otp')->with('msg', 'Please verify your account before proceeding.');
         }

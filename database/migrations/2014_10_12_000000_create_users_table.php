@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('role')->default('user');
             $table->string('image_url')->nullable();
             $table->string('google_id')->nullable();
-            $table->boolean('is_verified')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -35,6 +34,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');
             $table->dropColumn('google_id');
+            $table->dropColumn('email_verified_at');
         });
     }
 };

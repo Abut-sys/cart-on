@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
 
 class User extends Authenticatable
 {
@@ -26,7 +24,6 @@ class User extends Authenticatable
         'image_url',
         'role',
         'google_id',
-        'is_verified'
     ];
 
     /**
@@ -48,4 +45,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Check if the user's email is verified.
+     *
+     * @return bool
+     */
+    public function isEmailVerified()
+    {
+        return $this->email_verified_at !== null;
+    }
 }
