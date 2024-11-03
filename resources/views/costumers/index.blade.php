@@ -3,6 +3,14 @@
 @section('content')
     <div class="costumers-container">
         <h1 class="costumers-title">User Management</h1>
+        <div class="costumers-search-filter-container">
+            <input type="text" class="costumers-search-bar" placeholder="Search users...">
+            <select class="costumers-filter-select">
+                <option value="all">All Users</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+            </select>
+        </div>
         <a href="{{ route('costumers.create') }}" class="costumers-btn costumers-btn-primary">
             <i class="fas fa-plus costumers-icon"></i> Add User
         </a>
@@ -29,7 +37,7 @@
                             @else
                                 <span>No Image</span>
                             @endif
-                        </td>                        
+                        </td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone_number }}</td>

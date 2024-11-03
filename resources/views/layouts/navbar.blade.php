@@ -44,7 +44,7 @@
         <a href="{{ route('products.index') }}" class="{{ request()->is('products*') ? 'active' : '' }}">
             <i class="fas fa-boxes icon"></i> Products
         </a>
-    </div>
+    </div>    
     <div class="nav-item category-container">
         <a href="#" class="category-link {{ request()->is('categories/*') ? 'active' : '' }}">
             <i class="fas fa-shapes icon"></i> Category
@@ -73,11 +73,9 @@
             <i class="fas fa-users icon"></i> Customers
         </a>
     </div>
-    @if (Auth::check())
-        <div class="nav-item">
-            <a href="" class="{{ request()->is('settings') ? 'active' : '' }}">
-                <i class="fas fa-cog icon"></i> Settings
-            </a>
-        </div>
-    @endif
+    <div class="nav-item">
+        <a href="{{ route('informations.index') }}" class="{{ request()->is('settings') ? 'active' : '' }}">
+            <i class="fas fa-cog icon"></i> Settings
+        </a>
+    </div>
 </div>
