@@ -28,10 +28,12 @@
             <div class="create-costumers-form-group">
                 <label for="image">User Image</label>
                 <input type="file" class="create-costumers-form-control-file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-                <img id="image-preview" src="" alt="Image Preview" class="create-costumers-image-preview" style="display:none; margin-top: 10px; max-width: 200px; border-radius: 8px;">
+                <img id="image-preview" src="" alt="Image Preview" class="create-costumers-image-preview" style="display:none;">
             </div>
-            <button type="submit" class="create-costumers-btn create-costumers-btn-primary">Add</button>
-            <a href="{{ route('costumers.index') }}" class="create-costumers-btn create-costumers-btn-secondary">Cancel</a>
+            <div class="create-costumers-buttons">
+                <button type="submit" class="create-costumers-btn create-costumers-btn-primary">Add</button>
+                <a href="{{ route('costumers.index') }}" class="create-costumers-btn create-costumers-btn-secondary">Cancel</a>
+            </div>
         </form>
     </div>
 

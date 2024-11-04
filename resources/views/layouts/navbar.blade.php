@@ -70,7 +70,7 @@
     </div>
     <div class="nav-item">
         <a href="{{ route('costumers.index') }}" class="{{ request()->is('customers') ? 'active' : '' }}">
-            <i class="fas fa-users icon"></i> Customers
+            <i class="fas fa-users icon"></i> Account
         </a>
     </div>
     <div class="nav-item">
