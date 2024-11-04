@@ -25,6 +25,14 @@
                 <h5 class="card-title" style="color: black;">Stock:</h5>
                 <p class="card-text" style="color: black;">{{ $product->stock }}</p>
 
+                <h4>Sub-Variants:</h4>
+                <ul>
+                    @foreach ($product->subVariants as $subVariant)
+                        <li>{{ $subVariant->name }}</li>
+                    @endforeach
+                </ul>
+
+
                 @if ($product->image_path)
                     <h5 class="card-title" style="color: black;">Image:</h5>
                     <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" class="img-fluid">

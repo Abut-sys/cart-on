@@ -54,18 +54,54 @@
                         </select>
                     </div>
 
-                    {{-- <div class="form-group mt-3">
-                        <label for="brand_id">Brand:</label>
-                        <select name="brand_id" id="brand_id" class="form-control">
-                            <option value="">Select Brand</option>
-                            @foreach ($brands as $brand)
-                                <option value="{{ $brand->id }}"
-                                    {{ isset($product) && $product->brand_id == $brand->id ? 'selected' : '' }}>
-                                    {{ $brand->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div> --}}
+                    {{-- <h4>Sub-Variants:</h4>
+                    <div id="sub-variants">
+                        <div class="sub-variant">
+                            <input type="text" name="sub_variants[]" placeholder="Sub-Variant Name" required>
+                            <button type="button" class="remove-sub-variant">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-sub-variant">Add Another Sub-Variant</button> --}}
+
+                    <h4>Sub-Variants:</h4>
+                    <div id="sub-variants">
+                        <div class="sub-variant">
+                            <input type="text" name="sub_variants[]" placeholder="Sub-Variant Name">
+                            <button type="button" class="remove-sub-variant"
+                                aria-label="Remove this sub-variant">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-sub-variant" aria-label="Add another sub-variant">Add Another
+                        Sub-Variant</button>
+
+                    <!-- Optional: Include a script to handle adding and removing sub-variant fields -->
+                    <script>
+                        document.getElementById('add-sub-variant').addEventListener('click', function() {
+                            const subVariantContainer = document.getElementById('sub-variants');
+                            const newSubVariant = document.createElement('div');
+                            newSubVariant.classList.add('sub-variant');
+                            newSubVariant.innerHTML = `
+            <input type="text" name="sub_variants[]" placeholder="Sub-Variant Name" required>
+            <button type="button" class="remove-sub-variant" aria-label="Remove this sub-variant">Remove</button>
+        `;
+                            subVariantContainer.appendChild(newSubVariant);
+
+                            // Add event listener for the remove button of the new sub-variant
+                            newSubVariant.querySelector('.remove-sub-variant').addEventListener('click', function() {
+                                subVariantContainer.removeChild(newSubVariant);
+                            });
+                        });
+
+                        // Add event listener to existing remove buttons
+                        document.querySelectorAll('.remove-sub-variant').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const subVariant = this.parentElement;
+                                subVariant.parentElement.removeChild(subVariant);
+                            });
+                        });
+                    </script>
+
+
 
 
                     <div class="mt-4">
@@ -74,6 +110,10 @@
                         </button>
                     </div>
                 </form>
+
+
+
+                
             </div>
         </div>
     </div>

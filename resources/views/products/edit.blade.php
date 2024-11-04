@@ -55,18 +55,6 @@
                         @endif
                     </div>
 
-                    {{-- <div class="form-group mb-3">
-                        <label for="brand_id">Brand:</label>
-                        <select name="brand_id" required>
-                            @foreach ($brands as $brand)
-                                <option value="{{ $brand->id }}"
-                                    {{ $product->brand_id == $brand->id ? 'selected' : '' }}>
-                                    {{ $brand->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div> --}}
-
                     <div class="form-group mb-3">
                         <label for="brand_id">Brand:</label>
                         <select name="brands_id" id="brand_id" class="form-control">
@@ -80,6 +68,18 @@
                         </select>
                     </div>
 
+                    <h4>Sub-Variants:</h4>
+                    <div id="sub-variants">
+                        @foreach ($product->subVariants as $subVariant)
+                            <div class="sub-variant">
+                                <input type="text" name="sub_variants[]" value="{{ $subVariant->name }}"
+                                    placeholder="Sub-Variant Name" required>
+                                <button type="button" class="remove-sub-variant">Remove</button>
+                            </div>
+                        @endforeach
+                    </div>
+                    <button type="button" id="add-sub-variant">Add Another Sub-Variant</button>
+
 
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" class="btn" style="background-color: #00ff00; color: black;">
@@ -87,6 +87,22 @@
                         </button>
                     </div>
                 </form>
+
+                <script>
+                    document.getElementById('add-sub-variant').addEventListener('click', function() {
+                        const subVariantDiv = document.createElement('div');
+                        subVariantDiv.className = 'sub-variant';
+                        subVariantDiv.innerHTML = `
+                            <input type="text" name="sub_variants[]" placeholder="Sub-Variant Name" required>
+                            <button type="button" class="remove-sub-variant">Remove</button>
+                        `;
+                        document.getElementById('sub-variants').appendChild(subVariantDiv);
+
+                        subVariantDiv.querySelector('.remove-sub-variant').addEventListener('click', function() {
+                            subVariantDiv.remove();
+                        });
+                    });
+                </script>
             </div>
         </div>
     </div>
