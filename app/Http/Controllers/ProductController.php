@@ -20,6 +20,7 @@ class ProductController extends Controller
         // return view('products.index', compact('products'));
     }
 
+
     /**
      * Show the form for creating a new resource.
      */
@@ -29,37 +30,9 @@ class ProductController extends Controller
         return view('products.create', compact ('brands'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required',
-    //         'price' => 'required|numeric',
-    //         'stock' => 'required|integer',
-    //         'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-    //         'description' => 'nullable',
-    //         'brands_id' => 'nullable|exists:brands,id', // Corrected validation rule
-    //         'sub_variants' => 'nullable|string|max:255',
-    //     ]);
-
-    //     $data = $request->except('_token', 'image');
-
-    //     if ($request->hasFile('image')) {
-    //         $data['image_path'] = $request->file('image')->store('product_images', 'public');
-    //     }
-
-    //     else ($request->sub_variants_name) {
-    //         $data->subVariants()->create(['name' => $request->sub_variants_name]);
-    //     }
-
-    //     Product::create($data); // Removed named argument syntax for compatibility
-    //     return redirect()->route('products.index')->with('success', 'Product Created Successfully.');
-    // }
 
     public function store(Request $request)
-{
+    {
     // Validate request data
     $request->validate([
         'name' => 'required|string|max:255', // Ensure name is a string with max length
@@ -105,11 +78,8 @@ class ProductController extends Controller
         }
     }
 
-
     return redirect()->route('products.index')->with('success', 'Product Created Successfully.');
-}
-
-
+    }
 
 
     /**
@@ -120,6 +90,7 @@ class ProductController extends Controller
         $product = $product->load('brand', 'subVariants' ); // load the related brand
         return view('products.show', compact('product'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -135,33 +106,8 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    // public function update(Request $request, Product $product)
-    // {
-    //     $request->validate([
-    //         'name' => 'required',
-    //         'price' => 'required|numeric',
-    //         'stock' => 'required|integer',
-    //         'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
-    //         'description' => 'nullable',
-    //         'brands_id' => 'nullable|exists:brands,id', // Corrected validation rule
-    //     ]);
-
-
-    //     $data = $request->except('_token', 'image');
-
-    //     if ($request->hasFile('image')) {
-    //         if ($product->image_path) {
-    //             Storage::disk('public')->delete($product->image_path); // Delete old image
-    //         }
-    //         $data['image_path'] = $request->file('image')->store('product_images', 'public'); // Store new image
-    //     }
-
-    //     $product->update($data); // Update product with validated data
-    //     return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
-    // }
-
     public function update(Request $request, Product $product)
-{
+    {
     // Validate request data
     $request->validate([
         'name' => 'required|string|max:255',
@@ -202,12 +148,9 @@ class ProductController extends Controller
     }
 
     return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
-}
+    }
 
-
-
-
-
+    
     /**
      * Remove the specified resource from storage.
      */

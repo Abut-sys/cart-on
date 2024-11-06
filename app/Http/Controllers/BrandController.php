@@ -18,6 +18,7 @@ class BrandController extends Controller
         return view('brands.index', compact('brands'));
     }
 
+    
     /**
      * Show the form for creating a new resource.
      */
@@ -25,6 +26,7 @@ class BrandController extends Controller
     {
         return view('brands.create');
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -49,6 +51,7 @@ class BrandController extends Controller
         return redirect()->route('brands.index')->with('success', 'Brand Created Successfully.');
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -57,6 +60,7 @@ class BrandController extends Controller
         return view('brands.show', compact('brand'));
     }
 
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -64,6 +68,7 @@ class BrandController extends Controller
     {
         return view('brands.edit', compact('brand'));
     }
+
 
     /**
      * Update the specified resource in storage.
