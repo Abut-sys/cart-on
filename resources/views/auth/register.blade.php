@@ -14,8 +14,8 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center the card vertically */
-            align-items: center; /* Center the card horizontally */
+            justify-content: center;
+            align-items: center;
             font-family: 'Arial', sans-serif;
             overflow: hidden;
             position: relative;
@@ -117,13 +117,21 @@
         .input-group-text {
             background-color: #f7f7f7;
             border: 1px solid #99bc85;
-            border-radius: 30px 0 0 30px;
+            border-radius: 30px;
             padding: 8px 10px;
+            cursor: pointer;
         }
 
-        .input-group .form-control {
-            border-radius: 0 30px 30px 0;
+        #eyeIcon, #eyeConfirmIcon {
+            font-size: 18px;
+            color: #99bc85;
+            cursor: pointer;
         }
+
+        #eyeIcon:hover, #eyeConfirmIcon:hover {
+            color: #66a3a1;
+        }
+
     </style>
 </head>
 
@@ -150,8 +158,7 @@
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
-                            required>
+                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number" required>
                     </div>
                 </div>
             </div>
@@ -164,14 +171,19 @@
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Password" name="password" required>
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="password" required>
+                    <span class="input-group-text" id="togglePassword">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </span>
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Confirm Password"
-                        name="password_confirmation" required>
+                    <input type="password" class="form-control" placeholder="Confirm Password" name="password_confirmation" id="confirmPassword" required>
+                    <span class="input-group-text" id="toggleConfirmPassword">
+                        <i class="fas fa-eye" id="eyeConfirmIcon"></i>
+                    </span>
                 </div>
             </div>
             <div class="mb-3">
@@ -210,5 +222,23 @@
             });
         </script>
     @endif
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const eyeConfirmIcon = document.getElementById('eyeConfirmIcon');
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            eyeConfirmIcon.classList.toggle('fa-eye-slash');
+        });
+    </script>
 </body>
 </html>
