@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -76,7 +77,7 @@ class LoginController extends Controller
                 'phone_number' => null, // Google tidak mengembalikan nomor telepon secara default
                 'password' => bcrypt(Str::random(16)), // Menggunakan Str::random()
                 'role' => 'user', // Atur default role, bisa disesuaikan
-                'email_verified_at' => now(), // Anggap sudah terverifikasi
+                'email_verified_at' => Carbon::now(), // Anggap sudah terverifikasi
                 'google_id' => $user->getId(), // Simpan Google ID jika diperlukan
             ]);
             Auth::login($newUser);
