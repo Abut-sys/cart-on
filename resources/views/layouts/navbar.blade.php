@@ -16,10 +16,6 @@
                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Profile
                 </a>
-                <a href="{{ route('logout') }}" class="dropdown-item"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt"></i> Log Out
-                </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>
@@ -70,14 +66,20 @@
     </div>
     <div class="nav-item">
         <a href="{{ route('costumers.index') }}" class="{{ request()->is('customers') ? 'active' : '' }}">
-            <i class="fas fa-users icon"></i> Customers
+            <i class="fas fa-users icon"></i> Account
         </a>
     </div>
-    @if (Auth::check())
-        <div class="nav-item">
-            <a href="{{ url('settings') }}" class="{{ request()->is('settings') ? 'active' : '' }}">
-                <i class="fas fa-cog icon"></i> Settings
-            </a>
-        </div>
-    @endif
+    <div class="nav-item">
+        <a href="{{ route('informations.index') }}" class="{{ request()->is('settings') ? 'active' : '' }}">
+            <i class="fas fa-cog icon"></i> Information Web
+        </a>
+    </div>
+
+    <div class="logout-container">
+        <a href="{{ route('logout') }}" class="logout-link"
+            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fas fa-sign-out-alt"></i> Log Out
+        </a>
+    </div>
+          
 </div>

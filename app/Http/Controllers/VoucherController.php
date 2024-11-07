@@ -10,7 +10,7 @@ class VoucherController extends Controller
 {
     public function index()
     {
-        $vouchers = Voucher::all();
+        $vouchers = Voucher::all(); // Ambil semua voucher
         return view('vouchers.index', compact('vouchers'));
     }
 
@@ -21,32 +21,19 @@ class VoucherController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the incoming request
+        // Validasi data input
         $validatedData = $request->validate([
             'code' => 'required|string|max:255|unique:vouchers',
             'discount_value' => 'required|numeric|min:0|max:100',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => 'required|date|after:start_date',
             'Terms_and_Conditions' => 'nullable|string',
             'usage_limit' => 'required|integer|min:1',
         ]);
 
-        // Get the current date
-        $currentDate = Carbon::now()->toDateString();
+        // Buat voucher baru
+        Voucher::create($validatedData);
 
-        // Determine the status based on the dates
-        $status = ($currentDate >= $validatedData['start_date'] && $currentDate <= $validatedData['end_date']) ? 'active' : 'inactive';
-
-        // Create the voucher
-        Voucher::create([
-            'code' => $validatedData['code'],
-            'discount_value' => $validatedData['discount_value'],
-            'start_date' => $validatedData['start_date'],
-            'end_date' => $validatedData['end_date'],
-            'Terms_and_Conditions' => $validatedData['Terms_and_Conditions'],
-            'usage_limit' => $validatedData['usage_limit'],
-            'status' => $status,
-        ]);
         return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully!');
     }
 
@@ -66,14 +53,8 @@ class VoucherController extends Controller
             'usage_limit' => 'required|integer|min:1',
         ]);
 
-        // Get the current date
-        $currentDate = Carbon::now()->toDateString();
-
-        // Determine the status based on the dates
-        $status = ($currentDate >= $validateData['start_date'] && $currentDate <= $validateData['end_date']) ? 'active' : 'inactive';
-
-        // Update the voucher
-        $voucher->update(array_merge($validateData, ['status' => $status]));
+        // Update voucher
+        $voucher->update($validateData);
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully!');
     }

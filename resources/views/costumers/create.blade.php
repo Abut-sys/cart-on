@@ -29,10 +29,32 @@
             </div>
             <div class="create-costumers-form-group">
                 <label for="image">User Image</label>
-                <input type="file" class="create-costumers-form-control-file" id="image" name="image">
+                <input type="file" class="create-costumers-form-control-file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                <img id="image-preview" src="" alt="Image Preview" class="create-costumers-image-preview" style="display:none;">
             </div>
-            <button type="submit" class="create-costumers-btn create-costumers-btn-primary">Add</button>
-            <a href="{{ route('costumers.index') }}" class="create-costumers-btn create-costumers-btn-secondary">Cancel</a>
+            <div class="create-costumers-buttons">
+                <button type="submit" class="create-costumers-btn create-costumers-btn-primary">Add</button>
+                <a href="{{ route('costumers.index') }}" class="create-costumers-btn create-costumers-btn-secondary">Cancel</a>
+            </div>
         </form>
     </div>
+
+    <script>
+        function previewImage(event) {
+            const imagePreview = document.getElementById('image-preview');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = '';
+                imagePreview.style.display = 'none';
+            }
+        }
+    </script>
 @endsection

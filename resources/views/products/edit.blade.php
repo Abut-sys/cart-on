@@ -57,18 +57,6 @@
                         @endif
                     </div>
 
-                    {{-- <div class="form-group mb-3">
-                        <label for="brand_id">Brand:</label>
-                        <select name="brand_id" required>
-                            @foreach ($brands as $brand)
-                                <option value="{{ $brand->id }}"
-                                    {{ $product->brand_id == $brand->id ? 'selected' : '' }}>
-                                    {{ $brand->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div> --}}
-
                     <div class="form-group mb-3">
                         <label for="brand_id">Brand:</label>
                         <select name="brands_id" id="brand_id" class="form-control">
@@ -82,6 +70,18 @@
                         </select>
                     </div>
 
+                    <h4>Sub-Variants:</h4>
+                    <div id="sub-variants">
+                        @foreach ($product->subVariants as $subVariant)
+                            <div class="sub-variant">
+                                <input type="text" name="sub_variants[]" value="{{ $subVariant->name }}"
+                                    placeholder="Sub-Variant Name" required>
+                                <button type="button" class="remove-sub-variant">Remove</button>
+                            </div>
+                        @endforeach
+                    </div>
+                    <button type="button" id="add-sub-variant">Add Another Sub-Variant</button>
+
 
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" class="btn" style="background-color: #00ff00; color: black;">
@@ -89,75 +89,23 @@
                         </button>
                     </div>
                 </form>
+
+                <script>
+                    document.getElementById('add-sub-variant').addEventListener('click', function() {
+                        const subVariantDiv = document.createElement('div');
+                        subVariantDiv.className = 'sub-variant';
+                        subVariantDiv.innerHTML = `
+                            <input type="text" name="sub_variants[]" placeholder="Sub-Variant Name" required>
+                            <button type="button" class="remove-sub-variant">Remove</button>
+                        `;
+                        document.getElementById('sub-variants').appendChild(subVariantDiv);
+
+                        subVariantDiv.querySelector('.remove-sub-variant').addEventListener('click', function() {
+                            subVariantDiv.remove();
+                        });
+                    });
+                </script>
             </div>
         </div>
     </div>
-
-
-    {{-- <div class="container mt-5">
-    <h1 class="text-center mb-4">Edit Produk</h1>
-
-    <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-
-        <div class="form-group">
-            <label for="name">Nama Produk:</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ $product->name }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="description">Deskripsi:</label>
-            <textarea class="form-control" id="description" name="description" rows="4">{{ $product->description }}</textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="price">Harga:</label>
-            <input type="number" class="form-control" id="price" name="price" value="{{ $product->price }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="stock">Stok:</label>
-            <input type="number" class="form-control" id="stock" name="stock" value="{{ $product->stock }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="image">Gambar:</label>
-            <input type="file" class="form-control-file" id="image" name="image">
-            @if ($product->image_path)
-                <small class="form-text text-muted">Gambar saat ini:</small>
-                <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" width="100" class="img-thumbnail">
-            @endif
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block">Perbarui</button>
-    </form>
-
-    <div class="text-center mt-4">
-        <a href="{{ route('products.index') }}" class="btn btn-secondary">Kembali ke Daftar Produk</a>
-    </div>
-</div> --}}
-
-    {{-- <h1>Edit Produk</h1>
-<form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('PUT')
-
-    <label>Nama Produk:</label>
-    <input type="text" name="name" value="{{ $product->name }}" required>
-
-    <label>Deskripsi:</label>
-    <textarea name="description">{{ $product->description }}</textarea>
-
-    <label>Harga:</label>
-    <input type="number" name="price" value="{{ $product->price }}" required>
-
-    <label>Stok:</label>
-    <input type="number" name="stock" value="{{ $product->stock }}" required>
-
-    <label>Gambar:</label>
-    <input type="file" name="image">
-
-    <button type="submit">Perbarui</button>
-</form> --}}
 @endsection

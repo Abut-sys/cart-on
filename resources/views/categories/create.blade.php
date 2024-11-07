@@ -5,41 +5,30 @@
 @section('content')
     <div class="container mt-4">
 
-        <div class="card mb-4 shadow-sm" style="background-color: #f0f0f0;"> <!-- Light gray background -->
-            <div class="card-header d-flex justify-content-between" style="background-color: #d3d3d3;">
-                <!-- Light gray header -->
-                <h2 class="mb-0" style="color: black;">Add Product Category</h2> <!-- Black header text -->
-                <a href="{{ route('categories.index') }}" class="btn btn-danger"
-                    style="background-color: #ff0000; color: black;">
+        <div class="card category-create-card mb-4 shadow-sm">
+            <div class="card-header category-create-card-header d-flex justify-content-between">
+                <h2 class="mb-0 category-create-title">Add Product Category</h2>
+                <a href="{{ route('categories.index') }}" class="btn category-create-btn-return">
                     <i class="fas fa-arrow-left"></i> Return
                 </a>
             </div>
-            <div class="card-body">
+            <div class="card-body category-create-card-body">
                 <form action="{{ route('categories.store') }}" method="POST">
                     @csrf
-                    <div class="form-group">
-                        <label for="category_name" style="font-weight: bold; color: black; margin-bottom: 5px;">Category
-                            Name</label> <!-- Bold label with bottom margin -->
-                        <input type="text" class="form-control" id="category_name" name="name" required
-                            placeholder="Category Name" style="background-color: #dcdcdc; border-color: #c0c0c0;">
-                        <!-- Gray input -->
+                    <div class="form-group category-create-form-group">
+                        <label for="category_name" class="category-create-label">Category Name</label>
+                        <input type="text" class="form-control category-create-input" id="category_name" name="name" required
+                            placeholder="Category Name">
                     </div>
 
-                    <div class="form-group mt-3"> <!-- Top margin added to space this group from the previous one -->
-                        <label for="sub_category_name"
-                            style="font-weight: bold; color: black; margin-bottom: 5px;">Sub-Category</label>
-                        <!-- Bold label with bottom margin -->
-                        <input type="text" class="form-control" id="sub_category_name" name="sub_category_name"
-                            placeholder="Sub Category" style="background-color: #dcdcdc; border-color: #c0c0c0;">
-                        <!-- Gray input -->
+                    <div class="form-group category-create-form-group mt-3">
+                        <label for="sub_category_name" class="category-create-label">Sub-Category</label>
+                        <input type="text" class="form-control category-create-input" id="sub_category_name" name="sub_category_name"
+                            placeholder="Sub Category">
                     </div>
 
-                    <!-- Button container with added spacing -->
-                    <div class="mt-4">
-                        <button type="submit" class="btn confirm-btn" style="background-color: #00ff00; color: black;">
-                            <!-- Bright green button -->
-                            Confirm
-                        </button>
+                    <div class="category-create-btn-container mt-4">
+                        <button type="submit" class="btn category-create-btn-confirm">Confirm</button>
                     </div>
                 </form>
             </div>

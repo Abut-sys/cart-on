@@ -4,10 +4,20 @@
 
 @section('content')
     <div class="costumers-container">
-        <h1 class="costumers-title">User Management</h1>
-        <a href="{{ route('costumers.create') }}" class="costumers-btn costumers-btn-primary">
-            <i class="fas fa-plus costumers-icon"></i> Add User
-        </a>
+        <div class="costumers-header">
+            <h1 class="costumers-title">User Management</h1>
+            <a href="{{ route('costumers.create') }}" class="costumers-btn costumers-btn-primary costumers-btn-add">
+                <i class="fas fa-plus costumers-icon"></i> Add User
+            </a>
+        </div>
+        <div class="costumers-search-filter-container">
+            <input type="text" class="costumers-search-bar" placeholder="Search users...">
+            <select class="costumers-filter-select">
+                <option value="all">All Users</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+            </select>
+        </div>
         <table class="costumers-table">
             <thead>
                 <tr>

@@ -19,7 +19,8 @@ return new class extends Migration
             $table->date('end_date');
             $table->text('terms_and_conditions')->nullable();
             $table->integer('usage_limit');
-            $table->string('status')->default('active');
+            $table->integer('used_count')->default(0);
+            $table->string('status')->default('inactive');
             $table->timestamps();
         });
     }

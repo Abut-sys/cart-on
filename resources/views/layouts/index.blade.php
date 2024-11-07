@@ -12,6 +12,13 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/index.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/create.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/index.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/create.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/edit.css">
+
 
 </head>
 

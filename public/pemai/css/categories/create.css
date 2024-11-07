@@ -1,0 +1,75 @@
+.category-create-card {
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.category-create-card-header {
+    background-color: #1e7e34;
+    color: white;
+    padding: 15px 20px;
+    font-weight: 600;
+    font-size: 1.25rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.category-create-title {
+    color: white;
+}
+
+.category-create-btn-return {
+    background-color: #ff0000;
+    color: white;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.category-create-btn-return:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+}
+
+.category-create-card-body {
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.category-create-form-group {
+    margin-bottom: 20px;
+}
+
+.category-create-label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.category-create-input {
+    background-color: #e8f5e9;
+    border-color: #c0c0c0;
+    border-radius: 6px;
+    padding: 10px;
+    color: #333;
+}
+
+.category-create-btn-container {
+    text-align: right;
+}
+
+.category-create-btn-confirm {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.category-create-btn-confirm:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}

@@ -1,35 +1,43 @@
 .create-costumers-container {
-    max-width: 600px;
+    max-width: 500px;
     margin: 20px auto;
-    padding: 30px;
+    padding: 20px;
     background-color: #ffffff;
     border-radius: 15px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.create-costumers-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
 
 .create-costumers-title {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
     color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .create-costumers-form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .create-costumers-form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     font-weight: bold;
     color: #2c3e50;
 }
 
 .create-costumers-form-control {
     width: 100%;
-    padding: 6px;
-    font-size: 12px;
+    padding: 8px;
+    font-size: 14px;
     border: 1px solid #ddd;
     border-radius: 6px;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -44,9 +52,9 @@
 .create-costumers-btn {
     display: inline-flex;
     align-items: center;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
     text-decoration: none;
     transition: background-color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
@@ -64,12 +72,41 @@
 }
 
 .create-costumers-btn-secondary {
-    background-color: #e0e0e0;
-    color: #2c3e50;
+    background-color: #ff0000;
+    color: #ffffff;
     margin-left: 10px;
 }
 
 .create-costumers-btn-secondary:hover {
-    background-color: #d1d1d1;
+    background-color: #d70000;
+    color: #fff;
     transform: translateY(-2px);
+}
+
+.create-costumers-image-preview {
+    margin-top: 10px;
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.create-costumers-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+@media (max-width: 500px) {
+    .create-costumers-container {
+        padding: 15px;
+    }
+
+    .create-costumers-title {
+        font-size: 20px;
+    }
+
+    .create-costumers-btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
 }

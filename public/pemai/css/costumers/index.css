@@ -1,28 +1,73 @@
 .costumers-container {
     max-width: 100%;
     margin: 20px auto;
-    padding: 20px;
-    background-color: #f7f9fc;
+    padding: 30px;
+    background-color: transparent;
     border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.costumers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .costumers-title {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 600;
     margin-bottom: 20px;
     text-align: center;
     color: #2c3e50;
+    flex-grow: 1;
+}
+
+.costumers-btn-add {
+    margin-left: auto;
+}
+
+.costumers-search-filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.costumers-search-bar {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #99bc85;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-right: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.costumers-search-bar:focus {
+    outline: none;
+    border-color: #9fd0a0;
+}
+
+.costumers-filter-select {
+    padding: 10px;
+    border: 1px solid #99bc85;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.costumers-filter-select:focus {
+    outline: none;
+    border-color: #9fd0a0;
 }
 
 .costumers-btn {
     display: inline-flex;
     align-items: center;
-    padding: 8px 16px;
+    padding: 8px 12px;
     font-size: 14px;
-    border-radius: 10px;
+    border-radius: 8px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .costumers-btn-primary {
@@ -32,6 +77,7 @@
 
 .costumers-btn-primary:hover {
     background-color: #9fd0a0;
+    transform: scale(1.05);
     color: #fff;
 }
 
@@ -39,15 +85,16 @@
     background-color: #e74c3c;
     color: #fff;
     border: none;
-    padding: 6px 12px;
-    border-radius: 5px;
+    padding: 6px 10px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 12px;
 }
 
 .costumers-btn-danger:hover {
     background-color: #c0392b;
+    transform: scale(1.05);
 }
 
 .costumers-icon {
@@ -55,45 +102,56 @@
 }
 
 .costumers-table {
-    width: 90%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 16px;
-    overflow: hidden;
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .costumers-table th,
 .costumers-table td {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: none;
     text-align: left;
 }
 
 .costumers-table th {
-    background-color: #99bc85;
+    background-color: #67a36a;
     color: #fff;
-    font-weight: bold;
-    font-size: 10px;
+    font-weight: 600;
+    font-size: 11px;
+    position: sticky;
+    top: 0;
+    text-align: center;
+    height: 40px;
 }
 
 .costumers-table td {
-    font-size: 10px;
+    font-size: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.costumers-table tr {
+    transition: background-color 0.3s ease;
+}
+
+.costumers-table tr:hover {
+    background-color: #f2f9f2;
+}
+
+.costumers-table tr:nth-child(odd) {
+    background-color: #ffffff;
 }
 
 .costumers-table .small-text {
-    font-size: 12px;
+    font-size: 10px;
     text-align: right;
 }
 
-.costumers-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
 .costumers-user-image {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
+    border-radius: 50%;
 }

@@ -32,7 +32,6 @@ class RegisterController extends Controller
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'password' => Hash::make($request->password),
-            'is_verified' => false, // Initially set to false
         ]);
 
         // Send OTP
@@ -59,7 +58,7 @@ class RegisterController extends Controller
         if ($request->otp == session('otp') && $request->email == session('email') && session('otp_created_at') && (time() - session('otp_created_at') < 300)) {
             // OTP is valid, mark user as verified
             $user = User::where('email', $request->email)->first();
-            $user->is_verified = true; // Change status to verified
+            $user->email_verified_at = now(); // Set the email_verified_at timestamp
             $user->save();
 
             // Clear session

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +31,7 @@ class LoginController extends Controller
         $user = User::where('email', $attributes['email'])->first();
 
         // Jika pengguna ditemukan dan belum terverifikasi
-        if ($user && !$user->is_verified) {
+        if ($user && !$user->email_verified_at) {
             // Redirect kembali dengan pesan kesalahan
             return redirect()->back()->withErrors(['email' => 'Your account is not verified. Please check your email for the OTP.']);
         }
@@ -76,7 +77,7 @@ class LoginController extends Controller
                 'phone_number' => null, // Google tidak mengembalikan nomor telepon secara default
                 'password' => bcrypt(Str::random(16)), // Menggunakan Str::random()
                 'role' => 'user', // Atur default role, bisa disesuaikan
-                'is_verified' => true, // Anggap sudah terverifikasi
+                'email_verified_at' => Carbon::now(), // Anggap sudah terverifikasi
                 'google_id' => $user->getId(), // Simpan Google ID jika diperlukan
             ]);
             Auth::login($newUser);

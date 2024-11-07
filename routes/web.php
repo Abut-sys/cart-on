@@ -12,6 +12,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\InformationController;
 use App\Http\Controllers\ForgotPasswordController;
 
 /*
@@ -25,16 +26,16 @@ Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 // Route untuk logout yang hanya bisa diakses oleh pengguna yang terautentikasi
 Route::middleware('auth')->group(function () {
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Route untuk update profile
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 });
 
 // Route untuk pengguna biasa yang terautentikasi
 Route::middleware(['auth', 'role:user'])->group(function () {
-    // Route untuk form edit profile
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
 
-    // Route untuk update profile
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Route untuk pengguna yang tidak terautentikasi
@@ -66,9 +67,6 @@ Route::middleware(['guest'])->group(function () {
 
 // Route untuk pengguna yang terautentikasi dan berperan admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::resource('brands', BrandController::class);
@@ -78,8 +76,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryProductController::class);
 
     Route::resource('vouchers', VoucherController::class);
-
     Route::resource('costumers', CostumersController::class);
+
+    Route::resource('informations', InformationController::class);
+
 });
 
 // Route untuk memastikan pengguna yang belum memverifikasi akun mereka tidak dapat mengakses halaman login

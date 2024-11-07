@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
@@ -20,14 +22,27 @@
         }
 
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
         }
 
         @keyframes floating {
-            0% { transform: translateY(0px) translateX(0px); }
-            50% { transform: translateY(-15px) translateX(10px); }
-            100% { transform: translateY(0px) translateX(0px); }
+            0% {
+                transform: translateY(0px) translateX(0px);
+            }
+
+            50% {
+                transform: translateY(-15px) translateX(10px);
+            }
+
+            100% {
+                transform: translateY(0px) translateX(0px);
+            }
         }
 
         .background-circle {
@@ -38,18 +53,101 @@
             animation: floating 10s ease-in-out infinite;
         }
 
-        .circle1 { width: 150px; height: 150px; top: 5%; left: 5%; animation-delay: 0s; }
-        .circle2 { width: 100px; height: 100px; top: 15%; left: 85%; animation-delay: 1s; }
-        .circle3 { width: 120px; height: 120px; top: 50%; left: 5%; animation-delay: 2s; }
-        .circle4 { width: 80px; height: 80px; top: 65%; left: 80%; animation-delay: 3s; }
-        .circle5 { width: 180px; height: 180px; top: 90%; left: 10%; animation-delay: 4s; }
-        .circle6 { width: 90px; height: 90px; top: 5%; left: 65%; animation-delay: 5s; }
-        .circle7 { width: 70px; height: 70px; top: 75%; left: 5%; animation-delay: 6s; }
-        .circle8 { width: 110px; height: 110px; top: 30%; left: 90%; animation-delay: 7s; }
-        .circle9 { width: 130px; height: 130px; top: 85%; left: 70%; animation-delay: 8s; }
-        .circle10 { width: 50px; height: 50px; top: 10%; left: 55%; animation-delay: 9s; }
-        .circle11 { width: 100px; height: 100px; top: 75%; left: 50%; animation-delay: 11s; }
-        .circle12 { width: 60px; height: 60px; top: 90%; left: 20%; animation-delay: 12s; }
+        .circle1 {
+            width: 150px;
+            height: 150px;
+            top: 5%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .circle2 {
+            width: 100px;
+            height: 100px;
+            top: 15%;
+            left: 85%;
+            animation-delay: 1s;
+        }
+
+        .circle3 {
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .circle4 {
+            width: 80px;
+            height: 80px;
+            top: 65%;
+            left: 80%;
+            animation-delay: 3s;
+        }
+
+        .circle5 {
+            width: 180px;
+            height: 180px;
+            top: 90%;
+            left: 10%;
+            animation-delay: 4s;
+        }
+
+        .circle6 {
+            width: 90px;
+            height: 90px;
+            top: 5%;
+            left: 65%;
+            animation-delay: 5s;
+        }
+
+        .circle7 {
+            width: 70px;
+            height: 70px;
+            top: 75%;
+            left: 5%;
+            animation-delay: 6s;
+        }
+
+        .circle8 {
+            width: 110px;
+            height: 110px;
+            top: 30%;
+            left: 90%;
+            animation-delay: 7s;
+        }
+
+        .circle9 {
+            width: 130px;
+            height: 130px;
+            top: 85%;
+            left: 70%;
+            animation-delay: 8s;
+        }
+
+        .circle10 {
+            width: 50px;
+            height: 50px;
+            top: 10%;
+            left: 55%;
+            animation-delay: 9s;
+        }
+
+        .circle11 {
+            width: 100px;
+            height: 100px;
+            top: 75%;
+            left: 50%;
+            animation-delay: 11s;
+        }
+
+        .circle12 {
+            width: 60px;
+            height: 60px;
+            top: 90%;
+            left: 20%;
+            animation-delay: 12s;
+        }
 
         .login-card {
             background: rgba(255, 255, 255, 0.9);
@@ -149,12 +247,34 @@
         .input-group-text {
             background-color: #f7f7f7;
             border: 1px solid #99bc85;
-            border-radius: 30px 0 0 30px;
-            padding: 10px 15px;
+            border-radius: 30px;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        #eyeIcon {
+            font-size: 18px;
+            color: #99bc85;
+            cursor: pointer;
+        }
+
+        #togglePassword:hover #eyeIcon {
+            color: #66a3a1;
+        }
+
+        .input-group .form-control:focus {
+            border-color: #66a3a1;
+            box-shadow: 0 0 5px rgba(102, 163, 161, 0.5);
+        }
+
+
         .input-group .form-control {
-            border-radius: 0 30px 30px 0;
+            border-radius: 30px;
+            padding: 10px 15px;
+            border: 1px solid #99bc85;
         }
 
         @media (max-width: 576px) {
@@ -194,7 +314,11 @@
             </div>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" placeholder="Password" name="password" required>
+                <input type="password" class="form-control" placeholder="Password" name="password" id="password"
+                    required>
+                <span class="input-group-text" id="togglePassword">
+                    <i class="fas fa-eye" id="eyeIcon"></i>
+                </span>
             </div>
             <div class="mb-3">
                 <button type="submit" class="btn btn-login">Sign In</button>
@@ -237,6 +361,24 @@
             });
         </script>
     @endif
+
+    <script>
+        const togglePassword = document.getElementById("togglePassword");
+        const passwordField = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        togglePassword.addEventListener("click", function() {
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -24,4 +24,9 @@ class product extends Model
         return $this->belongsTo(Brand::class, 'brands_id');
     }
 
+    public function subVariants()
+    {
+        return $this->hasMany(SubVariant::class);
+    }
+
 }
