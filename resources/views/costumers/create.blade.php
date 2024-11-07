@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Customer')
+
 @section('content')
     <div class="create-costumers-container">
         <h1 class="create-costumers-title">Add User</h1>

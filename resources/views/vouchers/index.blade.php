@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Voucher')
+
 @section('content')
     <div class="container mt-4">
         <div class="card shadow-sm">

@@ -1,12 +1,14 @@
 @extends('layouts.index')
 
+@section('title', 'Brands')
+
 @section('content')
 
 {{-- <h1 class="text-center my-4">Daftar Brand</h1>
 <div class="text-center mb-3">
     <a href="{{ route('brands.create') }}" class="btn btn-primary">Buat Brand Baru</a>
 </div> --}}
-{{-- 
+{{--
 @if(session('success'))
     <div class="alert alert-success text-center">
         {{ session('success') }}
@@ -73,19 +75,19 @@
                                 </td>
                                 <td>
                                     <!-- Icons for View, Edit, and Delete actions -->
-                                    <a href="{{ route('brands.show', $brand->id) }}" class="btn btn-info btn-sm" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
                                     <a href="{{ route('brands.edit', $brand->id) }}" class="btn btn-warning btn-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('brands.destroy', $brand->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                        <button type="submit" class="btn btn-danger btn-sm me-3" title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
+                                    <a href="{{ route('brands.show', $brand->id) }}" class="btn btn-info btn-sm" title="View">
+                                        <i class="fas fa-eye"></i> Details
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

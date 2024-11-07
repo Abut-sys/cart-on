@@ -57,6 +57,10 @@ Route::middleware(['guest'])->group(function () {
     Route::get('register', [RegisterController::class, 'create'])->name('register');
     Route::post('register', [RegisterController::class, 'store']);
 
+    Route::get('/verify-otp', [RegisterController::class, 'showOtpForm'])->name('verify-otp');
+    Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('verify-otp.process');
+    Route::post('/otp/resend', [RegisterController::class, 'resendOtp'])->name('otp.resend');
+
     // Route::get('/kirimemail', [MalasngodingController::class, 'index']);
 });
 
@@ -68,8 +72,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::resource('brands', BrandController::class);
+
     Route::resource('products', ProductController::class);
+
     Route::resource('categories', CategoryProductController::class);
+
     Route::resource('vouchers', VoucherController::class);
 
     Route::resource('costumers', CostumersController::class);

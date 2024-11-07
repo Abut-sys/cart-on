@@ -101,6 +101,29 @@
             font-weight: bold;
         }
 
+        .btn-google {
+        background-color: #e0e0e0; /* Ubah latar belakang menjadi abu-abu muda saat hover */
+        color: #000000; /* Teks tetap berwarna biru saat hover */
+        width: 100%;
+        border-radius: 30px;
+        padding: 10px 15px;
+        display: flex;
+        font-weight: bold;
+        align-items: center;
+        justify-content: center; /* Center the content */
+        }
+
+        .btn-google img {
+        margin-right: 10px; /* Maintain space between icon and text */
+        }
+
+
+        .btn-google:hover {
+        background-color: rgb(238, 238, 238); /* Latar belakang putih */
+        border: 1px solid #4285F4; /* Border berwarna biru Google */
+        color: #4285F4; /* Teks berwarna biru Google */
+        }
+
         .btn-login:hover {
             background: linear-gradient(135deg, #66a3a1, #99bc85);
         }
@@ -177,15 +200,15 @@
                 <button type="submit" class="btn btn-login">Sign In</button>
             </div>
             <div class="mb-3">
-                <a href="{{ route('google.redirect') }}" class="btn btn-danger btn-login"><i
-                        class="fab fa-google me-2"></i> Sign in with Google</a>
+                <a href="{{ route('google.redirect') }}" class="btn btn-google">
+                    <img src="{{ asset('image/google-icon.png') }}" alt="Google Icon" style="width: 20px; height: 20px; margin-right: 10px;">
+                    Sign in with Google
+                </a>
             </div>
-            <div class="text-center text-muted">
-                <span>Don't have an account? <a href="{{ route('register') }}">Sign Up</a></span>
             <di class="text-center text-muted">
                 <a>Don't have an account? <a href="{{ route('register') }}"> Sign Up</a><br>
                 <a href="{{ route('forgot-password') }}">Forgot Password?</a>
-            </div>  
+            </div>
         </form>
     </div>
 

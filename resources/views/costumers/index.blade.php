@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Customer')
+
 @section('content')
     <div class="costumers-container">
         <h1 class="costumers-title">User Management</h1>
@@ -29,7 +31,7 @@
                             @else
                                 <span>No Image</span>
                             @endif
-                        </td>                        
+                        </td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone_number }}</td>

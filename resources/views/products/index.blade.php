@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Product')
+
 @section('content')
 
 {{-- <h1 class="text-center my-4">Daftar Produk</h1>
@@ -79,19 +81,19 @@
                                 </td>
                                 <td>
                                     <!-- Icons for View, Edit, and Delete actions -->
-                                    <a href="{{ route('products.show', $product->id) }}" class="btn btn-info btn-sm" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
                                     <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning btn-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                        <button type="submit" class="btn btn-danger btn-sm me-3" title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
+                                    <a href="{{ route('products.show', $product->id) }}" class="btn btn-info btn-sm" title="View">
+                                        <i class="fas fa-eye"></i> Details
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
