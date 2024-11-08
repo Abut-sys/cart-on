@@ -26,7 +26,7 @@
                         @foreach ($vouchers as $voucher)
                             <tr>
                                 <td>{{ $voucher->code }}</td>
-                                <td>{{ $voucher->discount_value }}</td>
+                                <td>{{ $voucher->discount_value }}%</td>
                                 <td>{{ $voucher->start_date }}</td>
                                 <td>{{ $voucher->end_date }}</td>
                                 <td>{{ $voucher->usage_limit }}</td>
