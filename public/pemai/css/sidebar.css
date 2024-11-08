@@ -113,7 +113,7 @@ body {
     top: 0;
     height: 100%;
     width: 200px;
-    background-color: #ffffff;
+    background-image: linear-gradient(to bottom, #ffffff, #F3EEEA);;
     color: #99bc85;
     padding-top: 20px;
     transition: transform 0.3s ease;
@@ -144,17 +144,17 @@ body {
 .nav-item a {
     text-decoration: none;
     color: #4a7c5b;
-    font-size: 14px;
+    font-size: 15px;
     display: flex;
     align-items: center;
-    padding: 5px;
+    padding: 8px;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .nav-item a:hover,
 .nav-item a.active {
-    background-color: #dde2de;
-    color: #99bc85;
+    background-color: #967f61;
+    color: #FFF2E1;
     font-weight: bold;
 }
 
@@ -213,8 +213,8 @@ body {
 }
 
 .logout-link {
-    color: white;
-    background-color: #f44336;
+    color: #4a7c5b;
+    background-color: #ffffffab;
     padding: 8px 15px;
     text-decoration: none;
     font-weight: bold;

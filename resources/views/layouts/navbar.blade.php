@@ -76,10 +76,12 @@
     </div>
 
     <div class="logout-container">
-        <a href="{{ route('logout') }}" class="logout-link"
-            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <i class="fas fa-sign-out-alt"></i> Log Out
-        </a>
-    </div>
+        @if (Auth::check())
+            <a href="{{ route('logout') }}" class="logout-link"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="fas fa-sign-out-alt"></i> Log Out
+            </a>
+        @endif
+    </div>    
           
 </div>

@@ -6,7 +6,7 @@
 }
 
 .category-create-card-header {
-    background-color: #1e7e34;
+    background-color: #67a36a;
     color: white;
     padding: 15px 20px;
     font-weight: 600;
@@ -19,12 +19,15 @@
 }
 
 .category-create-btn-return {
-    background-color: #ff0000;
+    background-color: #ff4b4b;
     color: white;
     font-weight: bold;
     padding: 8px 12px;
     border-radius: 8px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
 .category-create-btn-return:hover {
@@ -50,10 +53,18 @@
 
 .category-create-input {
     background-color: #e8f5e9;
-    border-color: #c0c0c0;
+    border: 1px solid #c0c0c0;
     border-radius: 6px;
     padding: 10px;
     color: #333;
+    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-create-input:focus {
+    border-color: #67a36a;
+    box-shadow: 0 0 6px rgba(103, 163, 106, 0.4);
+    outline: none;
 }
 
 .category-create-btn-container {
@@ -61,15 +72,18 @@
 }
 
 .category-create-btn-confirm {
-    background-color: #28a745;
+    background-color: #67a36a;
     color: white;
     font-weight: bold;
     padding: 10px 15px;
     border-radius: 8px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
 }
 
 .category-create-btn-confirm:hover {
-    background-color: #218838;
+    color: #fff;
+    background-color: #559355;
     transform: scale(1.05);
 }

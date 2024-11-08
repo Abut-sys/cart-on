@@ -1,29 +1,37 @@
 .category-edit-card {
-    background-color: #f0f0f0;
+    background-color: #f9f9f9;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 .category-edit-card-header {
-    background-color: #d3d3d3;
-    color: black;
+    background-color: #67a36a;
+    color: white;
     padding: 15px 20px;
     font-weight: 600;
     font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     border-bottom: 1px solid #e0e0e0;
 }
 
 .category-edit-title {
-    color: black;
+    color: white;
+    margin: 0;
 }
 
 .category-edit-btn-return {
-    background-color: #ff0000;
-    color: black;
+    background-color: #ff4b4b;
+    color: white;
     font-weight: bold;
     padding: 8px 12px;
     border-radius: 8px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
 .category-edit-btn-return:hover {
@@ -33,31 +41,43 @@
 
 .category-edit-card-body {
     padding: 20px;
+    background-color: #ffffff;
 }
 
 .category-edit-form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .category-edit-label {
     font-weight: bold;
-    color: black;
+    color: #333;
     margin-bottom: 5px;
     display: block;
 }
 
-.category-edit-input, .category-edit-subcategory-input {
-    background-color: #dcdcdc;
-    border-color: #c0c0c0;
+.category-edit-input,
+.category-edit-subcategory-input {
+    background-color: #e8f5e9;
+    border: 1px solid #c0c0c0;
     border-radius: 6px;
     padding: 10px;
     color: #333;
+    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-edit-input:focus,
+.category-edit-subcategory-input:focus {
+    border-color: #67a36a;
+    box-shadow: 0 0 6px rgba(103, 163, 106, 0.4);
+    outline: none;
 }
 
 .category-edit-subcategory-title {
-    color: black;
+    color: #333;
     font-weight: bold;
     margin-top: 20px;
+    font-size: 1.15rem;
 }
 
 .category-edit-subcategory-list {
@@ -66,45 +86,59 @@
 
 .category-edit-subcategory-item {
     list-style-type: none;
+    margin-bottom: 10px;
 }
 
 .category-edit-btn-delete {
     background-color: transparent;
-    color: #ff0000;
+    color: #ff4b4b;
     font-weight: bold;
-    text-decoration: underline;
+    border: none;
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.2s ease;
 }
 
 .category-edit-btn-delete:hover {
     color: #cc0000;
+    transform: scale(1.05);
 }
 
 .category-edit-btn-add-subcategory {
-    background-color: #d3d3d3;
-    color: black;
+    background-color: #67a36a;
+    color: white;
     font-weight: bold;
     padding: 8px 15px;
     border-radius: 8px;
+    border: none;
+    cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.category-edit-btn-add-subcategory i {
+    margin-right: 5px;
 }
 
 .category-edit-btn-add-subcategory:hover {
-    background-color: #b0b0b0;
+    color: #fff;
+    background-color: #559355;
     transform: scale(1.05);
 }
 
 .category-edit-btn-save {
-    background-color: #00ff00;
-    color: black;
+    background-color: #67a36a;
+    color: white;
     font-weight: bold;
     padding: 10px 15px;
     border-radius: 8px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
 }
 
 .category-edit-btn-save:hover {
-    background-color: #00cc00;
+    color: #fff;
+    background-color: #559355;
     transform: scale(1.05);
 }

@@ -1,0 +1,117 @@
+.voucher-create-container {
+    display: flex;
+    justify-content: center;
+    padding: 3rem;
+    background-color: #f3f4f6;
+}
+
+.voucher-create-card {
+    width: 100%;
+    max-width: 650px;
+    background-color: #e9f7ef;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.voucher-create-card:hover {
+    transform: scale(1.02);
+}
+
+.voucher-create-card-header {
+    background-color: #5f9461;
+    padding: 1.25rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.voucher-create-card-header h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.voucher-create-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.voucher-create-btn-success {
+    background-color: #28a745;
+    border: none;
+    cursor: pointer;
+}
+
+.voucher-create-btn-success:hover {
+    background-color: #218838;
+}
+
+.voucher-create-btn-danger {
+    background-color: #dc3545;
+    border: none;
+    cursor: pointer;
+}
+
+.voucher-create-btn-danger:hover {
+    color: #fff;
+    background-color: #c82333;
+}
+
+.voucher-create-card-body {
+    padding: 2rem;
+}
+
+.voucher-create-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.voucher-create-form-group label {
+    font-weight: 600;
+    color: #444;
+}
+
+.voucher-create-form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.voucher-create-form-control:focus {
+    border-color: #67a36a;
+    box-shadow: 0 0 4px rgba(103, 163, 106, 0.4);
+    outline: none;
+}
+
+small.voucher-create-form-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.voucher-create-alert-danger {
+    margin-top: 0.5rem;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 0.75rem;
+    border-radius: 4px;
+}
+
+button.voucher-create-btn-success {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s ease;
+}

@@ -18,6 +18,13 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/index.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/create.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/show.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/index.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/create.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
 
 
 </head>

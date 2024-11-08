@@ -1,17 +1,15 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="container mt-4">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between" style="background-color: #d3d3d3;">
-                <!-- Light gray header -->
-                <h2 class="mb-0" style="color: black;">Edit Voucher</h2> <!-- Black header text -->
-                <a href="{{ route('vouchers.index') }}" class="btn btn-danger"
-                    style="background-color: #ff0000; color: black;">
+    <div class="voucher-edit-container">
+        <div class="voucher-edit-card shadow-sm">
+            <div class="voucher-edit-card-header d-flex justify-content-between">
+                <h2 class="mb-0">Edit Voucher</h2>
+                <a href="{{ route('vouchers.index') }}" class="voucher-edit-btn voucher-edit-btn-danger">
                     <i class="fas fa-arrow-left"></i> Return
                 </a>
             </div>
-            <div class="card-body">
+            <div class="voucher-edit-card-body">
                 <form action="{{ route('vouchers.update', $voucher) }}" method="POST">
                     @csrf
                     @method('PUT')
@@ -70,7 +68,7 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-success" style="background-color: #00FF00; color: black;">
+                    <button type="submit" class="voucher-edit-btn voucher-edit-btn-success">
                         Update Voucher
                     </button>
                 </form>
