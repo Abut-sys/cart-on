@@ -61,7 +61,7 @@
                             <option value="">Select Brand</option>
                             @foreach ($brands as $brand)
                                 <option value="{{ $brand->id }}"
-                                    {{ isset($product) && $product->brand_id == $brand->id ? 'selected' : '' }}>
+                                    {{ (old('brands_id') == $brand->id || (isset($product) && $product->brands_id == $brand->id)) ? 'selected' : '' }}>
                                     {{ $brand->name }}
                                 </option>
                             @endforeach
