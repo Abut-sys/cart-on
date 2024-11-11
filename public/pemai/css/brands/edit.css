@@ -1,11 +1,11 @@
-.category-create-card {
+.brand-edit-card {
     background-color: #f0f0f0;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.category-create-card-header {
+.brand-edit-card-header {
     background-color: #67a36a;
     color: white;
     padding: 15px 20px;
@@ -14,11 +14,11 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-.category-create-title {
+.brand-edit-title {
     color: white;
 }
 
-.category-create-btn-return {
+.brand-edit-btn-return {
     background-color: #ff4b4b;
     color: white;
     font-weight: bold;
@@ -30,28 +30,29 @@
     cursor: pointer;
 }
 
-.category-create-btn-return:hover {
-    background-color: #cc0000;
+.brand-edit-btn-return:hover {
+    background-color: #dc0404;
     transform: scale(1.05);
+    color: #fff;
 }
 
-.category-create-card-body {
+.brand-edit-card-body {
     padding: 20px;
     background-color: #ffffff;
 }
 
-.category-create-form-group {
+.brand-edit-form-group {
     margin-bottom: 20px;
 }
 
-.category-create-label {
+.brand-edit-label {
     font-weight: bold;
     color: #333;
     margin-bottom: 5px;
     display: block;
 }
 
-.category-create-input {
+.brand-edit-input {
     background-color: #e8f5e9;
     border: 1px solid #c0c0c0;
     border-radius: 6px;
@@ -61,17 +62,17 @@
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.category-create-input:focus {
+.brand-edit-input:focus {
     border-color: #67a36a;
     box-shadow: 0 0 6px rgba(103, 163, 106, 0.4);
     outline: none;
 }
 
-.category-create-btn-container {
+.brand-edit-btn-container {
     text-align: right;
 }
 
-.category-create-btn-confirm {
+.brand-edit-btn-update {
     background-color: #67a36a;
     color: white;
     font-weight: bold;
@@ -82,8 +83,19 @@
     cursor: pointer;
 }
 
-.category-create-btn-confirm:hover {
+.brand-edit-btn-update:hover {
     color: #fff;
     background-color: #559355;
     transform: scale(1.05);
+}
+
+.brand-edit-img-thumbnail {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+    margin-top: 10px;
+}
+
+.brand-edit-file-input {
+    margin-top: 10px;
 }

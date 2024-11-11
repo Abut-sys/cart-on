@@ -10,6 +10,7 @@
     <link href="{{ asset('/') }}assets/plugin/fontawasome/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/index.css">
@@ -18,7 +19,13 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/edit.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/index.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/create.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/show.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/index.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/create.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
 
 
 </head>

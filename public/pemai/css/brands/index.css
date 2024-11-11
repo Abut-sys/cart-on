@@ -1,10 +1,10 @@
-.category-card {
+.brand-index-card {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.category-card-header {
+.brand-index-card-header {
     background: #67a36a;
     color: white;
     padding: 15px 20px;
@@ -13,17 +13,17 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-.category-card-body {
+.brand-index-card-body {
     padding: 20px;
     background-color: #ffffff;
 }
 
-.category-table {
+.brand-index-table {
     font-size: 15px;
     color: #333;
 }
 
-.category-table th {
+.brand-index-table th {
     background-color: #f7f7f7;
     color: #555;
     font-weight: 600;
@@ -31,16 +31,16 @@
     border-bottom: 2px solid #ddd;
 }
 
-.category-table td {
+.brand-index-table td {
     border-bottom: 1px solid #eee;
     padding: 12px 8px;
 }
 
-.category-table tbody tr:hover {
+.brand-index-table tbody tr:hover {
     background-color: #e6f7e6;
 }
 
-.category-btn-add-category {
+.brand-index-btn-add-brand {
     background-color: #3da455;
     color: white;
     padding: 8px 12px;
@@ -49,48 +49,48 @@
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.category-btn-add-category:hover {
+.brand-index-btn-add-brand:hover {
     background-color: #218838;
     transform: scale(1.05);
 }
 
-.category-btn-edit-category,
-.category-btn-delete-category {
+.brand-index-btn-edit-brand,
+.brand-index-btn-delete-brand {
     border-radius: 8px;
     padding: 5px 10px;
     font-size: 0.9rem;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.category-btn-edit-category {
+.brand-index-btn-edit-brand {
     background-color: #4caf50;
     color: white;
 }
 
-.category-btn-edit-category:hover {
+.brand-index-btn-edit-brand:hover {
     background-color: #388e3c;
     transform: scale(1.05);
 }
 
-.category-btn-delete-category {
+.brand-index-btn-delete-brand {
     background-color: #ff4d4d;
     color: white;
 }
 
-.category-btn-delete-category:hover {
+.brand-index-btn-delete-brand:hover {
     background-color: #e60000;
     transform: scale(1.05);
 }
 
-.category-list li {
+.brand-index-list li {
     margin-bottom: 4px;
 }
 
-.category-table th, .category-table td {
+.brand-index-table th, .brand-index-table td {
     vertical-align: middle;
 }
 
-.category-thead-light th {
+.brand-index-thead-light th {
     background-color: #e0f7e0;
     color: #333;
 }

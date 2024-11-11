@@ -1,10 +1,10 @@
-.category-card {
+.voucher-index-card {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.category-card-header {
+.voucher-index-card-header {
     background: #67a36a;
     color: white;
     padding: 15px 20px;
@@ -13,84 +13,92 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-.category-card-body {
-    padding: 20px;
+.voucher-index-card-body {
+    padding: 25px;
     background-color: #ffffff;
 }
 
-.category-table {
+.voucher-index-table {
     font-size: 15px;
     color: #333;
+    width: 100%;
+    margin-top: 20px;
 }
 
-.category-table th {
+.voucher-index-table th {
     background-color: #f7f7f7;
     color: #555;
     font-weight: 600;
     text-align: left;
+    padding: 15px 20px;
     border-bottom: 2px solid #ddd;
+    letter-spacing: 1px;
 }
 
-.category-table td {
+.voucher-index-table td {
     border-bottom: 1px solid #eee;
-    padding: 12px 8px;
+    padding: 15px 20px;
+    text-align: left;
 }
 
-.category-table tbody tr:hover {
+.voucher-index-table tbody tr:hover {
     background-color: #e6f7e6;
 }
 
-.category-btn-add-category {
+.voucher-index-btn-add {
+    text-decoration: none;
     background-color: #3da455;
     color: white;
-    padding: 8px 12px;
     font-weight: bold;
+    padding: 8px 12px;
     border-radius: 8px;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.category-btn-add-category:hover {
+.voucher-index-btn-add:hover {
+    color: #fff;
     background-color: #218838;
     transform: scale(1.05);
 }
 
-.category-btn-edit-category,
-.category-btn-delete-category {
+.voucher-index-btn-edit,
+.voucher-index-btn-delete {
+    text-decoration: none;
     border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding: 8px 15px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
 }
 
-.category-btn-edit-category {
+.voucher-index-btn-edit {
     background-color: #4caf50;
     color: white;
 }
 
-.category-btn-edit-category:hover {
+.voucher-index-btn-edit:hover {
     background-color: #388e3c;
     transform: scale(1.05);
+    color: #fff;
 }
 
-.category-btn-delete-category {
+.voucher-index-btn-delete {
     background-color: #ff4d4d;
     color: white;
+    border: none;
 }
 
-.category-btn-delete-category:hover {
+.voucher-index-btn-delete:hover {
     background-color: #e60000;
     transform: scale(1.05);
 }
 
-.category-list li {
-    margin-bottom: 4px;
+.voucher-index-btn:focus {
+    outline: 2px solid #67a36a;
 }
 
-.category-table th, .category-table td {
-    vertical-align: middle;
-}
-
-.category-thead-light th {
-    background-color: #e0f7e0;
-    color: #333;
+.voucher-index-list li {
+    margin-bottom: 6px;
 }

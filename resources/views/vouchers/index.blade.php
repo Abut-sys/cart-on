@@ -3,18 +3,16 @@
 @section('title', 'Voucher')
 
 @section('content')
-    <div class="container mt-4">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center"
-                style="background-color: #d3d3d3; color: black;">
+    <div class="voucher-index-container mt-4">
+        <div class="voucher-index-card shadow-sm">
+            <div class="voucher-index-card-header d-flex justify-content-between align-items-center">
                 <h2 class="mb-0">Voucher List</h2>
-                <a href="{{ route('vouchers.create') }}" class="btn btn-success me-2"
-                    style="background-color: #00FF00; color: black;">
+                <a href="{{ route('vouchers.create') }}" class="voucher-index-btn voucher-index-btn-add me-2">
                     <i class="fas fa-plus"></i> New Voucher
                 </a>
             </div>
-            <div class="card-body">
-                <table class="table table-striped table-hover">
+            <div class="voucher-index-card-body">
+                <table class="voucher-index-table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>Code</th>
@@ -31,23 +29,23 @@
                             <tr>
                                 <td>{{ $voucher->code }}</td>
                                 <td>{{ $voucher->discount_value }}%</td>
-                                <td>{{ $voucher->start_date }}</td>
-                                <td>{{ $voucher->end_date }}</td>
+                                <td>{{ $voucher->start_date->format('Y-m-d') }}</td>
+                                <td>{{ $voucher->end_date->format('Y-m-d') }}</td>
                                 <td>{{ $voucher->usage_limit }}</td>
-                                <td style="color: {{ $voucher->isActive() ? 'green' : 'red' }}">
-                                    {{ $voucher->isActive() ? 'Active' : 'Inactive' }}
+                                <td style="color: {{ $voucher->status == 'active' ? 'green' : 'red' }}">
+                                    {{ ucfirst($voucher->status) }} <!-- Menampilkan status secara dinamis -->
                                 </td>
                                 <td>
-                                    <a href="{{ route('vouchers.edit', $voucher) }}" class="btn btn-primary btn-sm"
-                                        style="background-color: #0000FF; color: white;" title="Edit">
+                                    <a href="{{ route('vouchers.edit', $voucher) }}"
+                                        class="voucher-index-btn voucher-index-btn-edit" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('vouchers.destroy', $voucher) }}" method="POST"
                                         style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm"
-                                            style="background-color: #FF0000; color: white;" title="Delete">
+                                        <button type="submit" class="voucher-index-btn voucher-index-btn-delete"
+                                            title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
@@ -59,10 +57,4 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .table-hover tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-    </style>
 @endsection
