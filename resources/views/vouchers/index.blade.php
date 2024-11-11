@@ -27,20 +27,23 @@
                             <tr>
                                 <td>{{ $voucher->code }}</td>
                                 <td>{{ $voucher->discount_value }}%</td>
-                                <td>{{ $voucher->start_date }}</td>
-                                <td>{{ $voucher->end_date }}</td>
+                                <td>{{ $voucher->start_date->format('Y-m-d') }}</td>
+                                <td>{{ $voucher->end_date->format('Y-m-d') }}</td>
                                 <td>{{ $voucher->usage_limit }}</td>
-                                <td style="color: {{ $voucher->isActive() ? 'green' : 'red' }}">
-                                    {{ $voucher->isActive() ? 'Active' : 'Inactive' }}
+                                <td style="color: {{ $voucher->status == 'active' ? 'green' : 'red' }}">
+                                    {{ ucfirst($voucher->status) }} <!-- Menampilkan status secara dinamis -->
                                 </td>
                                 <td>
-                                    <a href="{{ route('vouchers.edit', $voucher) }}" class="voucher-index-btn voucher-index-btn-edit" title="Edit">
+                                    <a href="{{ route('vouchers.edit', $voucher) }}"
+                                        class="voucher-index-btn voucher-index-btn-edit" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('vouchers.destroy', $voucher) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('vouchers.destroy', $voucher) }}" method="POST"
+                                        style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="voucher-index-btn voucher-index-btn-delete" title="Delete">
+                                        <button type="submit" class="voucher-index-btn voucher-index-btn-delete"
+                                            title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>

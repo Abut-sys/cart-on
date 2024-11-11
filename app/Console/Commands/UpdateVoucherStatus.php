@@ -13,27 +13,21 @@ class UpdateVoucherStatus extends Command
 
     public function handle()
     {
-        $currentDate = Carbon::now();
+        $today = Carbon::today();
 
-        // Ambil semua voucher
-        $vouchers = Voucher::all();
+        // Update vouchers that should be active
+        Voucher::where('status', 'inactive')
+            ->where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->update(['status' => 'active']);
 
-        foreach ($vouchers as $voucher) {
-            if ($currentDate->isAfter($voucher->end_date)) {
-                // Jika sudah lewat tanggal berakhir, set status sebagai tidak aktif
-                // Jika Anda menyimpan status sebagai kolom di database, gunakan ini:
-                $voucher->status = 'inactive';
-            } elseif ($currentDate->isBetween($voucher->start_date, $voucher->end_date, null, '[]')) {
-                // Jika dalam rentang tanggal, set status sebagai aktif
-                $voucher->status = 'active';
-            } else {
-                // Jika di luar rentang tanggal, set status sebagai tidak aktif
-                $voucher->status = 'inactive';
-            }
+        // Update vouchers that should be inactive  
+        Voucher::where('status', 'active')
+            ->where('end_date', '<', $today)
+            ->update(['status' => 'inactive']);
 
-            $voucher->save(); // Simpan perubahan
-        }
+        // Voucher::where(...)->update([...]);: Query untuk memperbarui status voucher berdasarkan tanggal.
 
-        $this->info('Voucher statuses have been updated successfully.');
+        $this->info('Voucher statuses updated successfully.');
     }
 }
