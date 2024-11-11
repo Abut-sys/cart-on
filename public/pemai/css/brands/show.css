@@ -1,0 +1,79 @@
+.brand-show-card {
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.brand-show-card-header {
+    background-color: #67a36a;
+    color: white;
+    padding: 16px 24px;
+    font-weight: 600;
+    font-size: 1.3rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.brand-show-title {
+    color: white;
+}
+
+.brand-show-btn-return {
+    background-color: #ff4b4b;
+    color: white;
+    font-weight: bold;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.brand-show-btn-return:hover {
+    background-color: #dc0404;
+    transform: scale(1.1);
+    color: white;
+}
+
+.brand-show-card-body {
+    padding: 24px;
+    background-color: white;
+}
+
+.brand-show-description-title {
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.brand-show-description-text {
+    color: #333;
+    font-size: 1rem;
+}
+
+.brand-show-img-fluid {
+    width: 120px;
+    height: auto;
+    object-fit: cover;
+    margin-top: 12px;
+    border-radius: 8px;
+}
+
+.brand-show-btn-back {
+    background-color: #67a36a;
+    color: white;
+    font-weight: bold;
+    padding: 12px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.brand-show-btn-back:hover {
+    background-color: #559355;
+    transform: scale(1.05);
+    color: white;
+}

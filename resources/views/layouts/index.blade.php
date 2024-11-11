@@ -84,7 +84,7 @@
                     confirmButtonText: 'Return'
                 });
             });
-        </script>
+        </script>   
     @endif
 </body>
 
