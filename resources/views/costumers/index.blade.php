@@ -1,6 +1,6 @@
 @extends('layouts.index')
 
-@section('title', 'Customer')
+@section('title', 'User')
 
 @section('content')
     <div class="costumers-container">

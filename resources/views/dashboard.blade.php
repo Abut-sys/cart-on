@@ -3,133 +3,79 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="container mt-5">
+    <div class="container mt-4">
+        <h2 class="mb-4">Dashboard</h2>
+        <div class="row d-flex justify-content-between">
+            <!-- Overview Cards -->
+            <div class="col-md-3 mb-4">
+                <a href="{{ route('products.index') }}" class="text-decoration-none">
+                    <div class="card text-white bg-primary border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #004085;">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <div class="mb-3">
+                                <i class="fas fa-boxes fa-3x"></i>
+                            </div>
+                            <h5 class="card-title mb-1 fw-bold">Total Products</h5>
+                            <p class="card-text fs-3 fw-bold">{{ $totalProducts ?? '0' }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-    <!-- Header -->
-    <div class="text-center mb-4">
-        <h2>Today's Dashboard</h2>
-        <p>Here You Can View Many Dashboard For Today's Sales</p>
-    </div>
+            <div class="col-md-3 mb-4">
+                <a href="{{ route('categories.index') }}" class="text-decoration-none">
+                    <div class="card text-white bg-success border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #155724;">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <div class="mb-3">
+                                <i class="fas fa-tag fa-3x"></i>
+                            </div>
+                            <h5 class="card-title mb-1 fw-bold">Total Product Categories</h5>
+                            <p class="card-text fs-3 fw-bold">{{ $totalProductCategories ?? '0' }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-    <!-- Statistik Utama -->
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-white bg-danger mb-3">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Visitors Online</h5>
-                    <p class="card-text display-4">{{ $visitorsOnline }}</p>
-                    <p>10% More Than Yesterday</p>
+            <div class="col-md-3 mb-4">
+                <a href="{{ route('brands.index') }}" class="text-decoration-none">
+                    <div class="card text-white bg-info border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #0c5460;">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <div class="mb-3">
+                                <i class="fas fa-star fa-3x"></i>
+                            </div>
+                            <h5 class="card-title mb-1 fw-bold">Total Brands</h5>
+                            <p class="card-text fs-3 fw-bold">{{ $totalBrands ?? '0' }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <a href="{{ route('vouchers.index') }}" class="text-decoration-none">
+                    <div class="card text-white bg-warning border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #856404;">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <div class="mb-3">
+                                <i class="fas fa-ticket-alt fa-3x"></i>
+                            </div>
+                            <h5 class="card-title mb-1 fw-bold">Active Vouchers</h5>
+                            <p class="card-text fs-3 fw-bold">{{ $activeVouchers ?? '0' }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Orders Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4 border-0 shadow-lg">
+                    <div class="card-header bg-dark text-white">
+                        Latest Orders
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted fw-bold">No recent orders found.</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Products Sold</h5>
-                    <p class="card-text display-4">{{ $productsSold }}</p>
-                    <p>42 More Than Yesterday</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Products Arrived Safely</h5>
-                    <p class="card-text display-4">{{ $productsArrivedSafely }}</p>
-                    <p>15% Faster Than Last Week</p>
-                </div>
-            </div>
-        </div>
     </div>
-
-    <!-- Tabel Produk Terbaru -->
-    <div class="card mb-4">
-        <div class="card-header">Recent Product In 24 Hours</div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Product Number</th>
-                    <th>Status</th>
-                    <th>Payment</th>
-                    <th>Details</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($recentProducts as $product)
-                    <tr>
-                        <td>{{ $product['name'] }}</td>
-                        <td>{{ $product['number'] }}</td>
-                        <td>{{ $product['status'] }}</td>
-                        <td>{{ $product['payment'] }}</td>
-                        <td><a href="#">Details</a></td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Grafik Penjualan Mingguan -->
-    <div class="card mb-4">
-        <div class="card-header">Grafik Penjualan Minggu Ini</div>
-        <div class="card-body">
-            <canvas id="weeklySalesChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Statistik Data Total Barang -->
-    <div class="card mb-4">
-        <div class="card-header">Statistik Data Total Barang</div>
-        <div class="card-body">
-            <canvas id="totalDataChart"></canvas>
-            <ul>
-                @foreach($weeklyStats as $week => $data)
-                    <li>{{ $week }}: {{ $data }} barang</li>
-                @endforeach
-            </ul>
-        </div>
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-<script>
-    // Grafik Penjualan Mingguan
-    const weeklySalesCtx = document.getElementById('weeklySalesChart').getContext('2d');
-    new Chart(weeklySalesCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
-            datasets: [{
-                label: 'Jumlah Penjualan',
-                data: @json($weeklySales),
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
-
-    // Grafik Statistik Total Barang
-    const totalDataCtx = document.getElementById('totalDataChart').getContext('2d');
-    new Chart(totalDataCtx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(@json($weeklyStats)),
-            datasets: [{
-                label: 'Data Barang Terjual',
-                data: Object.values(@json($weeklyStats)),
-                backgroundColor: ['#4CAF50', '#FF5733', '#33A4FF', '#FFC300', '#DA33FF']
-            }]
-        }
-    });
-</script>
-
 @endsection

@@ -76,6 +76,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryProductController::class);
 
     Route::resource('vouchers', VoucherController::class);
+    
     Route::resource('costumers', CostumersController::class);
 
     Route::resource('informations', InformationController::class);

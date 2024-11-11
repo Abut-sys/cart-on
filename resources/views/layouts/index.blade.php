@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
 
 
 </head>
@@ -64,6 +65,11 @@
             button.parentElement.remove();
         }
     </script>
+
+    {{-- Dashboard --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @yield('dashboard')
+
 
     {{-- sweet alert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
