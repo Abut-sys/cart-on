@@ -31,7 +31,7 @@
 
                 <div class="brand-create-btn-container mt-4">
                     <button type="submit" class="brand-create-btn-confirm">
-                        Save
+                        Confirm
                     </button>
                 </div>
             </form>

@@ -31,7 +31,7 @@
                 </div>
                 <div class="d-flex justify-content-end mt-3">
                     <button type="submit" class="btn brand-edit-btn-update">
-                        <i class="fas fa-save"></i> Update
+                        <i class="fas fa-save"></i> Save Changes
                     </button>
                 </div>
             </form>

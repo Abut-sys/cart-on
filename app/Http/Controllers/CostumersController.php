@@ -10,11 +10,26 @@ use Illuminate\Support\Facades\Storage;
 
 class CostumersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $query = User::query();
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->has('role') && $request->role != 'all') {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->get();
+
         return view('costumers.index', compact('users'));
     }
+
 
     public function create()
     {

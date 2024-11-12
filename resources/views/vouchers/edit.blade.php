@@ -69,7 +69,7 @@
                     </div>
 
                     <button type="submit" class="voucher-edit-btn voucher-edit-btn-success">
-                        Update Voucher
+                        Save Changes
                     </button>
                 </form>
             </div>

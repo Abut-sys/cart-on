@@ -62,7 +62,7 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="voucher-create-btn voucher-create-btn-success">Create</button>
+                    <button type="submit" class="voucher-create-btn voucher-create-btn-success">Confirm</button>
                 </form>
             </div>
         </div>
