@@ -1,136 +1,90 @@
-/* File: public/css/brand.css */
-
-.brand-card {
+.brand-create-card {
+    background-color: #f0f0f0;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: #f0f0f0;
 }
 
-.brand-card-header {
-    background-color: #d3d3d3;
-    color: black;
+.brand-create-card-header {
+    background-color: #67a36a;
+    color: white;
     padding: 15px 20px;
     font-weight: 600;
     font-size: 1.25rem;
     border-bottom: 1px solid #e0e0e0;
 }
 
-.brand-card-body {
+.brand-create-title {
+    color: white;
+}
+
+.brand-create-btn-return {
+    background-color: #ff4b4b;
+    color: white;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.brand-create-btn-return:hover {
+    background-color: #dc0404;
+    transform: scale(1.05);
+    color:#fff;
+}
+
+.brand-create-card-body {
     padding: 20px;
     background-color: #ffffff;
 }
 
-.brand-table {
-    font-size: 15px;
-    color: #333;
+.brand-create-form-group {
+    margin-bottom: 20px;
 }
 
-.brand-table th {
-    background-color: #f7f7f7;
-    color: #555;
-    font-weight: 600;
-    text-align: left;
-    border-bottom: 2px solid #ddd;
-}
-
-.brand-table td {
-    border-bottom: 1px solid #eee;
-    padding: 12px 8px;
-}
-
-.brand-table tbody tr:hover {
-    background-color: #e6f7e6;
-}
-
-.brand-btn-add {
-    background-color: #3da455;
-    color: white;
-    padding: 8px 12px;
+.brand-create-label {
     font-weight: bold;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.brand-btn-add:hover {
-    background-color: #218838;
-    transform: scale(1.05);
-}
-
-.brand-btn-edit,
-.brand-btn-delete,
-.brand-btn-return,
-.brand-btn-save {
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.brand-btn-edit {
-    background-color: #4caf50;
-    color: white;
-}
-
-.brand-btn-edit:hover {
-    background-color: #388e3c;
-    transform: scale(1.05);
-}
-
-.brand-btn-delete {
-    background-color: #ff4d4d;
-    color: white;
-}
-
-.brand-btn-delete:hover {
-    background-color: #e60000;
-    transform: scale(1.05);
-}
-
-.brand-btn-return {
-    background-color: #ff0000;
-    color: black;
-}
-
-.brand-btn-return:hover {
-    background-color: #d40000;
-    transform: scale(1.05);
-}
-
-.brand-btn-save {
-    background-color: #00ff00;
-    color: black;
-}
-
-.brand-btn-save:hover {
-    background-color: #00cc00;
-    transform: scale(1.05);
-}
-
-.brand-list li {
-    margin-bottom: 4px;
-}
-
-.brand-table th, .brand-table td {
-    vertical-align: middle;
-}
-
-.brand-thead-light th {
-    background-color: #e0f7e0;
     color: #333;
-}
-
-.brand-label {
-    font-weight: bold;
-    color: black;
     margin-bottom: 5px;
+    display: block;
 }
 
-.brand-input {
-    background-color: #dcdcdc;
-    border-color: #c0c0c0;
+.brand-create-input {
+    background-color: #e8f5e9;
+    border: 1px solid #c0c0c0;
+    border-radius: 6px;
+    padding: 10px;
+    color: #333;
+    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.brand-table-hover tbody tr:hover {
-    background-color: #f1f1f1;
+.brand-create-input:focus {
+    border-color: #67a36a;
+    box-shadow: 0 0 6px rgba(103, 163, 106, 0.4);
+    outline: none;
+}
+
+.brand-create-btn-container {
+    text-align: right;
+}
+
+.brand-create-btn-confirm {
+    background-color: #67a36a;
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.brand-create-btn-confirm:hover {
+    color: #fff;
+    background-color: #559355;
+    transform: scale(1.05);
 }

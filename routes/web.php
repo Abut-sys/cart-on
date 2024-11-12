@@ -12,9 +12,8 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\InformationController;
-use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ForgotPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,9 +55,8 @@ Route::middleware(['guest'])->group(function () {
     Route::get('reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset.form');
     Route::post('reset-password', [ForgotPasswordController::class, 'reset'])->name('password.update');
 
-    Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
-
+    Route::get('register', [RegisterController::class, 'create'])->name('register');
+    Route::post('register', [RegisterController::class, 'store']);
 
     Route::get('/verify-otp', [RegisterController::class, 'showOtpForm'])->name('verify-otp');
     Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('verify-otp.process');
@@ -72,9 +70,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::resource('brands', BrandController::class);
+
     Route::resource('products', ProductController::class);
+
     Route::resource('categories', CategoryProductController::class);
+
     Route::resource('vouchers', VoucherController::class);
+
     Route::resource('costumers', CostumersController::class);
 
     Route::resource('informations', InformationController::class);

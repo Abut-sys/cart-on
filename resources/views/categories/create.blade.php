@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Categories Product')
+
 @section('content')
     <div class="container mt-4">
 

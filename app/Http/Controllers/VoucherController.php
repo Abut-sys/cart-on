@@ -10,7 +10,15 @@ class VoucherController extends Controller
 {
     public function index()
     {
-        $vouchers = Voucher::all(); // Ambil semua voucher
+        // Mengambil semua voucher
+        $vouchers = Voucher::all();
+
+        // Mengonversi start_date dan end_date menjadi objek Carbon jika belum
+        foreach ($vouchers as $voucher) {
+            $voucher->start_date = Carbon::parse($voucher->start_date);
+            $voucher->end_date = Carbon::parse($voucher->end_date);
+        }
+
         return view('vouchers.index', compact('vouchers'));
     }
 
@@ -27,12 +35,15 @@ class VoucherController extends Controller
             'discount_value' => 'required|numeric|min:0|max:100',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'Terms_and_Conditions' => 'nullable|string',
+            'terms_and_conditions' => 'nullable|string',
             'usage_limit' => 'required|integer|min:1',
         ]);
 
         // Buat voucher baru
-        Voucher::create($validatedData);
+        $voucher = Voucher::create($validatedData);
+
+        // Update status voucher sesuai dengan tanggal
+        $voucher->updateStatus(); // Pastikan ada method updateStatus di model
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully!');
     }
@@ -44,17 +55,21 @@ class VoucherController extends Controller
 
     public function update(Request $request, Voucher $voucher)
     {
-        $validateData = $request->validate([
-            'code' => 'required|string|max:255|unique:vouchers,code,' . $voucher->id, // Allow current code
+        // Validasi data input
+        $validatedData = $request->validate([
+            'code' => 'required|string|max:255|unique:vouchers,code,' . $voucher->id,
             'discount_value' => 'required|numeric|min:0|max:100',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'Terms_and_Conditions' => 'nullable|string',
+            'terms_and_conditions' => 'nullable|string',
             'usage_limit' => 'required|integer|min:1',
         ]);
 
         // Update voucher
-        $voucher->update($validateData);
+        $voucher->update($validatedData);
+
+        // Update status voucher sesuai dengan tanggal
+        $voucher->updateStatus(); // Pastikan ada method updateStatus di model
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully!');
     }

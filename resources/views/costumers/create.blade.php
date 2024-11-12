@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Customer')
+
 @section('content')
     <div class="create-costumers-container">
         <h1 class="create-costumers-title">Add User</h1>
@@ -16,6 +18,13 @@
             <div class="create-costumers-form-group">
                 <label for="phone_number">Phone Number</label>
                 <input type="text" name="phone_number" id="phone_number" class="create-costumers-form-control" required>
+            </div>
+            <div class="edit-user-form-group">
+                <label for="role">Role</label>
+                <select name="role" id="role" class="edit-user-form-control">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
             </div>
             <div class="create-costumers-form-group">
                 <label for="password">Password</label>

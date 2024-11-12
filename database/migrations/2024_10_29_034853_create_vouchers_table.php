@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('terms_and_conditions')->nullable();
             $table->integer('usage_limit');
             $table->integer('used_count')->default(0);
-            $table->string('status')->default('inactive');
+            $table->enum('status', ['inactive', 'active']);
             $table->timestamps();
         });
     }

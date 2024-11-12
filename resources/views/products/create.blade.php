@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Product')
+
 @section('content')
     <div class="container mt-4">
         <div class="card mb-4 shadow-sm" style="background-color: #f0f0f0;"> <!-- Light gray background -->

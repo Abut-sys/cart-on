@@ -10,6 +10,7 @@
     <link href="{{ asset('/') }}assets/plugin/fontawasome/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/index.css">
@@ -71,6 +72,11 @@
             button.parentElement.remove();
         }
     </script>
+
+    {{-- Dashboard --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @yield('dashboard')
+
 
     {{-- sweet alert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>

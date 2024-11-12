@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Product')
+
 @section('content')
     {{-- with table --}}
     <div class="container-fluid mt-4">
@@ -43,10 +45,6 @@
                                     </td>
                                     <td>
                                         <!-- Icons for View, Edit, and Delete actions -->
-                                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-info btn-sm"
-                                            title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
                                         <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning btn-sm"
                                             title="Edit">
                                             <i class="fas fa-edit"></i>
@@ -59,6 +57,10 @@
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
+                                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-info btn-sm"
+                                            title="View">
+                                            <i class="fas fa-eye"></i> Details
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
