@@ -13,6 +13,8 @@ class product extends Model
     protected $fillable = [
         'name',
         'brands_id',
+        'category_products_id',
+        'sub_category_products_id',
         'description',
         'price',
         'stock',
@@ -27,6 +29,16 @@ class product extends Model
     public function subVariants()
     {
         return $this->hasMany(SubVariant::class);
+    }
+
+    public function categoryProduct()
+    {
+        return $this->belongsTo(CategoryProduct::class, 'category_products_id');
+    }
+
+    public function subCategoryProduct()
+    {
+        return $this->belongsTo(SubCategoryProduct::class, 'sub_category_products_id');
     }
 
 }

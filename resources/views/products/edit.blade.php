@@ -70,6 +70,32 @@
                         </select>
                     </div>
 
+                    <div class="form-group mt-3">
+                        <label for="categoryproduct_id">Category:</label>
+                        <select name="category_products_id" id="categoryproduct_id" class="form-control" required>
+                            <option value="">Select Category</option>
+                            @foreach ($categoryProducts as $categoryproduct)
+                                <option value="{{ $categoryproduct->id }}"
+                                    {{ (old('category_products_id') == $categoryproduct->id || (isset($product) && $product->category_products_id == $categoryproduct->id)) ? 'selected' : '' }}>
+                                    {{ $categoryproduct->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="subcategoryproduct_id">Sub Category:</label>
+                        <select name="sub_category_products_id" id="subcategoryproduct_id" class="form-control" required>
+                            <option value="">Select Sub Category</option>
+                            @foreach ($subCategoryProducts as $subcategoryproduct)
+                                <option value="{{ $subcategoryproduct->id }}"
+                                    {{ (old('sub_category_products_id') == $subcategoryproduct->id || (isset($product) && $product->sub_category_products_id == $subcategoryproduct->id)) ? 'selected' : '' }}>
+                                    {{ $subcategoryproduct->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <h4>Sub-Variants:</h4>
                     <div id="sub-variants">
                         @foreach ($product->subVariants as $subVariant)

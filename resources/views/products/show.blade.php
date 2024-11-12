@@ -17,6 +17,11 @@
                 <h5 class="card-title" style="color: black;">Brand:</h5>
                 <p>Brand: {{ $product->brand ? $product->brand->name : 'No brand assigned' }}</p>
 
+                <h5 class="card-title" style="color: black;">Category:</h5>
+                <p>{{ $product->categoryProduct ? $product->categoryProduct->name : 'No category assigned' }}</p>
+
+                <h5 class="card-title" style="color: black;">Sub Category:</h5>
+                <p>{{ $product->subCategoryProduct ? $product->subCategoryProduct->name : 'No subcategory assigned' }}</p>
 
                 <h5 class="card-title" style="color: black;">Description:</h5>
                 <p class="card-text" style="color: black;">{{ $product->description }}</p>
