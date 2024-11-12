@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('category_products', function (Blueprint $table) {
             $table->id();
+            
             $table->string('name');
             $table->timestamps();
         });
@@ -21,8 +22,16 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+
+     public function down(): void
     {
-        Schema::dropIfExists('category_products');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropForeign(['categoryproducts_id']);
+            $table->dropColumn('categoryproducts_id');
+        });
     }
+    // public function down(): void
+    // {
+    //     Schema::dropIfExists('category_products');
+    // }
 };
