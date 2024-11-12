@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="container-fluid mt-4">
+{{-- <div class="container-fluid mt-4">
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #d3d3d3; color: black;">
             <!-- Title and Add Button in Header -->
@@ -18,7 +18,7 @@
                 <div class="alert alert-success text-center">
                     {{ session('success') }}
                 </div>
-            @endif
+            @endif --}}
     <div class="brand-index-container-fluid mt-4">
         <div class="brand-index-card shadow-sm">
             <div class="brand-index-card-header d-flex justify-content-between align-items-center">
