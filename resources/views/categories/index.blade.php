@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Categories Product')
+
 @section('content')
     <div class="container-fluid mt-4">
         <div class="card category-card shadow-sm border-0 rounded-lg">

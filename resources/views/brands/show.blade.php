@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Details Brands')
+
 @section('content')
 
 <div class="brand-show-container-fluid mt-4">

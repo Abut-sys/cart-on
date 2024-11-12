@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Product')
+
 @section('content')
     <div class="container mt-4">
         <div class="card mb-4 shadow-sm" style="background-color: #f0f0f0;"> <!-- Light gray background -->
@@ -53,6 +55,28 @@
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="form-group mt-3">
+                        <label for="categoryproduct_id">Category:</label>
+                        <select name="category_products_id" required>
+                            <option value="">Select Category</option>
+                            @foreach ($categoryproducts as $categoryproduct)
+                                <option value="{{ $categoryproduct->id }}">{{ $categoryproduct->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="subcategoryproduct_id">Sub Category:</label>
+                        <select name="sub_category_products_id" required>
+                            <option value="">Select Sub Category</option>
+                            @foreach ($subcategoryproducts as $subcategoryproduct)
+                                <option value="{{ $subcategoryproduct->id }}">{{ $subcategoryproduct->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+
 
                     <h4>Sub-Variants:</h4>
                     <div id="sub-variants">

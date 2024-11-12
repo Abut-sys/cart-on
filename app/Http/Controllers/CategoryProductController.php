@@ -23,15 +23,23 @@ class CategoryProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'sub_category_name' => 'nullable|string|max:255',
+            'subcategories' => 'array', // Memastikan bahwa subcategories adalah array
+            'subcategories.*' => 'nullable|string|max:255',
         ]);
         // Create the category
         $category = CategoryProduct::create(['name' => $request->name]);
 
         // If a subcategory name is provided, create the subcategory
-        if ($request->sub_category_name) {
-            $category->subCategories()->create(['name' => $request->sub_category_name]);
-        }
+        if ($request->has('sub_category_name')) {
+            foreach ($request->input('sub_category_name') as $subCategoryName) {
+                if (!empty($subCategoryName)) {
+                    $category->subCategories()->create([
+                        'name' => $subCategoryName,
+                    ]);
+                }
+            }
+        }   
+        
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 

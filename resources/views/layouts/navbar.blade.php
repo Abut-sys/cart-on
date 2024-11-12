@@ -32,7 +32,7 @@
         <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" />
     </div>
     <div class="nav-item">
-        <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">
+        <a href="{{ url('/dashboard') }}" class="{{ request()->is('/dashboard') ? 'active' : '' }}">
             <i class="fas fa-chart-line icon"></i> Dashboard
         </a>
     </div>

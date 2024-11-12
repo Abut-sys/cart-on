@@ -109,8 +109,8 @@
 
                             <!-- Back Button -->
                             <div class="d-grid">
-                                <a href="{{ url('/') }}" class="btn btn-lg btn-secondary shadow-lg">
-                                    <i class="fas fa-arrow-left me-2"></i> Back to Home
+                                <a href="{{ url('/dashboard') }}" class="btn btn-lg btn-secondary shadow-lg">
+                                    <i class="fas fa-arrow-left me-2"></i> Back
                                 </a>
                             </div>
                         </form>

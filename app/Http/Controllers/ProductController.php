@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoryProduct;
 use App\Models\product;
 use App\Models\Brand;
+use App\Models\SubCategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,10 +16,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['subVariants', 'brand'])->paginate(10); // Load sub-variants and brand, and paginate results
+        $products = Product::with(['subVariants', 'brand', 'categoryProduct', 'subCategoryProduct'])->paginate(10); // Load sub-variants and brand, and paginate results
         return view('products.index', compact('products'));
-        // $products = product::with('sub_variants')->paginate(10);
-        // return view('products.index', compact('products'));
     }
 
 
@@ -27,7 +27,9 @@ class ProductController extends Controller
     public function create()
     {
         $brands = Brand::all();
-        return view('products.create', compact ('brands'));
+        $categoryproducts = CategoryProduct::all();
+        $subcategoryproducts = SubCategoryProduct::all();
+        return view('products.create', compact ('brands', 'categoryproducts', 'subcategoryproducts'));
     }
 
 
@@ -43,6 +45,9 @@ class ProductController extends Controller
         'brands_id' => 'nullable|exists:brands,id', // Validate brand ID
         'sub_variants' => 'nullable|array', // Validate as an array
         'sub_variants.*' => 'string|max:255', // Validate each sub-variant
+        'category_products_id' => 'nullable|exists:category_products,id', // Validate brand ID
+        'sub_category_products_id' => 'nullable|exists:sub_category_products,id', // Validate brand ID
+
     ]);
     // dd($request->all());
 
@@ -87,9 +92,15 @@ class ProductController extends Controller
      */
     public function show(Product $product, )
     {
-        $product = $product->load('brand', 'subVariants' ); // load the related brand
+        // Load all related data at once
+        $product->load(['brand', 'subVariants', 'categoryProduct', 'subCategoryProduct']);
         return view('products.show', compact('product'));
     }
+
+    // {
+    //     $product = $product->load('brand', 'subVariants', 'categoryProducts','subCategoryProducts' ); // load the related brand
+    //     return view('products.show', compact('product'));
+    // }
 
 
     /**
@@ -97,10 +108,19 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('subVariants'); // Load existing sub-variants for the product
-        $brands = Brand::all(); // Load all brands for the brand selection dropdown
-        return view('products.edit', compact('product', 'brands'));
+        // Load necessary relationships for the product and get all brand/category data
+        $product->load(['brand', 'subVariants', 'categoryProduct', 'subCategoryProduct']);
+        $brands = Brand::all();
+        $categoryProducts = CategoryProduct::all();
+        $subCategoryProducts = SubCategoryProduct::all();
+
+        return view('products.edit', compact('product', 'brands', 'categoryProducts', 'subCategoryProducts'));
     }
+    // {
+    //     $product->load('subVariants'); // Load existing sub-variants for the product
+    //     $brands = Brand::all(); // Load all brands for the brand selection dropdown
+    //     return view('products.edit', compact('product', 'brands', 'categoryProducts','subcategoryproducts'));
+    // }
 
 
     /**
@@ -118,6 +138,9 @@ class ProductController extends Controller
         'brands_id' => 'nullable|exists:brands,id', // Validate brand ID
         'sub_variants' => 'nullable|array', // Change to array for better handling
         'sub_variants.*' => 'string|max:255', // Validate each sub-variant
+        'category_products_id' => 'nullable|exists:category_products,id', // Validate brand ID
+        'sub_category_products_id' => 'nullable|exists:sub_category_products,id', // Validate brand ID
+
     ]);
 
     // Prepare data for update
@@ -150,7 +173,7 @@ class ProductController extends Controller
     return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
     }
 
-    
+
     /**
      * Remove the specified resource from storage.
      */

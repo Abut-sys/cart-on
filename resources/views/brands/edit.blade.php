@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'Brands')
+
 @section('content')
 <div class="brand-edit-container-fluid mt-4">
     <div class="brand-edit-card shadow-sm">
