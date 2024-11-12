@@ -6,7 +6,7 @@
     <div class="container mt-4">
         <div class="card category-edit-card mb-4 shadow-sm">
             <div class="card-header category-edit-card-header d-flex justify-content-between align-items-center">
-                <h2 class="mb-0 category-edit-title">Add Product Category</h2>
+                <h2 class="mb-0 category-edit-title">Product Category</h2>
                 <a href="{{ route('categories.index') }}" class="btn category-edit-btn-return me-2">
                     <i class="fas fa-arrow-left"></i> Return
                 </a>
@@ -17,7 +17,7 @@
                     @method('PUT')
 
                     <div class="form-group category-edit-form-group mb-3">
-                        <label for="category_name" class="category-edit-label">Name Category</label>
+                        <label for="category_name" class="category-edit-label">Main Category</label>
                         <input type="text" class="form-control category-edit-input" id="category_name" name="name"
                             value="{{ $category->name }}" required>
                     </div>
@@ -52,4 +52,34 @@
             </div>
         </div>
     </div>
+
+    {{-- category --}}
+    <script>
+        document.getElementById('add-subcategory').addEventListener('click', function() {
+            const subcategoryList = document.getElementById('subcategory-list');
+            const newSubcategoryItem = document.createElement('li');
+            newSubcategoryItem.className = 'category-edit-subcategory-item mb-2';
+            newSubcategoryItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                        <input type="text" class="form-control category-edit-subcategory-input"
+                            name="new_subcategories[]" placeholder="Sub Category">
+                        <button type="button" class="btn btn-link text-danger" onclick="removeSubcategory(this)">Delete</button>
+                    </div>
+                `;
+
+            subcategoryList.appendChild(newSubcategoryItem);
+        });
+
+        function removeSubcategory(button, subCategoryId = null) {
+            if (subCategoryId) {
+                // Mark the subcategory for deletion
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'deleted_subcategories[]';
+                hiddenInput.value = subCategoryId;
+                button.closest('form').appendChild(hiddenInput);
+            }
+            button.parentElement.remove();
+        }
+    </script>
 @endsection
