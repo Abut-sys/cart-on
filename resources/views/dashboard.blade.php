@@ -9,7 +9,8 @@
             <!-- Overview Cards -->
             <div class="col-md-3 mb-4">
                 <a href="{{ route('products.index') }}" class="text-decoration-none">
-                    <div class="card text-white bg-primary border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #004085;">
+                    <div class="card text-white bg-primary border-0 shadow-lg rounded-lg hover-scale"
+                        style="border: 2px solid #004085;">
                         <div class="card-body d-flex flex-column justify-content-center align-items-center">
                             <div class="mb-3">
                                 <i class="fas fa-boxes fa-3x"></i>
@@ -23,7 +24,8 @@
 
             <div class="col-md-3 mb-4">
                 <a href="{{ route('categories.index') }}" class="text-decoration-none">
-                    <div class="card text-white bg-success border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #155724;">
+                    <div class="card text-white bg-success border-0 shadow-lg rounded-lg hover-scale"
+                        style="border: 2px solid #155724;">
                         <div class="card-body d-flex flex-column justify-content-center align-items-center">
                             <div class="mb-3">
                                 <i class="fas fa-tag fa-3x"></i>
@@ -37,7 +39,8 @@
 
             <div class="col-md-3 mb-4">
                 <a href="{{ route('brands.index') }}" class="text-decoration-none">
-                    <div class="card text-white bg-info border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #0c5460;">
+                    <div class="card text-white bg-info border-0 shadow-lg rounded-lg hover-scale"
+                        style="border: 2px solid #0c5460;">
                         <div class="card-body d-flex flex-column justify-content-center align-items-center">
                             <div class="mb-3">
                                 <i class="fas fa-star fa-3x"></i>
@@ -51,7 +54,8 @@
 
             <div class="col-md-3 mb-4">
                 <a href="{{ route('vouchers.index') }}" class="text-decoration-none">
-                    <div class="card text-white bg-warning border-0 shadow-lg rounded-lg hover-scale" style="border: 2px solid #856404;">
+                    <div class="card text-white bg-warning border-0 shadow-lg rounded-lg hover-scale"
+                        style="border: 2px solid #856404;">
                         <div class="card-body d-flex flex-column justify-content-center align-items-center">
                             <div class="mb-3">
                                 <i class="fas fa-ticket-alt fa-3x"></i>
@@ -72,10 +76,57 @@
                         Latest Orders
                     </div>
                     <div class="card-body">
-                        <p class="text-muted fw-bold">No recent orders found.</p>
+                        @if ($weeklyOrders->isNotEmpty())
+                            <canvas id="weeklyOrdersChart"></canvas>
+                        @else
+                            <p class="text-muted fw-bold">No recent orders found.</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('dashboard')
+    <script>
+        const ctx = document.getElementById('weeklyOrdersChart').getContext('2d');
+        const weeklyOrders = @json($weeklyOrders);
+
+        const labels = weeklyOrders.map(order => `Week ${order.week}`);
+        const data = weeklyOrders.map(order => order.count);
+
+        const weeklyOrdersChart = new Chart(ctx, {
+            type: 'line', // Anda bisa mengganti dengan 'bar' atau jenis lain sesuai kebutuhan
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Orders per Week',
+                    data: data,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Orders'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Weeks'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 @endsection

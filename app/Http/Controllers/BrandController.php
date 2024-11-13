@@ -18,7 +18,7 @@ class BrandController extends Controller
         return view('brands.index', compact('brands'));
     }
 
-    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -48,7 +48,7 @@ class BrandController extends Controller
         }
 
         Brand::create($data);
-        return redirect()->route('brands.index')->with('success', 'Brand Created Successfully.');
+        return redirect()->route('brands.index')->with('success');
     }
 
 
