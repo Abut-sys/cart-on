@@ -1,9 +1,79 @@
-.hover-scale {
-    transition: transform 0.3s ease;
+.container {
+    max-width: 1200px;
 }
 
-.hover-scale:hover {
-    transform: scale(1.05);
-    transition: transform 0.3s ease-in-out;
+/* Dashboard Card Styles */
+.dashboard-card {
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sedikit bayangan awal */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 200px; /* Membuat kartu seragam dalam tinggi */
 }
 
+/* Hover Effect */
+.dashboard-card:hover {
+    transform: translateY(-10px); /* Efek terangkat */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Bayangan lebih besar */
+}
+
+.dashboard-card-body .icon {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.dashboard-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.dashboard-card-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Background Colors */
+.bg-primary {
+    background-color: #007bff;
+}
+
+.bg-success {
+    background-color: #28a745;
+}
+
+.bg-info {
+    background-color: #17a2b8;
+}
+
+.bg-warning {
+    background-color: #ffc107;
+}
+
+/* Recent Orders Card */
+.recent-orders-card {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.recent-orders-header {
+    background-color: #343a40;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.recent-orders-body {
+    padding: 1.5rem;
+}
+
+.no-orders-text {
+    color: #6c757d;
+    font-weight: 600;
+    text-align: center;
+}
