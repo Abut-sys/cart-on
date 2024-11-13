@@ -41,7 +41,7 @@
             <i class="fas fa-boxes icon"></i> Products
         </a>
     </div>
-    <div class="nav-item category-container">
+    <div class="nav-dropdown-item category-container">
         <a href="#" class="category-link {{ request()->is('categories/*') ? 'active' : '' }}">
             <i class="fas fa-shapes icon"></i> Category
         </a>

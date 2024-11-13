@@ -16,7 +16,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['subVariants', 'brand', 'categoryProduct', 'subCategoryProduct'])->paginate(10); // Load sub-variants and brand, and paginate results
+        $products = Product::with(['subVariants', 'brand', 'categoryProduct', 'subCategoryProduct'])->paginate(5); // Load sub-variants and brand, and paginate results
         return view('products.index', compact('products'));
     }
 
