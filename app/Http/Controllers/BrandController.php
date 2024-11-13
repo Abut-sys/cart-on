@@ -14,11 +14,11 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brands = Brand::all();
+        $brands = Brand::paginate(5);
         return view('brands.index', compact('brands'));
     }
 
-    
+
     /**
      * Show the form for creating a new resource.
      */
