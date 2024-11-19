@@ -69,10 +69,57 @@
                         Latest Orders
                     </div>
                     <div class="recent-orders-body">
-                        <p class="no-orders-text">No recent orders found.</p>
+                        @if ($weeklyOrders->isNotEmpty())
+                            <canvas id="weeklyOrdersChart"></canvas>
+                        @else
+                            <p class="text-muted fw-bold">No recent orders found.</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('dashboard')
+    <script>
+        const ctx = document.getElementById('weeklyOrdersChart').getContext('2d');
+        const weeklyOrders = @json($weeklyOrders);
+
+        const labels = weeklyOrders.map(order => `Week ${order.week}`);
+        const data = weeklyOrders.map(order => order.count);
+
+        const weeklyOrdersChart = new Chart(ctx, {
+            type: 'line', // Anda bisa mengganti dengan 'bar' atau jenis lain sesuai kebutuhan
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Orders per Week',
+                    data: data,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Orders'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Weeks'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
