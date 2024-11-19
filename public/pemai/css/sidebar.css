@@ -66,14 +66,23 @@ body {
 .notification-icon {
     margin: 0 20px;
     cursor: pointer;
-    transition: color 0.3s;
     font-size: 24px;
+    transition: color 0.3s;
 }
 
 .notification-icon:hover {
     color: #d9cab3;
-    transform: rotate(20deg);
-    transition: transform 0.3s ease, color 0.3s ease;
+    animation: ring 1s ease-in-out;
+}
+
+@keyframes ring {
+    0% { transform: rotate(0); }
+    15% { transform: rotate(-15deg); }
+    30% { transform: rotate(15deg); }
+    45% { transform: rotate(-15deg); }
+    60% { transform: rotate(15deg); }
+    75% { transform: rotate(0); }
+    100% { transform: rotate(0); }
 }
 
 .username {

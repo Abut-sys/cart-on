@@ -23,6 +23,11 @@ class Voucher extends Model
 
     protected $dates = ['start_date', 'end_date'];
 
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];    
+
     /**
      * Scope untuk mengambil voucher aktif berdasarkan tanggal
      */
@@ -46,7 +51,7 @@ class Voucher extends Model
      */
     public function getStatusAttribute()
     {
-        return $this->isActive() ? 'active' : 'inactive';
+        return $this->end_date >= Carbon::now() ? 'active' : 'inactive';
     }
 
     /**

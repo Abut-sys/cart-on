@@ -8,16 +8,22 @@ use Illuminate\Http\Request;
 
 class VoucherController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil semua voucher
-        $vouchers = Voucher::all();
+        $query = Voucher::query();
 
-        // Mengonversi start_date dan end_date menjadi objek Carbon jika belum
-        foreach ($vouchers as $voucher) {
-            $voucher->start_date = Carbon::parse($voucher->start_date);
-            $voucher->end_date = Carbon::parse($voucher->end_date);
+        // Filter berdasarkan code (mendukung pencarian parsial)
+        if ($request->filled('code')) {
+            $query->where('code', 'like', '%' . $request->code . '%');
         }
+
+        // Filter berdasarkan status (active atau inactive)
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Paginate hasil pencarian
+        $vouchers = $query->paginate(10);
 
         return view('vouchers.index', compact('vouchers'));
     }
