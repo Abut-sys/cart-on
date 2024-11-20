@@ -10,14 +10,30 @@
                 <i class="fas fa-plus costumers-icon"></i> Add User
             </a>
         </div>
+
         <div class="costumers-search-filter-container">
-            <input type="text" class="costumers-search-bar" placeholder="Search users...">
-            <select class="costumers-filter-select">
-                <option value="all">All Users</option>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-            </select>
+            <form method="GET" action="{{ route('costumers.index') }}" style="display: flex; width: 100%; align-items: center;">
+                <input type="text" name="search" class="costumers-search-bar" placeholder="Search users..."
+                    value="{{ request()->search }}">
+                
+                <!-- Filter Icon with Dropdown Menu -->
+                <div class="costumers-filter-icon-container">
+                    <button type="button" class="costumers-filter-btn" onclick="toggleFilterMenu()">
+                        <i class="fas fa-filter costumers-icon"></i>
+                    </button>
+                    <div class="costumers-filter-menu" id="filterMenu">
+                        <button type="submit" name="role" value="all" {{ request()->role == 'all' ? 'class=active' : '' }}>All Users</button>
+                        <button type="submit" name="role" value="admin" {{ request()->role == 'admin' ? 'class=active' : '' }}>Admin</button>
+                        <button type="submit" name="role" value="user" {{ request()->role == 'user' ? 'class=active' : '' }}>User</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="costumers-btn costumers-btn-primary">
+                    <i class="fas fa-search costumers-icon"></i> Search
+                </button>
+            </form>
         </div>
+
         <table class="costumers-table">
             <thead>
                 <tr>
@@ -26,7 +42,7 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
-                    <th>Created At</th>
+                    <th>Signed Up</th>
                     <th>Updated At</th>
                     <th>Actions</th>
                 </tr>
@@ -61,4 +77,18 @@
             </tbody>
         </table>
     </div>
+    <script>
+        function toggleFilterMenu() {
+            const menu = document.getElementById('filterMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.addEventListener('click', function (event) {
+            const filterMenu = document.getElementById('filterMenu');
+            const filterBtn = document.querySelector('.costumers-filter-btn');
+            if (filterMenu.style.display === 'block' && !filterBtn.contains(event.target) && !filterMenu.contains(event.target)) {
+                filterMenu.style.display = 'none';
+            }
+        });
+    </script>
 @endsection

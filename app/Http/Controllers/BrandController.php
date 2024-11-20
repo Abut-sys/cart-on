@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
-use App\Models\CategoryBrand;
+use App\Models\CategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,19 +14,18 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brands = Brand::all();
+        $brands = Brand::with('categoryProduct')->paginate(5); // Memuat relasi categoryProduct
         return view('brands.index', compact('brands'));
     }
 
-    
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('brands.create');
+        $categories = CategoryProduct::all(); // Mendapatkan semua kategori produk
+        return view('brands.create', compact('categories'));
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -34,23 +33,23 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'logo' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-            'description'=> 'nullable',
+            'name' => 'required|string|max:255',
+            'category_product_id' => 'required|exists:category_products,id',
+            'description' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->except('_token');
+        $data = $request->only(['name', 'category_product_id', 'description']);
 
-        // Simpan file gambar
+        // Simpan file gambar jika ada
         if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('logos', 'public');
-            $data['logo_path'] = $path;
+            $data['logo_path'] = $request->file('logo')->store('logos', 'public');
         }
 
         Brand::create($data);
-        return redirect()->route('brands.index')->with('success', 'Brand Created Successfully.');
-    }
 
+        return redirect()->route('brands.index')->with('success', 'Brand created successfully.');
+    }
 
     /**
      * Display the specified resource.
@@ -60,15 +59,14 @@ class BrandController extends Controller
         return view('brands.show', compact('brand'));
     }
 
-
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Brand $brand)
     {
-        return view('brands.edit', compact('brand'));
+        $categories = CategoryProduct::all(); // Mendapatkan semua kategori produk
+        return view('brands.edit', compact('brand', 'categories'));
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -76,12 +74,13 @@ class BrandController extends Controller
     public function update(Request $request, Brand $brand)
     {
         $request->validate([
-            'name' => 'required',
-            'logo' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-            'description'=> 'nullable',
+            'name' => 'required|string|max:255',
+            'category_product_id' => 'required|exists:category_products,id',
+            'description' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['name', 'category_product_id', 'description']);
 
         if ($request->hasFile('logo')) {
             // Hapus logo lama jika ada
@@ -90,14 +89,13 @@ class BrandController extends Controller
             }
 
             // Simpan file baru
-            $path = $request->file('logo')->store('logos', 'public');
-            $data['logo_path'] = $path;
+            $data['logo_path'] = $request->file('logo')->store('logos', 'public');
         }
 
         $brand->update($data);
-        return redirect()->route('brands.index')->with('success', 'Brand Updated Successfully.');
-    }
 
+        return redirect()->route('brands.index')->with('success', 'Brand updated successfully.');
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -109,6 +107,7 @@ class BrandController extends Controller
         }
 
         $brand->delete();
-        return redirect()->route('brands.index')->with('success', 'Brand Deleted Successfully.');
+
+        return redirect()->route('brands.index')->with('success', 'Brand deleted successfully.');
     }
 }

@@ -19,6 +19,20 @@
                     <label for="name" class="brand-edit-label">Brand Name:</label>
                     <input type="text" class="form-control brand-edit-input" id="name" name="name" value="{{ $brand->name }}" required>
                 </div>
+
+                <div class="form-group">
+                    <label for="category_product_id">Category Product</label>
+                    <select name="category_product_id" id="category_product_id" class="form-control" required>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}"
+                                {{ old('category_product_id', $brand->category_product_id ?? '') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+
                 <div class="brand-edit-form-group mb-3">
                     <label for="description" class="brand-edit-label">Description:</label>
                     <textarea class="form-control brand-edit-input" id="description" name="description" rows="4">{{ $brand->description }}</textarea>
@@ -33,7 +47,7 @@
                 </div>
                 <div class="d-flex justify-content-end mt-3">
                     <button type="submit" class="btn brand-edit-btn-update">
-                        <i class="fas fa-save"></i> Update
+                        <i class="fas fa-save"></i> Save Changes
                     </button>
                 </div>
             </form>

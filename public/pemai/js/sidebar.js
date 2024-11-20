@@ -102,4 +102,3 @@ navItems.forEach((item) => {
     });
 });
 
-window.addEventListener("DOMContentLoaded", loadState);

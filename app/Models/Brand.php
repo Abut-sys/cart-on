@@ -11,6 +11,7 @@ class Brand extends Model
 
     protected $fillable = [
         'name',
+        'category_product_id',
         'description',
         'logo_path',
     ];
@@ -19,5 +20,10 @@ class Brand extends Model
     public function Brand()
     {
         return $this->hasMany(Product::class, 'product_id');
+    }
+
+    public function categoryProduct()
+    {
+        return $this->belongsTo(CategoryProduct::class);
     }
 }

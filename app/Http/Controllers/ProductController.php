@@ -16,7 +16,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['subVariants', 'brand', 'categoryProduct', 'subCategoryProduct'])->paginate(10); // Load sub-variants and brand, and paginate results
+        $products = Product::with(['subVariants', 'brand', 'categoryProduct', 'subCategoryProducts'])->paginate(5); // Load sub-variants and brand, and paginate results
         return view('products.index', compact('products'));
     }
 
@@ -33,73 +33,113 @@ class ProductController extends Controller
     }
 
 
-    public function store(Request $request)
-    {
-    // Validate request data
-    $request->validate([
-        'name' => 'required|string|max:255', // Ensure name is a string with max length
-        'price' => 'required|numeric|min:0', // Ensure price is numeric and positive
-        'stock' => 'required|integer|min:0', // Ensure stock is a non-negative integer
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Make image optional
-        'description' => 'nullable|string', // Ensure description is a string
-        'brands_id' => 'nullable|exists:brands,id', // Validate brand ID
-        'sub_variants' => 'nullable|array', // Validate as an array
-        'sub_variants.*' => 'string|max:255', // Validate each sub-variant
-        'category_products_id' => 'nullable|exists:category_products,id', // Validate brand ID
-        'sub_category_products_id' => 'nullable|exists:sub_category_products,id', // Validate brand ID
 
+    //  public function store(Request $request)
+    //  {
+    //      // Validate request data
+    //      $validatedData = $request->validate([
+    //          'name' => 'required|string|max:255',
+    //          'price' => 'required|numeric|min:0',
+    //          'stock' => 'required|integer|min:0',
+    //          'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //          'description' => 'nullable|string',
+    //          'brands_id' => 'nullable|exists:brands,id',
+    //          'sub_variants' => 'nullable|array',
+    //          'sub_variants.*' => 'string|max:255',
+    //          'category_products_id' => 'nullable|exists:category_products,id',
+    //          'sub_category_products_id' => 'nullable|array|min:1',
+    //          'sub_category_products_id.*' => 'exists:sub_category_products,id',
+    //      ]);
+    //     //  dd($request->all());
+
+    //      // Process image upload if present
+    //      if ($request->hasFile('image')) {
+    //          $validatedData['image_path'] = $request->file('image')->store('product_images', 'public');
+    //      }
+
+    //      // Create the product without sub-variants and sub-categories
+    //      $product = Product::create($validatedData);
+
+    //      // Handle sub-variants if provided
+    //      if (!empty($request->sub_variants)) {
+    //          $subVariantsData = array_map(function ($name) {
+    //              return ['name' => trim($name)];
+    //          }, array_filter($request->sub_variants));
+
+    //          // Bulk insert new sub-variants with product association
+    //          $product->subVariants()->createMany($subVariantsData);
+    //      }
+
+    //      // Attach selected sub-categories
+    //      if (!empty($request->sub_category_products_id)) {
+    //          $product->subCategoryProduct()->sync($request->sub_category_products_id);
+    //      }
+
+    //      return redirect()->route('products.index')->with('success', 'Product Created Successfully.');
+    //  }
+
+     public function store(Request $request)
+{
+    // Validate the incoming request
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'description' => 'nullable|string',
+        'brands_id' => 'nullable|exists:brands,id',
+        'sub_variants' => 'nullable|array',
+        'sub_variants.*' => 'string|max:255',
+        'category_products_id' => 'nullable|exists:category_products,id',
+        'sub_category_products_id' => 'nullable|array|min:1',
+        'sub_category_products_id.*' => 'exists:sub_category_products,id',
     ]);
+    dd($request->all());
+    // if ($request->fails()) {
+    //     dd($request->all(), $request->errors());
+    // }
 
-    // Prepare data for product creation
-    $data = $request->except('_token', 'image');
+    // dd($validatedData);
 
-    // Handle image upload if exists
+    // Process image upload, if present
     if ($request->hasFile('image')) {
-        $data['image_path'] = $request->file('image')->store('product_images', 'public');
+        $validatedData['image_path'] = $request->file('image')->store('product_images', 'public');
     }
 
     // Create the product
-    $product = Product::create($data);
+    $product = Product::create($validatedData);
 
-    // Handle sub-variants if provided
+    // Add sub-variants if provided
     if (!empty($request->sub_variants)) {
-        // Prepare new sub-variants for bulk insertion
-        $subVariantsData = array_filter($request->sub_variants, function ($name) {
-            return !empty(trim($name)); // Filter out empty sub-variant names
-        });
+        $subVariants = collect($request->sub_variants)
+            ->filter() // Remove empty strings
+            ->map(fn($name) => ['name' => trim($name)]) // Prepare data
+            ->toArray();
 
-        if (!empty($subVariantsData)) {
-            // Map to the required format with product_id
-            $subVariantsData = array_map(function ($name) use ($product) {
-                return [
-                    'name' => trim($name),
-                    'product_id' => $product->id,
-                ];
-            }, $subVariantsData);
-
-            // Bulk create new sub-variants
-            $product->subVariants()->createMany($subVariantsData);
-        }
+        $product->subVariants()->createMany($subVariants);
     }
 
+    // Attach sub-categories if provided
+    // if (!empty($request->sub_category_products_id)) {
+    //     $product->subCategoryProduct()->sync($request->sub_category_products_id);
+    // }
+    if ($request->filled('sub_category_products_id')) {
+        $product->subCategoryProduct()->sync($request->input('sub_category_products_id'));
+    }
+
+
+    // Redirect to product listing with success message
     return redirect()->route('products.index')->with('success', 'Product Created Successfully.');
-    }
+}
 
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(Product $product, )
     {
         // Load all related data at once
-        $product->load(['brand', 'subVariants', 'categoryProduct', 'subCategoryProduct']);
+        $product->load(['brand', 'subVariants', 'categoryProduct', 'subCategoryProducts']);
         return view('products.show', compact('product'));
     }
-
-    // {
-    //     $product = $product->load('brand', 'subVariants', 'categoryProducts','subCategoryProducts' ); // load the related brand
-    //     return view('products.show', compact('product'));
-    // }
 
 
     /**
@@ -125,52 +165,151 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
-    {
-    // Validate request data
-    $request->validate([
+
+
+    // // Validate request data
+    // $request->validate([
+    //     'name' => 'required|string|max:255',
+    //     'price' => 'required|numeric|min:0',
+    //     'stock' => 'required|integer|min:0',
+    //     'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+    //     'description' => 'nullable|string',
+    //     'brands_id' => 'nullable|exists:brands,id', // Validate brand ID
+    //     'sub_variants' => 'nullable|array', // Change to array for better handling
+    //     'sub_variants.*' => 'string|max:255', // Validate each sub-variant
+    //     'category_products_id' => 'nullable|exists:category_products,id', // Validate brand ID
+    //     'sub_category_products_id' => 'nullable|exists:sub_category_products,id', // Validate brand ID
+
+    // ]);
+
+    // // Prepare data for update
+    // $data = $request->except('_token', 'image', 'sub_variants');
+
+    // // Handle image upload if exists
+    // if ($request->hasFile('image')) {
+    //     if ($product->image_path) {
+    //         Storage::disk('public')->delete($product->image_path); // Delete old image
+    //     }
+    //     $data['image_path'] = $request->file('image')->store('product_images', 'public'); // Store new image
+    // }
+
+    // // Update the product
+    // $product->update($data);
+
+    // // Update sub-variants if provided
+    // if (!empty($request->sub_variants)) {
+    //     // Clear existing sub-variants
+    //     $product->subVariants()->delete();
+
+    //     // Prepare new sub-variants for bulk insertion
+    //     $subVariantsData = array_map(function ($name) {
+    //         return ['name' => trim($name)]; // Prepare sub-variant data
+    //     }, $request->sub_variants);
+
+    //     $product->subVariants()->createMany($subVariantsData); // Bulk create new sub-variants
+    // }
+
+    // return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
+    // }
+
+//     public function update(Request $request, Product $product)
+// {
+//     // Validate request data
+//     $validatedData = $request->validate([
+//         'name' => 'required|string|max:255',
+//         'price' => 'required|numeric|min:0',
+//         'stock' => 'required|integer|min:0',
+//         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+//         'description' => 'nullable|string',
+//         'brands_id' => 'nullable|exists:brands,id',
+//         'sub_variants' => 'nullable|array',
+//         'sub_variants.*' => 'string|max:255',
+//         'category_products_id' => 'nullable|exists:category_products,id',
+//         'sub_category_products_id' => 'nullable|array|min:1',
+//         'sub_category_products_id.*' => 'exists:sub_category_products,id',
+//     ]);
+
+//     // Handle image upload if exists
+//     if ($request->hasFile('image')) {
+//         $validatedData['image_path'] = $request->file('image')->store('product_images', 'public');
+//         // Optionally, delete the old image if applicable
+//         if ($product->image_path) {
+//             Storage::disk('public')->delete($product->image_path);
+//         }
+//     }
+
+//     // Update product without sub-variants and sub-categories
+//     $product->update($validatedData);
+
+//     // Update sub-variants
+//     if (!empty($request->sub_variants)) {
+//         // Remove existing sub-variants and create new ones
+//         $product->subVariants()->delete();
+//         $subVariantsData = array_map(function ($name) {
+//             return ['name' => trim($name)];
+//         }, array_filter($request->sub_variants));
+//         $product->subVariants()->createMany($subVariantsData);
+//     }
+
+//     // Sync sub-categories
+//     if (!empty($request->sub_category_products_id)) {
+//         $product->subCategories()->sync($request->sub_category_products_id);
+//     }
+
+//     return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
+// }
+
+
+public function update(Request $request, Product $product)
+{
+    // Validate the incoming request
+    $validatedData = $request->validate([
         'name' => 'required|string|max:255',
         'price' => 'required|numeric|min:0',
         'stock' => 'required|integer|min:0',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'description' => 'nullable|string',
-        'brands_id' => 'nullable|exists:brands,id', // Validate brand ID
-        'sub_variants' => 'nullable|array', // Change to array for better handling
-        'sub_variants.*' => 'string|max:255', // Validate each sub-variant
-        'category_products_id' => 'nullable|exists:category_products,id', // Validate brand ID
-        'sub_category_products_id' => 'nullable|exists:sub_category_products,id', // Validate brand ID
-
+        'brands_id' => 'nullable|exists:brands,id',
+        'sub_variants' => 'nullable|array',
+        'sub_variants.*' => 'string|max:255',
+        'category_products_id' => 'nullable|exists:category_products,id',
+        'sub_category_products_id' => 'nullable|array|min:1',
+        'sub_category_products_id.*' => 'exists:sub_category_products,id',
     ]);
 
-    // Prepare data for update
-    $data = $request->except('_token', 'image', 'sub_variants');
-
-    // Handle image upload if exists
+    // Handle image upload if provided
     if ($request->hasFile('image')) {
+        $validatedData['image_path'] = $request->file('image')->store('product_images', 'public');
+
+        // Delete the old image, if applicable
         if ($product->image_path) {
-            Storage::disk('public')->delete($product->image_path); // Delete old image
+            Storage::disk('public')->delete($product->image_path);
         }
-        $data['image_path'] = $request->file('image')->store('product_images', 'public'); // Store new image
     }
 
     // Update the product
-    $product->update($data);
+    $product->update($validatedData);
 
-    // Update sub-variants if provided
+    // Update sub-variants
     if (!empty($request->sub_variants)) {
-        // Clear existing sub-variants
-        $product->subVariants()->delete();
+        $product->subVariants()->delete(); // Remove existing sub-variants
 
-        // Prepare new sub-variants for bulk insertion
-        $subVariantsData = array_map(function ($name) {
-            return ['name' => trim($name)]; // Prepare sub-variant data
-        }, $request->sub_variants);
+        $subVariants = collect($request->sub_variants)
+            ->filter() // Remove empty strings
+            ->map(fn($name) => ['name' => trim($name)]) // Prepare data
+            ->toArray();
 
-        $product->subVariants()->createMany($subVariantsData); // Bulk create new sub-variants
+        $product->subVariants()->createMany($subVariants); // Add new sub-variants
     }
 
+    // Sync sub-categories
+    $product->subCategoryProduct()->sync($request->sub_category_products_id ?? []);
+
+    // Redirect back with a success message
     return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
-    }
+}
+
+
 
 
     /**

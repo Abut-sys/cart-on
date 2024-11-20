@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
 
 
 </head>

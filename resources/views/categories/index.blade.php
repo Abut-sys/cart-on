@@ -6,14 +6,14 @@
     <div class="container-fluid mt-4">
         <div class="card category-card shadow-sm border-0 rounded-lg">
             <div class="card-header category-card-header d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">List of Product Categories</h2>
-                <a href="{{ route('categories.create') }}" class="btn category-btn-add-category me-2">
+                <h2 class="mb-0">Product Categories</h2>
+                <a href="{{ route('categories.create') }}" class="btn category-btn-add-category">
                     <i class="fas fa-plus"></i> Add Category
                 </a>
             </div>
-            <div class="card-body category-card-body p-4">
+            <div class="card-body category-card-body">
                 <div class="table-responsive">
-                    <table class="table category-table table-striped table-hover w-100">
+                    <table class="table category-table table-striped table-hover">
                         <thead class="category-thead-light">
                             <tr>
                                 <th>ID</th>
@@ -24,13 +24,13 @@
                         </thead>
                         <tbody>
                             @foreach ($categories as $index => $category)
-                                <tr>
+                                <tr class="category-row">
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $category->name }}</td>
                                     <td>
                                         <ul class="list-unstyled category-list mb-0">
                                             @foreach ($category->subCategories as $subCategory)
-                                                <li>{{ $subCategory->name }}</li>
+                                                <li class="category-subcategory-item">{{ $subCategory->name }}</li>
                                             @endforeach
                                         </ul>
                                     </td>
@@ -39,7 +39,7 @@
                                             class="btn category-btn-edit-category btn-sm" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn category-btn-delete-category btn-sm" title="Delete">

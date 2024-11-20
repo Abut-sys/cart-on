@@ -1,49 +1,55 @@
 .category-card {
-    border-radius: 12px;
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .category-card-header {
     background: #67a36a;
     color: white;
-    padding: 15px 20px;
+    padding: 12px 20px;
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     border-bottom: 1px solid #e0e0e0;
 }
 
 .category-card-body {
-    padding: 20px;
+    padding: 24px;
     background-color: #ffffff;
 }
 
 .category-table {
-    font-size: 15px;
+    font-size: 14px;
     color: #333;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.category-table th,
+.category-table td {
+    padding: 10px;
+    text-align: left;
 }
 
 .category-table th {
     background-color: #f7f7f7;
     color: #555;
     font-weight: 600;
-    text-align: left;
     border-bottom: 2px solid #ddd;
 }
 
 .category-table td {
     border-bottom: 1px solid #eee;
-    padding: 12px 8px;
 }
 
 .category-table tbody tr:hover {
-    background-color: #e6f7e6;
+    background-color: #eaf7ea;
 }
 
 .category-btn-add-category {
     background-color: #3da455;
     color: white;
-    padding: 8px 12px;
+    padding: 8px 15px;
     font-weight: bold;
     border-radius: 8px;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -57,7 +63,7 @@
 .category-btn-edit-category,
 .category-btn-delete-category {
     border-radius: 8px;
-    padding: 5px 10px;
+    padding: 6px 12px;
     font-size: 0.9rem;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -83,11 +89,9 @@
 }
 
 .category-list li {
-    margin-bottom: 4px;
-}
-
-.category-table th, .category-table td {
-    vertical-align: middle;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #777;
 }
 
 .category-thead-light th {

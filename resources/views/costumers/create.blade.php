@@ -40,7 +40,7 @@
                 <img id="image-preview" src="" alt="Image Preview" class="create-costumers-image-preview" style="display:none;">
             </div>
             <div class="create-costumers-buttons">
-                <button type="submit" class="create-costumers-btn create-costumers-btn-primary">Add</button>
+                <button type="submit" class="create-costumers-btn create-costumers-btn-primary">Confirm</button>
                 <a href="{{ route('costumers.index') }}" class="create-costumers-btn create-costumers-btn-secondary">Cancel</a>
             </div>
         </form>
