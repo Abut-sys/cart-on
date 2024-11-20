@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Voucher;
+use App\Events\VoucherStatusChanged;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -12,13 +13,6 @@ class VoucherController extends Controller
     {
         // Mengambil semua voucher
         $vouchers = Voucher::all();
-
-        // Mengonversi start_date dan end_date menjadi objek Carbon jika belum
-        foreach ($vouchers as $voucher) {
-            $voucher->start_date = Carbon::parse($voucher->start_date);
-            $voucher->end_date = Carbon::parse($voucher->end_date);
-        }
-
         return view('vouchers.index', compact('vouchers'));
     }
 
@@ -43,7 +37,10 @@ class VoucherController extends Controller
         $voucher = Voucher::create($validatedData);
 
         // Update status voucher sesuai dengan tanggal
-        $voucher->updateStatus(); // Pastikan ada method updateStatus di model
+        $voucher->updateStatus();
+
+        // Trigger event untuk notifikasi
+        event(new VoucherStatusChanged($voucher));
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully!');
     }
@@ -69,7 +66,10 @@ class VoucherController extends Controller
         $voucher->update($validatedData);
 
         // Update status voucher sesuai dengan tanggal
-        $voucher->updateStatus(); // Pastikan ada method updateStatus di model
+        $voucher->updateStatus();
+
+        // Trigger event untuk notifikasi
+        event(new VoucherStatusChanged($voucher));
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully!');
     }

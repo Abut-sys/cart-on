@@ -27,14 +27,21 @@ class DeleteUnverifiedUsers extends Command
      */
     public function handle()
     {
-        // Tentukan batas waktu untuk verifikasi (misal, 2 jam)
         $verificationTimelimit = Carbon::now()->subHours(2);
+        $batchSize = 100; // Adjust the batch size as needed
 
-        // Hapus pengguna yang tidak terverifikasi
-        $usersDeleted = User::whereNull('email_verified_at')
-            ->where('created_at', '<', $verificationTimelimit)
-            ->delete();
+        do {
+            $users = User::whereNull('email_verified_at')
+                ->where('created_at', '<', $verificationTimelimit)
+                ->limit($batchSize)
+                ->get();
 
-        $this->info("Unverified users deleted successfully: {$usersDeleted} users.");
+            $userCount = $users->count();
+
+            if ($userCount > 0) {
+                User::whereIn('id', $users->pluck('id'))->delete();
+                $this->info("Unverified users deleted successfully: {$userCount} users.");
+            }
+        } while ($userCount > 0);
     }
 }

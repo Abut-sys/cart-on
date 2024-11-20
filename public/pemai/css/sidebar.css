@@ -1,3 +1,4 @@
+/* Styling untuk Body */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -5,6 +6,7 @@ body {
     transition: margin-left 0.3s ease;
 }
 
+/* Navbar Styling */
 .navbar-top {
     display: flex;
     align-items: center;
@@ -16,12 +18,14 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Menu Icon Styling */
 .menu-icon {
     cursor: pointer;
     font-size: 24px;
     margin-right: 20px;
 }
 
+/* Search Bar Styling */
 .search-bar {
     flex-grow: 1;
     display: flex;
@@ -50,17 +54,52 @@ body {
     align-items: center;
     margin: 0 20px;
     font-size: 18px;
+    position: relative;
 }
 
 .notification-icon {
-    margin: 0 20px;
+    position: relative;
+    display: inline-block;
     cursor: pointer;
-    transition: color 0.3s;
-    font-size: 24px;
 }
 
-.notification-icon:hover {
-    color: #d9cab3;
+.notification-icon .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 12px;
+}
+
+.notification-list {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    width: 250px;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon:hover .notification-list {
+    display: block;
 }
 
 .username {
@@ -113,7 +152,7 @@ body {
     top: 0;
     height: 100%;
     width: 200px;
-    background-image: linear-gradient(to bottom, #ffffff, #F3EEEA);;
+    background-image: linear-gradient(to bottom, #ffffff, #f3eeea);
     color: #99bc85;
     padding-top: 20px;
     transition: transform 0.3s ease;
@@ -154,7 +193,7 @@ body {
 .nav-item a:hover,
 .nav-item a.active {
     background-color: #967f61;
-    color: #FFF2E1;
+    color: #fff2e1;
     font-weight: bold;
 }
 
@@ -191,7 +230,7 @@ body {
     color: #ffffff;
 }
 
-.category-link.active+.dropdown {
+.category-link.active + .dropdown {
     display: block;
 }
 
@@ -201,7 +240,7 @@ body {
     transition: margin-left 0.3s ease;
 }
 
-.sidebar.active~.main-content {
+.sidebar.active ~ .main-content {
     margin-left: 200px;
 }
 

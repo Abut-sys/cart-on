@@ -49,7 +49,6 @@ class ProductController extends Controller
         'sub_category_products_id' => 'nullable|exists:sub_category_products,id', // Validate brand ID
 
     ]);
-    // dd($request->all());
 
     // Prepare data for product creation
     $data = $request->except('_token', 'image');

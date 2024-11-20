@@ -6,8 +6,13 @@
         <input type="text" placeholder="Tap to search" class="search-input" />
         <i class="fas fa-search search-icon"></i>
     </div>
-    <div class="notification-section">
-        <i class="fas fa-bell notification-icon"></i>
+    <div id="notification-icon" class="notification-icon" data-count="0">
+        <i class="fas fa-bell"></i>
+        <span class="badge">0</span>
+        <!-- Dropdown untuk daftar notifikasi -->
+        <ul id="notification-list" class="notification-list">
+            <!-- Notifikasi akan ditambahkan di sini -->
+        </ul>
     </div>
     <div class="user-info">
         @if (Auth::check())

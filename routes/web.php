@@ -67,7 +67,7 @@ Route::middleware(['guest'])->group(function () {
 
 // Route untuk pengguna yang terautentikasi dan berperan admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::resource('brands', BrandController::class);
 

@@ -4,21 +4,6 @@
 
 @section('content')
 
-<div class="container-fluid mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #d3d3d3; color: black;">
-            <!-- Title and Add Button in Header -->
-            <h2 class="mb-0">List of Brands</h2>
-            <a href="{{ route('brands.create') }}" class="btn btn-success me-2" style="background-color: #00FF00; color: black;">
-                <i class="fas fa-plus"></i> Add Brand
-            </a>
-        </div>
-        <div class="card-body">
-            @if(session('success'))
-                <div class="alert alert-success text-center">
-                    {{ session('success') }}
-                </div>
-            @endif
     <div class="brand-index-container-fluid mt-4">
         <div class="brand-index-card shadow-sm">
             <div class="brand-index-card-header d-flex justify-content-between align-items-center">
@@ -52,24 +37,27 @@
                                     <td>{{ $brand->name }}</td>
                                     <td>
                                         <img src="{{ asset('storage/' . $brand->logo_path) }}"
-                                             alt="Logo {{ $brand->name }}" width="50" class="brand-index-logo">
+                                            alt="Logo {{ $brand->name }}" width="50" class="brand-index-logo">
                                     </td>
                                     <td>
                                         <a href="{{ route('brands.edit', $brand->id) }}"
-                                           class="brand-index-btn-edit-brand btn btn-warning btn-sm" title="Edit">
-                                           <i class="fas fa-edit"></i>
+                                            class="brand-index-btn-edit-brand btn btn-warning btn-sm" title="Edit">
+                                            <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('brands.destroy', $brand->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('brands.destroy', $brand->id) }}" method="POST"
+                                            style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="brand-index-btn-delete-brand btn btn-danger btn-sm me-3" title="Delete">
+                                            <button type="submit"
+                                                class="brand-index-btn-delete-brand btn btn-danger btn-sm me-3"
+                                                title="Delete">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                         <a href="{{ route('brands.show', $brand->id) }}"
                                             class="brand-index-btn-view btn btn-info btn-sm" title="View">
                                             <i class="fas fa-eye"></i> Details
-                                         </a>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
