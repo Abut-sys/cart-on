@@ -22,6 +22,11 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+
+            // Sinkronisasi: Perbarui kolom last_online_at
+            $user->update(['last_online_at' => now()]);
+
+            // Redirect berdasarkan role
             if ($user->role == 'admin') {
                 return redirect()->intended('/dashboard');
             } elseif ($user->role == 'user') {
