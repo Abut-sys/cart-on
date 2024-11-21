@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('checkout_id')->constrained('checkout')->onDelete('cascade');
+            $table->foreignId('checkout_id')->constrained('checkouts')->onDelete('cascade');
             $table->dateTime('order_date');
             $table->string('unique_order_id')->unique();
             $table->string('address', 255);
@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->timestamps(); // created_at and updated_at
         });
     }
-
+    
     /**
      * Reverse the migrations.
      */
