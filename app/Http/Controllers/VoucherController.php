@@ -18,12 +18,12 @@ class VoucherController extends Controller
             $query->where('code', 'like', '%' . $request->code . '%');
         }
 
-        // Filter berdasarkan status (active atau inactive)
+        // // Filter berdasarkan status (active atau inactive)
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Paginate hasil pencarian
+        // // Paginate hasil pencarian
         $vouchers = $query->paginate(10);
 
         return view('vouchers.index', compact('vouchers'));

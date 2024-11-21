@@ -6,16 +6,11 @@
         <input type="text" placeholder="Tap to search" class="search-input" />
         <i class="fas fa-search search-icon"></i>
     </div>
-    <div id="notification-icon" class="notification-icon" data-count="0">
-        <i class="fas fa-bell"></i>
-        <span class="badge">0</span>
-        <!-- Dropdown untuk daftar notifikasi -->
-        <ul id="notification-list" class="notification-list">
-            <!-- Notifikasi akan ditambahkan di sini -->
-        </ul>
+    <div class="notification-section">
+        @if (Auth::check())
+        <i class="fas fa-bell notification-icon"></i>
     </div>
     <div class="user-info">
-        @if (Auth::check())
             <a href="#" class="username" id="adminToggle">{{ Auth::user()->name }}</a>
             <div class="user-dropdown" id="userDropdown">
                 <a class="dropdown-item" href="{{ route('profile.edit') }}">

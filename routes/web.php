@@ -14,6 +14,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\PasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 // Route untuk logout yang hanya bisa diakses oleh pengguna yang terautentikasi
 Route::middleware('auth')->group(function () {
+    Route::get('/set-password', [PasswordController::class, 'create'])->name('password.create');
+    Route::post('/set-password', [PasswordController::class, 'store'])->name('password.store');
+
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route untuk update profile
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
@@ -34,9 +38,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Route untuk pengguna biasa yang terautentikasi
-Route::middleware(['auth', 'role:user'])->group(function () {
-
-});
+Route::middleware(['auth', 'role:user'])->group(function () {});
 
 // Route untuk pengguna yang tidak terautentikasi
 Route::middleware(['guest'])->group(function () {
@@ -80,7 +82,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('costumers', CostumersController::class);
 
     Route::resource('informations', InformationController::class);
-
 });
 
 // Route untuk memastikan pengguna yang belum memverifikasi akun mereka tidak dapat mengakses halaman login
