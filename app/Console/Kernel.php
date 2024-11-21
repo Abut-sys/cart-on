@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('vouchers:update-status')->daily();
+        $schedule->command('vouchers:update-status')->dailyAt('00:00');
         $schedule->command('app:delete-unverified-users')->hourly();
     }
 

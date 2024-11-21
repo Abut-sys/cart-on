@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Voucher;
 use Carbon\Carbon;
+use App\Events\VoucherStatusChanged;
 
 class UpdateVoucherStatus extends Command
 {
@@ -15,18 +16,24 @@ class UpdateVoucherStatus extends Command
     {
         $today = Carbon::today();
 
-        // Update vouchers that should be active
-        Voucher::where('status', 'inactive')
+        $activeVouchers = Voucher::where('status', 'inactive')
             ->where('start_date', '<=', $today)
             ->where('end_date', '>=', $today)
-            ->update(['status' => 'active']);
+            ->pluck('id');
 
-        // Update vouchers that should be inactive  
-        Voucher::where('status', 'active')
+        if ($activeVouchers->isNotEmpty()) {
+            Voucher::whereIn('id', $activeVouchers)
+                ->update(['status' => 'active']);
+        }
+
+        $inactiveVouchers = Voucher::where('status', 'active')
             ->where('end_date', '<', $today)
-            ->update(['status' => 'inactive']);
+            ->pluck('id');
 
-        // Voucher::where(...)->update([...]);: Query untuk memperbarui status voucher berdasarkan tanggal.
+        if ($inactiveVouchers->isNotEmpty()) {
+            Voucher::whereIn('id', $inactiveVouchers)
+                ->update(['status' => 'inactive']);
+        }
 
         $this->info('Voucher statuses updated successfully.');
     }

@@ -17,7 +17,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, $role)
     {
         if (!Auth::check() || Auth::user()->role != $role) {
-            return redirect('/home'); // Redirect jika role tidak sesuai
+            return redirect('/'); // Redirect jika role tidak sesuai
         }
         return $next($request);
     }

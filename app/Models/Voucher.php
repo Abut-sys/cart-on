@@ -24,8 +24,8 @@ class Voucher extends Model
     protected $dates = ['start_date', 'end_date'];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date' => 'datetime:Y-m-d',
+        'end_date' => 'datetime:Y-m-d',
     ];    
 
     /**
@@ -51,7 +51,7 @@ class Voucher extends Model
      */
     public function getStatusAttribute()
     {
-        return $this->end_date >= Carbon::now() ? 'active' : 'inactive';
+        return $this->isActive() ? 'active' : 'inactive';
     }
 
     /**
