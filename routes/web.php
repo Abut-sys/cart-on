@@ -38,7 +38,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Route untuk pengguna biasa yang terautentikasi
-Route::middleware(['auth', 'role:user'])->group(function () {});
+Route::middleware(['auth', 'role:user'])->group(function () {
+    
+});
 
 // Route untuk pengguna yang tidak terautentikasi
 Route::middleware(['guest'])->group(function () {

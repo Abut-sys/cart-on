@@ -88,7 +88,11 @@ class LoginController extends Controller
             return redirect()->route('password.create');
         }
 
-        return redirect()->intended(route('home.index'));
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('dashboard.index')->with('msg', 'Welcome Admin!');
+        }
+
+        return redirect()->route('home.index')->with('msg', 'Welcome User!');;
     }
 
     // Fungsi untuk redirect pengguna berdasarkan role
