@@ -1,3 +1,4 @@
+/* Styling untuk Body */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -5,6 +6,7 @@ body {
     transition: margin-left 0.3s ease;
 }
 
+/* Navbar Styling */
 .navbar-top {
     display: flex;
     align-items: center;
@@ -16,6 +18,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Menu Icon Styling */
 .menu-icon {
     cursor: pointer;
     font-size: 24px;
@@ -103,8 +106,43 @@ body {
     transition: color 0.3s;
 }
 
-.notification-icon:hover {
-    color: #d9cab3;
+.notification-icon .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 12px;
+}
+
+.notification-list {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    width: 250px;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon:hover .notification-list {
+    display: block;
     animation: ring 1s ease-in-out;
 }
 

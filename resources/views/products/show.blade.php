@@ -20,8 +20,19 @@
                 <h5 class="card-title" style="color: black;">Category:</h5>
                 <p>{{ $product->categoryProduct ? $product->categoryProduct->name : 'No category assigned' }}</p>
 
-                <h5 class="card-title" style="color: black;">Sub Category:</h5>
-                <p>{{ $product->subCategoryProduct ? $product->subCategoryProduct->name : 'No subcategory assigned' }}</p>
+                {{-- <h5 class="card-title" style="color: black;">Sub Category:</h5>
+                <p>{{ $product->subCategoryProduct ? $product->subCategoryProduct->name : 'No subcategory assigned' }}</p> --}}
+
+                <h5 class="card-title" style="color: black;">Sub Categories:</h5>
+                @if ($product->subCategoryProduct && $product->subCategoryProduct->isNotEmpty())
+                    <ul>
+                        @foreach ($product->subCategoryProduct as $subCategory)
+                            <li>{{ $subCategory->name }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p>No subcategories assigned</p>
+                @endif
 
                 <h5 class="card-title" style="color: black;">Description:</h5>
                 <p class="card-text" style="color: black;">{{ $product->description }}</p>

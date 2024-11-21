@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Voucher;
+use App\Events\VoucherStatusChanged;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -49,7 +50,10 @@ class VoucherController extends Controller
         $voucher = Voucher::create($validatedData);
 
         // Update status voucher sesuai dengan tanggal
-        $voucher->updateStatus(); // Pastikan ada method updateStatus di model
+        $voucher->updateStatus();
+
+        // Trigger event untuk notifikasi
+        event(new VoucherStatusChanged($voucher));
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully!');
     }
@@ -75,7 +79,10 @@ class VoucherController extends Controller
         $voucher->update($validatedData);
 
         // Update status voucher sesuai dengan tanggal
-        $voucher->updateStatus(); // Pastikan ada method updateStatus di model
+        $voucher->updateStatus();
+
+        // Trigger event untuk notifikasi
+        event(new VoucherStatusChanged($voucher));
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully!');
     }

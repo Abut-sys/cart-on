@@ -24,6 +24,10 @@ class UpdateVoucherStatus extends Command
         if ($activeVouchers->isNotEmpty()) {
             Voucher::whereIn('id', $activeVouchers)
                 ->update(['status' => 'active']);
+
+            foreach ($activeVouchers as $voucherId) {
+                event(new VoucherStatusChanged(Voucher::find($voucherId)));
+            }
         }
 
         $inactiveVouchers = Voucher::where('status', 'active')
@@ -33,6 +37,10 @@ class UpdateVoucherStatus extends Command
         if ($inactiveVouchers->isNotEmpty()) {
             Voucher::whereIn('id', $inactiveVouchers)
                 ->update(['status' => 'inactive']);
+
+            foreach ($inactiveVouchers as $voucherId) {
+                event(new VoucherStatusChanged(Voucher::find($voucherId)));
+            }
         }
 
         $this->info('Voucher statuses updated successfully.');
