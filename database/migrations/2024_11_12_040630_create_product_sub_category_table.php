@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('products_id');
             $table->unsignedBigInteger('sub_category_products_id');
             $table->timestamps();
-
             // Foreign keys
             $table->foreign('products_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('sub_category_products_id')->references('id')->on('sub_category_products')->onDelete('cascade');

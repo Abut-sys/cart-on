@@ -10,8 +10,10 @@ class SubVariant extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'product_id'
+        'product_id',
+        'color',
+        'size',
+        'stock'
     ];
 
     public function product()

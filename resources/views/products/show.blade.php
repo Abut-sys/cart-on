@@ -1,61 +1,106 @@
 @extends('layouts.index')
 
-@section('title', 'Details Product')
+@section('title', 'Product Details')
 
 @section('content')
-    <div class="container-fluid mt-4">
-        <div class="card mb-4 shadow-sm" style="background-color: #f0f0f0;"> <!-- Light gray background -->
-            <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #d3d3d3;">
-                <h2 class="mb-0" style="color: black;">{{ $product->name }}</h2> <!-- Product name as header -->
-                <a href="{{ route('products.index') }}" class="btn btn-danger me-2"
-                    style="background-color: #ff0000; color: black;">
-                    <i class="fas fa-arrow-left"></i> Return to Products
+    <div class="container mt-4">
+        <div class="card product-show-card mb-4 shadow-sm">
+            <div class="card-header product-show-card-header d-flex justify-content-between">
+                <a href="{{ route('products.index') }}" class="btn product-show-btn-return">
+                    <i class="fas fa-arrow-left"></i> Return
                 </a>
             </div>
-            <div class="card-body">
+            <div class="card-body product-show-card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
+                            class="img-fluid">
+                    </div>
+                    <div class="col-md-8">
+                        {{-- product --}}
+                        <h3>{{ $product->name }}</h3>
+                        <p><strong>Price:</strong>{{ number_format($product->price, 2) }}</p>
+                        <p><strong>Description:</strong> {{ $product->description }}</p>
 
-                <h5 class="card-title" style="color: black;">Brand:</h5>
-                <p>Brand: {{ $product->brand ? $product->brand->name : 'No brand assigned' }}</p>
+                        {{-- SubCategory --}}
+                        <p><strong>Subcategory:</strong> {{ $product->subCategory->name }}</p>
 
-                <h5 class="card-title" style="color: black;">Category:</h5>
-                <p>{{ $product->categoryProduct ? $product->categoryProduct->name : 'No category assigned' }}</p>
+                        {{-- Brand --}}
+                        <p><strong>Brand:</strong> {{ $product->brand->name }}</p>
 
-                {{-- <h5 class="card-title" style="color: black;">Sub Category:</h5>
-                <p>{{ $product->subCategoryProduct ? $product->subCategoryProduct->name : 'No subcategory assigned' }}</p> --}}
-
-                <h5 class="card-title" style="color: black;">Sub Categories:</h5>
-                @if ($product->subCategoryProduct && $product->subCategoryProduct->isNotEmpty())
-                    <ul>
-                        @foreach ($product->subCategoryProduct as $subCategory)
-                            <li>{{ $subCategory->name }}</li>
-                        @endforeach
-                    </ul>
-                @else
-                    <p>No subcategories assigned</p>
-                @endif
-
-                <h5 class="card-title" style="color: black;">Description:</h5>
-                <p class="card-text" style="color: black;">{{ $product->description }}</p>
-
-                <h5 class="card-title" style="color: black;">Price:</h5>
-                <p class="card-text" style="color: black;">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-
-                <h5 class="card-title" style="color: black;">Stock:</h5>
-                <p class="card-text" style="color: black;">{{ $product->stock }}</p>
-
-                <h4>Sub-Variants:</h4>
-                <ul>
-                    @foreach ($product->subVariants as $subVariant)
-                        <li>{{ $subVariant->name }}</li>
-                    @endforeach
-                </ul>
-
-
-                @if ($product->image_path)
-                    <h5 class="card-title" style="color: black;">Image:</h5>
-                    <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" class="img-fluid">
-                @endif
+                        {{-- Variants --}}
+                        <h4>Variants:</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Color</th>
+                                    <th>Size</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($product->subVariant as $variant)
+                                    <tr>
+                                        <td>{{ $variant->color }}</td>
+                                        <td>{{ $variant->size }}</td>
+                                        <td>{{ $variant->stock }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 @endsection
+
+    <style>
+        .product-show-card-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-show-btn-return {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .product-show-card-body {
+            padding: 20px;
+        }
+
+        .product-show-title {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>

@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('checkouts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel users
-            $table->decimal('total_amount', 10, 2);
-            $table->string('status')->default('pending'); // Status pesanan
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel orders
+            $table->string('payment_method');
+            $table->string('shipping_address');
+            $table->string('billing_address')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('checkouts');
     }
 };
