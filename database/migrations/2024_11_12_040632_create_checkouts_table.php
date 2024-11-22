@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('checkouts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel orders
+            $table->foreignId('order_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel orders
             $table->string('payment_method');
             $table->string('shipping_address');
             $table->string('billing_address')->nullable();

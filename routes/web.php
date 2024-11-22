@@ -14,6 +14,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
 
 /*
@@ -39,7 +40,7 @@ Route::middleware('auth')->group(function () {
 
 // Route untuk pengguna biasa yang terautentikasi
 Route::middleware(['auth', 'role:user'])->group(function () {
-    
+
 });
 
 // Route untuk pengguna yang tidak terautentikasi
@@ -80,6 +81,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryProductController::class);
 
     Route::resource('vouchers', VoucherController::class);
+
+    Route::resource('orders', OrderController::class);
 
     Route::resource('costumers', CostumersController::class);
 
