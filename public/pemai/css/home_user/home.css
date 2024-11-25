@@ -1,0 +1,38 @@
+.banner-container {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.banner {
+    display: flex;
+    transition: transform 1s ease;
+    gap: 10px;
+}
+
+.banner-image {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.banner-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.banner-text h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.banner-text p {
+    font-size: 1rem;
+}

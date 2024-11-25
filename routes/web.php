@@ -21,7 +21,7 @@ use App\Http\Controllers\ForgotPasswordController;
 |--------------------------------------------------------------------------
 */
 
-// Route untuk halaman utama
+    // Route untuk halaman utama
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 // Route untuk logout yang hanya bisa diakses oleh pengguna yang terautentikasi
