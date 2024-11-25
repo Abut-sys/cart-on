@@ -81,6 +81,11 @@ class LoginController extends Controller
                 'google_id' => $user->getId(), // Simpan Google ID jika diperlukan
             ]);
             Auth::login($newUser);
+            return redirect()->route('password.create');
+        }
+
+        if (!$existingUser->password) {
+            return redirect()->route('password.create');
         }
 
         if (Auth::user()->role === 'admin') {

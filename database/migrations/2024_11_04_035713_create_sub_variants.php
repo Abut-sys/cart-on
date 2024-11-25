@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('sub_variants', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('name');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->string('color');
+            $table->string('size');
+            $table->string('stock');
             $table->timestamps();
         });
     }

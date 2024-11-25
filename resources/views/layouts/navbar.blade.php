@@ -95,7 +95,7 @@
             </a>
         </div>
         <div class="nav-item">
-            <a href="{{ url('orders') }}" class="{{ request()->is('orders') ? 'active' : '' }}">
+            <a href="{{ route('orders.index') }}" class="{{ request()->is('orders') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart icon"></i> Orders
             </a>
         </div>

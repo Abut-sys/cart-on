@@ -25,7 +25,7 @@ class Voucher extends Model
     protected $casts = [
         'start_date' => 'datetime:Y-m-d',
         'end_date' => 'datetime:Y-m-d',
-    ];   
+    ];
 
     /**
      * Scope untuk mengambil voucher aktif berdasarkan tanggal

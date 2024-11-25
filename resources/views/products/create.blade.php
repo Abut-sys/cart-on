@@ -1,219 +1,235 @@
 @extends('layouts.index')
 
-@section('title', 'Product')
+@section('title', 'Create Product')
 
 @section('content')
-<style>
-    #sub-category-list .selected-sub-category {
-        display: inline-block;
-        margin: 5px;
-        padding: 5px 10px;
-        background-color: #f8f9fa;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    #sub-category-list .selected-sub-category .remove-btn {
-        color: red;
-        margin-left: 8px;
-        cursor: pointer;
-        text-decoration: none;
-    }
-</style>
     <div class="container mt-4">
-        <div class="card mb-4 shadow-sm" style="background-color: #f0f0f0;"> <!-- Light gray background -->
-            <div class="card-header d-flex justify-content-between" style="background-color: #d3d3d3;">
-                <h2 class="mb-0" style="color: black;">Add New Product</h2> <!-- Title -->
-                <a href="{{ route('products.index') }}" class="btn btn-danger"
-                    style="background-color: #ff0000; color: black;">
-                    <i class="fas fa-arrow-left"></i> Return To Product List
+        <div class="card product-create-card mb-4 shadow-sm">
+            <div class="card-header product-create-card-header d-flex justify-content-between">
+                <h2 class="mb-0 product-create-title">Create Product</h2>
+                <a href="{{ route('products.index') }}" class="btn product-create-btn-return">
+                    <i class="fas fa-arrow-left"></i> Return
                 </a>
             </div>
-
-            <div class="card-body">
+            <div class="card-body product-create-card-body">
                 <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <div class="form-group">
-                        <label for="name" style="font-weight: bold; color: black; margin-bottom: 5px;">Product</label>
-                        <input type="text" class="form-control" id="name" name="name" required
-                            style="background-color: #dcdcdc; border-color: #c0c0c0;">
+                    <div class="form-group product-create-form-group">
+                        <label for="name" class="product-create-label">Name</label>
+                        <input type="text" name="name" id="name" class="form-control product-create-input"
+                            value="{{ old('name') }}" required>
+                        @error('name')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-
-                    <div class="form-group mt-3">
-                        <label for="description"
-                            style="font-weight: bold; color: black; margin-bottom: 5px;">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4"
-                            style="background-color: #dcdcdc; border-color: #c0c0c0;"></textarea>
+                    <div class="form-group product-create-form-group">
+                        <label for="image_path" class="product-create-label">Image</label>
+                        <input type="file" name="image_path" id="image_path" class="form-control product-create-input"
+                            accept="image/*" required>
+                        @error('image_path')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-
-                    <div class="form-group mt-3">
-                        <label for="price" style="font-weight: bold; color: black; margin-bottom: 5px;">Price</label>
-                        <input type="number" class="form-control" id="price" name="price" required
-                            style="background-color: #dcdcdc; border-color: #c0c0c0;">
+                    <div class="form-group product-create-form-group">
+                        <label for="price" class="product-create-label">Price</label>
+                        <input type="number" name="price" id="price" class="form-control product-create-input"
+                            value="{{ old('price') }}" required>
+                        @error('price')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-
-                    <div class="form-group mt-3">
-                        <label for="stock" style="font-weight: bold; color: black; margin-bottom: 5px;">Stock</label>
-                        <input type="number" class="form-control" id="stock" name="stock" required
-                            style="background-color: #dcdcdc; border-color: #c0c0c0;">
+                    <div class="form-group product-create-form-group">
+                        <label for="description" class="product-create-label">Description</label>
+                        <textarea name="description" id="description" class="form-control product-create-input" rows="4">{{ old('description') }}</textarea>
+                        @error('description')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-
-                    <div class="form-group mt-3">
-                        <label for="image" style="font-weight: bold; color: black; margin-bottom: 5px;">Image</label>
-                        <input type="file" class="form-control-file" id="image" name="image">
+                    <div class="form-group product-create-form-group">
+                        <label for="sub_category_product_id" class="product-create-label">Sub-Category</label>
+                        <select name="sub_category_product_id" id="sub_category_product_id" class="form-control product-create-input"
+                            required>
+                            <option value="">Choose Sub-Category</option>
+                            @foreach ($subcategories as $subcategory)
+                                <option value="{{ $subcategory->id }}"
+                                    {{ old('sub_category_product_id') == $subcategory->id ? 'selected' : '' }}>
+                                    {{ $subcategory->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('sub_category_product_id')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-
-                    <div class="form-group mt-3">
-                        <label for="brand_id">Brand:</label>
-                        <select name="brands_id" required>
-                            <option value="">Select Brand</option>
+                    <div class="form-group product-create-form-group">
+                        <label for="brand_id" class="product-create-label">Brand</label>
+                        <select name="brand_id" id="brand_id" class="form-control product-create-input" required>
+                            <option value="">Choose Brand</option>
                             @foreach ($brands as $brand)
-                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                    {{ $brand->name }}
+                                </option>
                             @endforeach
                         </select>
+                        @error('brand_id')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
+                    <h3 class="mt-4">Product Variant</h3>
+                    <ul class="list-unstyled product-create-variations-list" id="variations-container">
+                        <li class="product-create-variasi-item mb-3">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <div class="me-3">
+                                    <label for="warna[]" class="product-create-label">Color</label>
+                                    <input type="text" name="variants[0][color]"
+                                        class="form-control product-create-input" value="{{ old('variants.0.color') }}">
+                                </div>
+                                <div class="me-3">
+                                    <label for="ukuran[]" class="product-create-label">Size</label>
+                                    <input type="text" name="variants[0][size]" class="form-control product-create-input"
+                                        value="{{ old('variants.0.size') }}">
+                                </div>
+                                <div class="me-3">
+                                    <label for="stok[]" class="product-create-label">Stock</label>
+                                    <input type="number" name="variants[0][stock]"
+                                        class="form-control product-create-input" value="{{ old('variants.0.stock') }}">
+                                </div>
+                                <div>
+                                    <button type="button" class="btn product-create-btn-remove">Delete</button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
 
-                    <div class="form-group mt-3">
-                        <label for="categoryproduct_id">Category:</label>
-                        <select name="category_products_id" required>
-                            <option value="">Select Category</option>
-                            @foreach ($categoryproducts as $categoryproduct)
-                                <option value="{{ $categoryproduct->id }}">{{ $categoryproduct->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- <div class="form-group mt-3">
-                        <label for="subcategoryproduct_id">Sub Category:</label>
-                        <select name="sub_category_products_id" required>
-                            <option value="">Select Sub Category</option>
-                            @foreach ($subcategoryproducts as $subcategoryproduct)
-                                <option value="{{ $subcategoryproduct->id }}">{{ $subcategoryproduct->name }}</option>
-                            @endforeach
-                        </select>
-                    </div> --}}
-
-                    {{-- <div class="form-group mt-3">
-                        <label for="sub_category">Sub Categories:</label>
-                        <div id="sub-category-list">
-                            <!-- This is where selected sub-categories will appear -->
-                        </div>
-                        <select id="sub-category-dropdown" class="form-control mt-2">
-                            <option value="">Select Sub Category</option>
-                            @foreach ($subcategoryproducts as $subcategoryproduct)
-                                <option value="{{ $subcategoryproduct->id }}">{{ $subcategoryproduct->name }}</option>
-                            @endforeach
-                        </select>
-                        <button type="button" id="add-sub-category" class="btn btn-primary mt-2">Add Sub Category</button>
-                    </div> --}}
-
-                    <div class="form-group mt-3">
-                        <label for="sub_category" class="form-label">Sub Categories:</label>
-                        <div id="sub-category-list" class="mb-2">
-                            <!-- Selected sub-categories will appear here -->
-                        </div>
-                        <div class="input-group">
-                            <select id="sub-category-dropdown" class="form-select">
-                                <option value="" disabled selected>Select Sub Category</option>
-                                @foreach ($subcategoryproducts as $subcategoryproduct)
-                                    <option value="{{ $subcategoryproduct->id }}">{{ $subcategoryproduct->name }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" id="add-sub-category" class="btn btn-outline-primary">Add</button>
-                        </div>
-                    </div>
-
-
-                    <h4>Sub-Variants:</h4>
-                    <div id="sub-variants">
-                        <div class="sub-variant">
-                            <input type="text" name="sub_variants[]" placeholder="Sub-Variant Name">
-                            <button type="button" class="remove-sub-variant"
-                                aria-label="Remove this sub-variant">Remove</button>
-                        </div>
-                    </div>
-                    <button type="button" id="add-sub-variant" aria-label="Add another sub-variant">Add Another
-                        Sub-Variant</button>
-
-                    <!-- Optional: Include a script to handle adding and removing sub-variant fields -->
-                    <script>
-                        document.getElementById('add-sub-variant').addEventListener('click', function() {
-                            const subVariantContainer = document.getElementById('sub-variants');
-                            const newSubVariant = document.createElement('div');
-                            newSubVariant.classList.add('sub-variant');
-                            newSubVariant.innerHTML = `
-            <input type="text" name="sub_variants[]" placeholder="Sub-Variant Name" required>
-            <button type="button" class="remove-sub-variant" aria-label="Remove this sub-variant">Remove</button>
-        `;
-                            subVariantContainer.appendChild(newSubVariant);
-
-                            // Add event listener for the remove button of the new sub-variant
-                            newSubVariant.querySelector('.remove-sub-variant').addEventListener('click', function() {
-                                subVariantContainer.removeChild(newSubVariant);
-                            });
-                        });
-
-                        // Add event listener to existing remove buttons
-                        document.querySelectorAll('.remove-sub-variant').forEach(button => {
-                            button.addEventListener('click', function() {
-                                const subVariant = this.parentElement;
-                                subVariant.parentElement.removeChild(subVariant);
-                            });
-                        });
-                    </script>
-
+                    <button type="button" class="btn product-create-btn-add">More Variant</button>
 
                     <div class="mt-4">
-                        <button type="submit" class="btn confirm-btn" style="background-color: #00ff00; color: black;">
-                            Confirm
-                        </button>
+                        <button type="submit" class="btn btn-success w-100 product-create-btn-confirm">Save Product</button>
                     </div>
                 </form>
-
-                <!-- Script to dynamically handle sub-category selection -->
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        const dropdown = document.getElementById("sub-category-dropdown");
-                        const addButton = document.getElementById("add-sub-category");
-                        const listContainer = document.getElementById("sub-category-list");
-
-                        addButton.addEventListener("click", () => {
-                            const selectedValue = dropdown.value;
-                            const selectedText = dropdown.options[dropdown.selectedIndex]?.text;
-
-                            // Ensure a valid sub-category is selected
-                            if (!selectedValue) return alert("Please select a valid sub-category.");
-
-                            // Check if the sub-category is already added
-                            if (document.querySelector(`#sub-category-list [data-id="${selectedValue}"]`)) {
-                                return alert("This sub-category is already added.");
-                            }
-
-                            // Create the selected sub-category badge
-                            const badge = document.createElement("span");
-                            badge.className = "selected-sub-category";
-                            badge.dataset.id = selectedValue;
-                            badge.innerHTML = `${selectedText}
-                <a href="#" class="remove-btn" data-id="${selectedValue}">&times;</a>`;
-
-                            // Add badge to the list
-                            listContainer.appendChild(badge);
-
-                            // Clear dropdown selection
-                            dropdown.value = "";
-                        });
-
-                        // Handle badge removal
-                        listContainer.addEventListener("click", (e) => {
-                            if (e.target.classList.contains("remove-btn")) {
-                                e.preventDefault();
-                                const badge = e.target.closest(".selected-sub-category");
-                                listContainer.removeChild(badge);
-                            }
-                        });
-                    });
-                </script>
             </div>
         </div>
     </div>
+
+    <script>
+         document.addEventListener('DOMContentLoaded', function() {
+            let variationIndex = 1;
+
+            document.querySelector('.product-create-btn-add').addEventListener('click', function() {
+                let container = document.getElementById('variations-container');
+                let newVariation = document.createElement('li');
+                newVariation.classList.add('product-create-variasi-item', 'mb-3');
+                newVariation.innerHTML = ` 
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="me-3">
+                            <label for="variants[${variationIndex}][color]" class="product-create-label">Warna</label>
+                            <input type="text" name="variants[${variationIndex}][color]" class="form-control product-create-input">
+                        </div>
+                        <div class="me-3">
+                            <label for="variants[${variationIndex}][size]" class="product-create-label">Ukuran</label>
+                            <input type="text" name="variants[${variationIndex}][size]" class="form-control product-create-input">
+                        </div>
+                        <div class="me-3">
+                            <label for="variants[${variationIndex}][stock]" class="product-create-label">Stok</label>
+                            <input type="number" name="variants[${variationIndex}][stock]" class="form-control product-create-input">
+                        </div>
+                        <button type="button" class="btn product-create-btn-remove">Hapus</button>
+                    </div>
+                `;
+                container.appendChild(newVariation);
+                variationIndex++;
+            });
+
+            document.getElementById('variations-container').addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('product-create-btn-remove')) {
+                    e.target.closest('li').remove();
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .product-create-card-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-create-btn-return {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .product-create-card-body {
+            padding: 20px;
+        }
+
+        .product-create-form-group {
+            margin-bottom: 20px;
+        }
+
+        .product-create-label {
+            font-weight: bold;
+        }
+
+        .product-create-input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .product-create-btn-add {
+            background-color: #757575;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .product-create-btn-confirm {
+            background-color: #4CAF50;
+            color: white;
+            width: 100%;
+        }
+
+        .product-create-btn-remove {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .product-create-btn-remove:hover {
+            background-color: #d32f2f;
+        }
+
+        .product-create-btn-add:hover {
+            background-color: #616161;
+        }
+
+        .product-create-btn-confirm:hover {
+            background-color: #388E3C;
+        }
+
+        .product-create-alert-danger {
+            color: #f44336;
+            font-size: 12px;
+        }
+
+        .product-create-variasi-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-create-variasi-item .d-flex {
+            display: flex;
+            align-items: center;
+        }
+    </style>
 @endsection
