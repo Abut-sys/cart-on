@@ -4,12 +4,9 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Voucher;
 
 class VoucherStatusChanged implements ShouldBroadcast
 {
@@ -17,7 +14,7 @@ class VoucherStatusChanged implements ShouldBroadcast
 
     public $voucher;
 
-    public function __construct(Voucher $voucher)
+    public function __construct($voucher)
     {
         $this->voucher = $voucher;
     }
@@ -27,8 +24,10 @@ class VoucherStatusChanged implements ShouldBroadcast
         return new Channel('admin-notifications');
     }
 
-    public function broadcastAs()
+    public function broadcastWith()
     {
-        return 'voucher.status.changed';
+        return [
+            'voucher' => $this->voucher,
+        ];
     }
 }

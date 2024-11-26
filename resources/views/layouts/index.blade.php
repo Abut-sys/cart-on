@@ -49,6 +49,128 @@
         {{-- sidebar --}}
         <script src="{{ asset('pemai/js/sidebar.js') }}"></script>
 
+        @vite('resources/js/bootstrap.js')
+        {{-- notif --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // loadNotifications();
+
+                const notificationIcon = document.getElementById('notificationIcon');
+                const notificationCount = document.getElementById('notificationCount');
+                const notificationDropdown = document.getElementById('notificationDropdown');
+
+                // Laravel Echo Configuration (untuk real-time notifikasi)
+                // window.Echo = new Echo({
+                //     broadcaster: 'pusher',
+                //     key: '{{ env('PUSHER_APP_KEY') }}',
+                //     cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+                //     encrypted: true
+                // });
+
+                // Menampilkan atau menyembunyikan dropdown notifikasi
+                function toggleNotificationDropdown() {
+                    notificationDropdown.classList.toggle('active');
+                }
+
+                if (notificationIcon) {
+                    notificationIcon.addEventListener('click', toggleNotificationDropdown);
+                }
+
+                // Fungsi untuk menandai notifikasi sebagai dibaca
+                function markAsRead(notificationIds) {
+                    fetch("{{ route('markAsRead') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                notification_ids: notificationIds
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                loadNotifications(); // Reload notifications after marking as read
+                            }
+                        });
+                }
+
+                // Fungsi untuk memuat notifikasi terbaru
+                function loadNotifications() {
+                    fetch("{{ route('getNotifications') }}")
+                        .then(response => response.json())
+                        .then(notifications => {
+                            const unreadCount = notifications.filter(notification => !notification.read_at).length;
+                            console.log('Unread notifications count:', unreadCount);
+
+                            // Update count notifikasi di elemen HTML
+                            notificationCount.textContent = unreadCount;
+                            renderNotifications(notifications);
+                        });
+                }
+
+                // Fungsi untuk merender notifikasi di dropdown
+                function renderNotifications(notifications) {
+                    notificationDropdown.innerHTML = ''; // Menghapus notifikasi yang ada
+
+                    notifications.forEach(notification => {
+                        const notificationItem = document.createElement('div');
+                        notificationItem.classList.add('notification-item');
+
+                        // Jika notifikasi belum dibaca, beri kelas 'unread'
+                        if (!notification.read_at) {
+                            notificationItem.classList.add('unread');
+                        } else {
+                            notificationItem.classList.add('read');
+                        }
+
+                        notificationItem.innerHTML = `
+            <i class="fas fa-info-circle"></i> ${notification.data.message}
+        `;
+
+                        // Ketika notifikasi diklik, tandai sebagai dibaca
+                        notificationItem.onclick = function() {
+                            markAsRead([notification.id]);
+                        };
+
+                        notificationDropdown.appendChild(notificationItem);
+                    });
+
+                    if (notifications.length === 0) {
+                        notificationDropdown.innerHTML =
+                            '<div class="notification-item no-notifications">Tidak ada notifikasi baru</div>';
+                    }
+
+                    const seeAllLink = document.createElement('div');
+                    seeAllLink.classList.add('notification-item', 'see-all-item');
+                    seeAllLink.innerHTML =
+                        `<a href="{{ route('allNotifications') }}" class="see-all-link">See All</a>`;
+                    notificationDropdown.appendChild(seeAllLink);
+                }
+
+                // Mendengarkan event WebSocket di channel 'admin-notifications'
+                Echo.channel('admin-notifications')
+                    .listen('VoucherStatusChanged', (event) => {
+                        console.log('Voucher status changed:', event);
+                        const newNotification = document.createElement('div');
+                        newNotification.classList.add('notification-item');
+                        newNotification.innerHTML = `
+                <i class="fas fa-info-circle"></i> Status voucher ${event.voucher.code} has changed to ${event.voucher.status}.
+            `;
+                        newNotification.onclick = function() {
+                            markAsRead([event.voucher.id]);
+                            window.location.href = `/notifications/${event.voucher.id}`;
+                        };
+                        notificationDropdown.prepend(newNotification);
+                        notificationCount.textContent = parseInt(notificationCount.textContent) + 1;
+                    });
+
+                // Load notifications when the page loads
+                loadNotifications();
+            });
+        </script>
+
 
         {{-- Dashboard --}}
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
