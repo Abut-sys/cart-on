@@ -40,7 +40,33 @@
     {{-- Notification and User Info --}}
     <div class="notification-section">
         @auth
-            <i class="fas fa-bell notification-icon"></i>
+            <!-- Icon Notifikasi -->
+            <i class="fas fa-bell notification-icon" id="notificationIcon" style="cursor: pointer;"></i>
+            <span class="badge" id="notificationCount">{{ auth()->user()->unreadNotifications->count() }}</span>
+
+            <!-- Dropdown Notifikasi -->
+            <div class="notification-dropdown hidden" id="notificationDropdown">
+                <!-- Notifikasi yang belum dibaca -->
+                @foreach (auth()->user()->unreadNotifications as $notification)
+                    <div class="notification-item unread" onclick="markAsRead(['{{ $notification->id }}'])">
+                        <i class="fas fa-info-circle"></i>
+                        {{ $notification->data['message'] }}
+                    </div>
+                @endforeach
+
+                <!-- Notifikasi yang sudah dibaca -->
+                @foreach (auth()->user()->readNotifications as $notification)
+                    <div class="notification-item read">
+                        <i class="fas fa-info-circle"></i>
+                        {{ $notification->data['message'] }}
+                    </div>
+                @endforeach
+
+                <!-- Link "See All" untuk menampilkan semua notifikasi -->
+                <div class="notification-item see-all-item">
+                    <a href="{{ route('allNotifications') }}" class="see-all-link">See All</a>
+                </div>
+            </div>
         @endauth
     </div>
 

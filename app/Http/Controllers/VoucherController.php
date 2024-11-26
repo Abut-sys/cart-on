@@ -36,7 +36,6 @@ class VoucherController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data input
         $validatedData = $request->validate([
             'code' => 'required|string|max:255|unique:vouchers',
             'discount_value' => 'required|numeric|min:0|max:100',
@@ -46,10 +45,8 @@ class VoucherController extends Controller
             'usage_limit' => 'required|integer|min:1',
         ]);
 
-        // Buat voucher baru
         $voucher = Voucher::create($validatedData);
 
-        // Update status voucher sesuai dengan tanggal
         $voucher->updateStatus();
 
         // Trigger event untuk notifikasi
@@ -65,7 +62,6 @@ class VoucherController extends Controller
 
     public function update(Request $request, Voucher $voucher)
     {
-        // Validasi data input
         $validatedData = $request->validate([
             'code' => 'required|string|max:255|unique:vouchers,code,' . $voucher->id,
             'discount_value' => 'required|numeric|min:0|max:100',
@@ -75,14 +71,12 @@ class VoucherController extends Controller
             'usage_limit' => 'required|integer|min:1',
         ]);
 
-        // Update voucher
         $voucher->update($validatedData);
 
-        // Update status voucher sesuai dengan tanggal
         $voucher->updateStatus();
 
         // Trigger event untuk notifikasi
-        event(new VoucherStatusChanged($voucher));
+        // event(new VoucherStatusChanged($voucher));
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully!');
     }

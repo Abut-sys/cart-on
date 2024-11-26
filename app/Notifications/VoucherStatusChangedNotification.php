@@ -2,32 +2,37 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\Voucher;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Bus\Queueable;
 
-class VoucherStatusNotification extends Notification implements ShouldQueue
+class VoucherStatusChangedNotification extends Notification
 {
     use Queueable;
 
-    public $voucher;
+    protected $voucher;
 
-    public function __construct(Voucher $voucher)
+    public function __construct($voucher)
     {
         $this->voucher = $voucher;
     }
 
     public function via($notifiable)
     {
-        return ['broadcast'];
+        return ['broadcast', 'database']; // Menggunakan broadcast dan database
     }
 
-    public function toBroadcast($notifiable)
+    public function toArray($notifiable)
     {
-        return new BroadcastMessage([
-            'voucher' => $this->voucher,
-        ]);
+        return [
+            'message' => "Status voucher {$this->voucher->code} : telah berubah menjadi {$this->voucher->status}.",
+        ];
+    }
+
+    public function toDatabase($notifiable)
+    {
+        return [
+            'message' => "Status voucher {$this->voucher->code} : telah berubah menjadi {$this->voucher->status}.",
+        ];
     }
 }

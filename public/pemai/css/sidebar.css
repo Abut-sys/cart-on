@@ -90,10 +90,11 @@ body {
 }
 
 .notification-section {
-    display: flex;
+    display: inline-block;
     align-items: center;
     margin: 0 15px;
     font-size: 17px;
+    position: relative;
 }
 
 .notification-icon {
@@ -108,7 +109,20 @@ body {
     animation: ring 1s ease-in-out;
 }
 
+/* Badge untuk menampilkan jumlah notifikasi yang belum dibaca */
+.notification-icon .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff3b30;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 50%;
+}
 
+/* Animasi untuk ikon */
 @keyframes ring {
     0% {
         transform: rotate(0);
@@ -131,6 +145,86 @@ body {
     100% {
         transform: rotate(0);
     }
+}
+
+/* Dropdown untuk notifikasi */
+.notification-dropdown {
+    display: none; /* Secara default disembunyikan */
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 250px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto; /* Menambahkan scroll jika notifikasi lebih banyak */
+}
+
+.notification-dropdown.active {
+    display: block; /* Menampilkan dropdown ketika aktif */
+}
+
+/* Item notifikasi */
+.notification-item {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.notification-item:hover {
+    background-color: #f2f2f2;
+}
+
+/* Desain untuk notifikasi yang sudah dibaca */
+.notification-item.read {
+    color: #999;
+    background-color: #e0e0e0;
+}
+
+.notification-item.unread {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Ikon dalam notifikasi */
+.notification-item i {
+    margin-right: 10px;
+}
+
+/* Badge angka pada ikon */
+#notificationCount {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff3b30;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 50%;
+}
+
+/* Mengatur elemen hidden */
+.hidden {
+    display: none;
+}
+
+/* Mengatur elemen show */
+.show {
+    display: block;
+}
+
+/* Pesan ketika tidak ada notifikasi */
+.notification-dropdown .no-notifications {
+    text-align: center;
+    padding: 12px;
+    color: #999;
+    font-size: 14px;
 }
 
 .username {
@@ -225,7 +319,7 @@ body {
     top: 0;
     height: 100%;
     width: 200px;
-    background-image: linear-gradient(to bottom, #ffffff, #F3EEEA);
+    background-image: linear-gradient(to bottom, #ffffff, #f3eeea);
     color: #99bc85;
     padding-top: 20px;
     transition: transform 0.3s ease;
@@ -273,7 +367,7 @@ body {
 .nav-item a:hover,
 .nav-item a.active {
     background-color: #967f61;
-    color: #FFF2E1;
+    color: #fff2e1;
     font-weight: bold;
     transform: translateY(-10px) scale(1.1);
     padding: 8px 12px;
@@ -300,7 +394,7 @@ body {
 .nav-dropdown-item a:hover,
 .nav-dropdown-item a.active {
     background-color: #967f61;
-    color: #FFF2E1;
+    color: #fff2e1;
     font-weight: bold;
     padding: 8px 12px;
     border-radius: 4px;
@@ -326,7 +420,7 @@ body {
 .category-link:hover,
 .category-link.active {
     background-color: #967f61;
-    color: #FFF2E1;
+    color: #fff2e1;
     font-weight: bold;
     transform: translateY(-10px) scale(1.1);
     padding: 8px 12px;
