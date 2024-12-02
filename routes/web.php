@@ -24,7 +24,7 @@ use App\Http\Controllers\PasswordController;
 |--------------------------------------------------------------------------
 */
 
-    // Route untuk halaman utama
+// Route untuk halaman utama
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 // Route untuk logout yang hanya bisa diakses oleh pengguna yang terautentikasi
@@ -33,7 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/set-password', [PasswordController::class, 'store'])->name('password.store');
 
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/addresses', [ProfileController::class, 'editAddress'])->name('profile.address.edit');
+    Route::post('/profile/addresses', [ProfileController::class, 'addAddress'])->name('profile.address.add');
+    Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
@@ -78,6 +81,8 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
+    Route::get('/admin/profile/edit', [ProfileController::class, 'edit'])->name('admin.profile.edit');
+
     Route::resource('brands', BrandController::class);
 
     Route::resource('products', ProductController::class);
@@ -95,6 +100,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // Route untuk memastikan pengguna yang belum memverifikasi akun mereka tidak dapat mengakses halaman login
 Route::middleware(['guest', 'check.verified'])->group(function () {
-    Route::get('login', [LoginController::class, 'create'])->name('login')->middleware('check.verified'); // Tambahkan middleware di sini jika diperlukan
+    Route::get('login', [LoginController::class, 'create'])
+        ->name('login')
+        ->middleware('check.verified'); // Tambahkan middleware di sini jika diperlukan
     Route::post('login', [LoginController::class, 'store']);
 });

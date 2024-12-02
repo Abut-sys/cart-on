@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel orders
             $table->string('payment_method');
             $table->string('shipping_address');
-            $table->string('billing_address')->nullable();
             $table->timestamps();
         });
     }
