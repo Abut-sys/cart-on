@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-     
+
     protected $fillable = [
         'sub_category_product_id',
         'brand_id',
@@ -16,6 +16,11 @@ class Product extends Model
         'image_path',
         'price',
         'description',
+    ];
+
+    protected $casts = [
+        'color' => 'array',
+        'size' => 'array',
     ];
 
     public function subCategory()
@@ -31,5 +36,10 @@ class Product extends Model
     public function subVariant()
     {
         return $this->hasMany(SubVariant::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 }
