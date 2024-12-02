@@ -3,141 +3,102 @@
 @section('title', 'Brands')
 
 @section('content')
-
     <div class="brand-index-container-fluid mt-4">
-        <div class="brand-index-card shadow-sm">
-            <div class="brand-index-card-header d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">List of Brands</h2>
-                <a href="{{ route('brands.create') }}" class="brand-index-btn-add-brand btn me-2">
-                    <i class="fas fa-plus"></i> Add Brand
-                </a>
-            </div>
+        <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+            <h2 class="text-center w-100 fw-bold">Brand Categories</h2>
+            <a href="{{ route('brands.create') }}" class="btn brand-index-btn-add-brand">
+                <i class="fas fa-plus"></i> Add Brand
+            </a>
+        </div>
 
-            <div class="brand-index-card-body">
-                @if (session('success'))
-                    <div class="brand-index-alert-success alert text-center">
-                        {{ session('success') }}
+        <!-- Filter Form -->
+        <div class="brand-index-form">
+            <form method="GET" action="{{ route('brands.index') }}" class="mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control brand-index-search"
+                            placeholder="Search by ID or Name" value="{{ request('search') }}">
                     </div>
-                @endif
-
-                <div class="brand-index-table-responsive table-responsive">
-                    <table class="brand-index-table table table-striped table-hover w-100">
-                        <thead class="brand-index-thead-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Logo</th>
-                                <th>Category Product</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($brands as $brand)
-                                <tr>
-                                    <td>{{ $brand->id }}</td>
-                                    <td>{{ $brand->name }}</td>
-                                    <td>
-                                        <img src="{{ asset('storage/' . $brand->logo_path) }}"
-                                            alt="Logo {{ $brand->name }}" width="50" class="brand-index-logo">
-                                    </td>
-                                    <td>{{ $brand->categoryProduct->name ?? 'No Category' }}</td>
-                                    <td>
-                                        <a href="{{ route('brands.edit', $brand->id) }}" class="btn btn-warning btn-sm" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('brands.destroy', $brand->id) }}" method="POST"
-                                            style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                        <a href="{{ route('brands.show', $brand->id) }}" class="btn btn-info btn-sm" title="View">
-                                            <i class="fas fa-eye"></i> Details
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    <!-- Styled Pagination Links -->
-                    <div class="mt-4 d-flex justify-content-end">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination pagination-sm"> <!-- Changed to pagination-sm for smaller size -->
-                                <!-- Previous Page Link -->
-                                @if ($brands->onFirstPage())
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                                    </li>
-                                @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $brands->previousPageUrl() }}" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo; Previous</span>
-                                        </a>
-                                    </li>
-                                @endif
-
-                                <!-- Pagination Elements -->
-                                @foreach ($brands->links()->elements as $element)
-                                    <!-- Array Of Links -->
-                                    @if (is_array($element))
-                                        @foreach ($element as $page => $url)
-                                            <li class="page-item {{ $brands->currentPage() == $page ? 'active' : '' }}">
-                                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                                            </li>
-                                        @endforeach
-                                    @endif
-                                @endforeach
-
-                                <!-- Next Page Link -->
-                                @if ($brands->hasMorePages())
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $brands->nextPageUrl() }}" aria-label="Next">
-                                            <span aria-hidden="true">Next &raquo;</span>
-                                        </a>
-                                    </li>
-                                @else
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
-                                    </li>
-                                @endif
-                            </ul>
-                        </nav>
+                    <div class="col-md-2">
+                        <div class="d-flex align-items-center position-relative">
+                            <select name="sort_id" class="form-select brand-index-select">
+                                <option value="">Sort ID</option>
+                                <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>Ascending</option>
+                                <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>Descending</option>
+                            </select>
+                            <i class="fas fa-sort-down position-absolute end-0 me-2 sort-icon"></i>
+                        </div>
                     </div>
-                    <!-- Custom Styling -->
-                    <style>
-                        .pagination .page-item .page-link {
-                            background-color: #f0f0f0;
-                            color: #007bff;
-                            border: 1px solid #ddd;
-                            margin: 0 2px;
-                            padding: 5px 10px;
-                            /* Adjusted padding for smaller buttons */
-                            font-size: 0.875rem;
-                            /* Smaller font size */
-                            transition: background-color 0.3s ease;
-                        }
-
-                        .pagination .page-item.active .page-link {
-                            background-color: #007bff;
-                            color: #fff;
-                            border-color: #007bff;
-                        }
-
-                        .pagination .page-item:hover .page-link:not(.active) {
-                            background-color: #dcdcdc;
-                            color: #007bff;
-                        }
-
-                        .pagination .page-item.disabled .page-link {
-                            color: #999;
-                        }
-                    </style>
-
+                    <div class="col-md-2">
+                        <div class="d-flex align-items-center position-relative">
+                            <select name="sort_name" class="form-select brand-index-select">
+                                <option value="">Sort Name</option>
+                                <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z</option>
+                                <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A</option>
+                            </select>
+                            <i class="fas fa-sort-alpha-down position-absolute end-0 me-2 sort-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn brand-index-btn-filter">Search</button>
+                            <a href="{{ route('brands.index') }}" class="btn brand-index-btn-reset ms-2">Reset</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </form>
+        </div>
+
+        <!-- Brands Table -->
+        <div class="brand-index-table-responsive table-responsive mt-4">
+            <table class="table brand-index-table">
+                <thead class="brand-index-thead-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Logo</th>
+                        <th>Category Product</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($brands as $brand)
+                        <tr class="brand-index-row">
+                            <td>{{ $brand->id }}</td>
+                            <td>{{ $brand->name }}</td>
+                            <td>
+                                <img src="{{ asset('storage/' . $brand->logo_path) }}" alt="Logo {{ $brand->name }}"
+                                    width="50" class="brand-index-logo">
+                            </td>
+                            <td>{{ $brand->categoryProduct->name ?? 'No Category' }}</td>
+                            <td>
+                                <a href="{{ route('brands.edit', $brand->id) }}"
+                                    class="btn btn-sm btn-warning brand-index-btn-edit-brand">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('brands.destroy', $brand->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger brand-index-btn-delete-brand">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                                <a href="{{ route('brands.show', $brand->id) }}"
+                                    class="btn btn-sm btn-info brand-index-btn-view-brand">
+                                    <i class="fas fa-eye"></i> Details
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-3">
+            <nav>
+                {{ $brands->withQueryString()->links('pagination::bootstrap-4') }}
+            </nav>
         </div>
     </div>
 @endsection

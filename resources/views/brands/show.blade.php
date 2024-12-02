@@ -4,29 +4,35 @@
 
 @section('content')
 
-<div class="brand-show-container-fluid mt-4">
-    <div class="brand-show-card mb-4 shadow-sm">
+<div class="brand-show-container mt-4">
+    <div class="brand-show-card shadow-lg">
         <div class="brand-show-card-header d-flex justify-content-between align-items-center">
-            <h2 class="mb-0 brand-show-title">{{ $brand->name }}</h2>
-            <a href="{{ route('brands.index') }}" class="brand-show-btn-return me-2">
+            <h2 class="brand-show-title mb-0">Brand Details</h2>
+            <a href="{{ route('brands.index') }}" class="brand-show-btn-return">
                 <i class="fas fa-arrow-left"></i> Return
             </a>
         </div>
-        <div class="brand-show-card-body">
-            <h5 class="card-title brand-show-description-title">Description:</h5>
-            <p class="card-text brand-show-description-text">{{ $brand->description }}</p>
 
+        <div class="brand-show-card-body d-flex">
             @if ($brand->logo_path)
-                <h5 class="card-title brand-show-logo-title">Logo:</h5>
-                <img src="{{ asset('storage/' . $brand->logo_path) }}" alt="Logo {{ $brand->name }}" class="brand-show-img-fluid">
+                <div class="brand-logo-container">
+                    <img src="{{ asset('storage/' . $brand->logo_path) }}" alt="Logo {{ $brand->name }}" class="brand-show-img-fluid">
+                </div>
             @endif
-
-            <div class="mt-4">
-                <a href="{{ route('brands.index') }}" class="brand-show-btn-back">
-                    Kembali ke Daftar Brand
-                </a>
+        
+            <div class="brand-details-container">
+                <div class="brand-show-form-group">
+                    <label for="name" class="brand-show-label">Brand Name:</label>
+                    <p class="brand-show-text">{{ $brand->name }}</p>
+                </div>
+        
+                <div class="brand-show-form-group">
+                    <label for="description" class="brand-show-label">Description:</label>
+                    <p class="brand-show-text">{{ $brand->description }}</p>
+                </div>
             </div>
         </div>
+        
     </div>
 </div>
 

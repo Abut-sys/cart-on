@@ -11,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="{{ asset('/') }}assets/plugin/fontawasome/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
@@ -29,6 +30,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/home_user/home.css">
 </head>
 
 <body>
@@ -176,6 +178,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @yield('dashboard')
 
+    {{-- Select 2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    {{-- Jquery --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     {{-- sweet alert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>

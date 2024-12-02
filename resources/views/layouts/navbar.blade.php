@@ -1,5 +1,4 @@
 <nav class="navbar-top">
-    {{-- Menu toggle for admin --}}
     @auth
         @if (Auth::user()->role == 'admin')
             <div class="menu-icon">
@@ -8,20 +7,17 @@
         @endif
     @endauth
 
-    {{-- Logo for non-admin users --}}
     @if (!Auth::check() || Auth::user()->role != 'admin')
         <div class="logo-container" oncontextmenu="return false;">
             <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
         </div>
     @endif
 
-    {{-- Search bar --}}
     <div class="search-bar">
         <input type="text" placeholder="Tap to search" class="search-input" />
         <i class="fas fa-search search-icon"></i>
     </div>
 
-    {{-- Links for regular users --}}
     @if (!Auth::check() || Auth::user()->role != 'admin')
         <div class="link-section">
             <i class="fas fa-home link-icon"></i>
@@ -100,13 +96,11 @@
     </div>
 </nav>
 
-{{-- Sidebar (only for admin) --}}
 <div class="sidebar" id="sidebar" @if (Auth::check() && Auth::user()->role != 'admin') style="display: none;" @endif>
     <div class="logo">
         <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" />
     </div>
 
-    {{-- Admin Navigation --}}
     @if (Auth::check() && Auth::user()->role == 'admin')
         <div class="nav-item">
             <a href="{{ url('/dashboard') }}" class="{{ request()->is('dashboard') ? 'active' : '' }}">
@@ -152,7 +146,6 @@
             </a>
         </div>
 
-        {{-- Logout button --}}
         <div class="logout-container">
             <a href="{{ route('logout') }}" class="logout-link"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

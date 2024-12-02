@@ -12,9 +12,36 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $brands = Brand::with('categoryProduct')->paginate(5); // Memuat relasi categoryProduct
+        // Ambil input dari form
+        $search = $request->input('search');
+        $sortId = $request->input('sort_id');
+        $sortName = $request->input('sort_name');
+
+        // Query dasar dengan relasi categoryProduct
+        $query = Brand::with('categoryProduct');
+
+        // Filter pencarian berdasarkan ID atau Nama
+        if ($search) {
+            $query->where('id', 'like', "%{$search}%")
+                ->orWhere('name', 'like', "%{$search}%");
+        }
+
+        // Sorting berdasarkan ID
+        if ($sortId) {
+            $query->orderBy('id', $sortId);
+        }
+
+        // Sorting berdasarkan Nama
+        if ($sortName) {
+            $query->orderBy('name', $sortName);
+        }
+
+        // Paginate hasilnya
+        $brands = $query->paginate(2);
+
+        // Return ke view dengan data
         return view('brands.index', compact('brands'));
     }
 

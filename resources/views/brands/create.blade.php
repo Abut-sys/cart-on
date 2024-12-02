@@ -4,11 +4,11 @@
 
 @section('content')
 <div class="brand-create-container mt-4">
-    <div class="brand-create-card shadow-sm">
+    <div class="brand-create-card shadow-lg">
         <div class="brand-create-card-header d-flex justify-content-between align-items-center">
-            <h2 class="brand-create-title mb-0">Add New Brand</h2>
+            <h2 class="brand-create-title mb-0">New Brand</h2>
             <a href="{{ route('brands.index') }}" class="brand-create-btn-return">
-                <i class="fas fa-arrow-left"></i> Return To Brand List
+                <i class="fas fa-arrow-left"></i> Return
             </a>
         </div>
 
@@ -21,18 +21,17 @@
                     <input type="text" class="brand-create-input" id="name" name="name" required placeholder="Nama Brand">
                 </div>
 
-                <div class="form-group">
-                    <label for="category_product_id">Category Product</label>
-                    <select name="category_product_id" id="category_product_id" class="form-control" required>
+                <div class="brand-create-form-group">
+                    <label for="category_product_id" class="brand-create-label">Category Product</label>
+                    <select name="category_product_id" id="category_product_id" class="brand-create-input" required>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}"
                                 {{ old('category_product_id', $brand->category_product_id ?? '') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                         @endforeach
-                    </select>
+                    </select>   
                 </div>
-
 
                 <div class="brand-create-form-group">
                     <label for="description" class="brand-create-label">Description</label>

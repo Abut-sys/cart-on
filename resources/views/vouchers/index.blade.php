@@ -3,7 +3,7 @@
 @section('title', 'Voucher')
 
 @section('content')
-    <div class="mt-4">
+    <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
             <h2 class="text-center w-100 fw-bold">Voucher List</h2>
             <a href="{{ route('vouchers.create') }}" class="voucher-index-btn voucher-index-btn-add">

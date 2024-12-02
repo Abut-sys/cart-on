@@ -8,9 +8,25 @@ use Illuminate\Http\Request;
 
 class CategoryProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = CategoryProduct::with('subCategories')->get();
+        $query = CategoryProduct::with('subCategories');
+
+        if ($request->search) {
+            $query->where('id', $request->search)
+                ->orWhere('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->sort_id) {
+            $query->orderBy('id', $request->sort_id);
+        }
+
+        if ($request->sort_name) {
+            $query->orderBy('name', $request->sort_name);
+        }
+
+        $categories = $query->paginate(5);
+
         return view('categories.index', compact('categories'));
     }
 
@@ -38,8 +54,8 @@ class CategoryProductController extends Controller
                     ]);
                 }
             }
-        }   
-        
+        }
+
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
