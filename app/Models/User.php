@@ -45,6 +45,11 @@ class User extends Authenticatable
         return $this->email_verified_at !== null;
     }
 
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
     public function profile()
     {
         return $this->hasOne(Profile::class);

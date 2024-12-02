@@ -17,6 +17,8 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\ProductAllController;
+use App\Http\Controllers\WishlistController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +26,16 @@ use App\Http\Controllers\PasswordController;
 |--------------------------------------------------------------------------
 */
 
-// Route untuk halaman utama
-Route::get('/', [HomeController::class, 'index'])->name('home.index');
+// Route guest and user
+Route::middleware(['guestOrUserOnly'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
-// Route untuk logout yang hanya bisa diakses oleh pengguna yang terautentikasi
+    Route::get('products-all', [ProductAllController::class, 'index'])->name('products-all.index');
+    Route::get('products-all/{id}', [ProductAllController::class, 'show'])->name('products-all.show');
+    Route::post('products-all/stock', [ProductAllController::class, 'getStock'])->name('products-all.getStock');
+});
+
+// Route yang sudah login dan bisa diakses oleh admin dan user
 Route::middleware('auth')->group(function () {
     Route::get('/set-password', [PasswordController::class, 'create'])->name('password.create');
     Route::post('/set-password', [PasswordController::class, 'store'])->name('password.store');
@@ -45,12 +53,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 });
 
-// Route untuk pengguna biasa yang terautentikasi
+// Route untuk user
 Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
 
 });
 
-// Route untuk pengguna yang tidak terautentikasi
+// Route guest
 Route::middleware(['guest'])->group(function () {
     Route::get('login', [LoginController::class, 'create'])->name('login');
     Route::post('login', [LoginController::class, 'store']);
@@ -77,7 +87,7 @@ Route::middleware(['guest'])->group(function () {
     // Route::get('/kirimemail', [MalasngodingController::class, 'index']);
 });
 
-// Route untuk pengguna yang terautentikasi dan berperan admin
+// Route admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 

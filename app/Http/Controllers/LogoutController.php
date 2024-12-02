@@ -17,6 +17,8 @@ class LogoutController extends Controller
         // Optional: Regenerate the session token to prevent session fixation attacks
         $request->session()->regenerateToken();
 
+        session()->forget('wishlist');
+
         return redirect('/');
     }
 }
