@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Wishlist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,8 @@ class LoginController extends Controller
 
         // Coba login
         if (Auth::attempt($attributes)) {
-            // Redirect berdasarkan role pengguna
+            $this->storeWishlistToSession(Auth::user());
+
             return $this->redirectUserByRole();
         }
 
@@ -84,6 +86,8 @@ class LoginController extends Controller
             return redirect()->route('password.create');
         }
 
+        $this->storeWishlistToSession(Auth::user());
+
         if (!$existingUser->password) {
             return redirect()->route('password.create');
         }
@@ -92,7 +96,7 @@ class LoginController extends Controller
             return redirect()->route('dashboard.index')->with('msg', 'Welcome Admin!');
         }
 
-        return redirect()->route('home.index')->with('msg', 'Welcome User!');;
+        return redirect()->route('home.index')->with('msg', 'Welcome User!');
     }
 
     // Fungsi untuk redirect pengguna berdasarkan role
@@ -104,5 +108,12 @@ class LoginController extends Controller
         }
 
         return redirect()->route('home.index')->with('msg', 'Welcome User!');
+    }
+
+    private function storeWishlistToSession($user)
+    {
+        $user = Auth::user();
+        $wishlistItems = Wishlist::where('user_id', $user->id)->pluck('product_id')->toArray();
+        session()->put('wishlist', $wishlistItems);
     }
 }

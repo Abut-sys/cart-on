@@ -22,14 +22,28 @@
         <div class="link-section">
             <i class="fas fa-home link-icon"></i>
         </div>
-        <div class="product-section">
-            <i class="fas fa-boxes link-icon"></i>
+
+        <div class="link-section">
+            <a href="{{ route('products-all.index') }}">
+                <i class="fas fa-boxes link-icon"></i>
+            </a>
         </div>
+
         <div class="link-section">
             <i class="fas fa-shopping-cart link-icon"></i>
         </div>
+
         <div class="link-section">
-            <i class="fas fa-info-circle link-icon"></i>
+            <a href="{{ route('wishlist.index') }}">
+                <i class="fas fa-heart link-icon"></i>
+                @if (Auth::check())
+                    <span id="wishlist-count" class="badge bg-danger">
+                        {{ Auth::user()->wishlists->count() }}
+                    </span>
+                @else
+                    <span id="wishlist-count" class="badge bg-danger" style="display:none;"></span>
+                @endif
+            </a>
         </div>
     @endif
 
@@ -57,11 +71,6 @@
                         {{ $notification->data['message'] }}
                     </div>
                 @endforeach
-
-                <!-- Link "See All" untuk menampilkan semua notifikasi -->
-                <div class="notification-item see-all-item">
-                    <a href="{{ route('allNotifications') }}" class="see-all-link">See All</a>
-                </div>
             </div>
         @endauth
     </div>
