@@ -22,7 +22,7 @@
         <div class="link-section">
             <i class="fas fa-home link-icon"></i>
         </div>
-        <div class="link-section">
+        <div class="product-section">
             <i class="fas fa-boxes link-icon"></i>
         </div>
         <div class="link-section">

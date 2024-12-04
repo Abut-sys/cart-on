@@ -1,38 +1,191 @@
-.banner-container {
-    position: relative;
-    width: 80%;
-    margin: 0 auto;
-    overflow: hidden;
-}
-
-.banner {
+.home-user-banner-container {
     display: flex;
-    transition: transform 1s ease;
-    gap: 10px;
-}
-
-.banner-image {
+    gap: 20px;
     width: 100%;
-    max-width: 800px;
-    height: auto;
-    flex-shrink: 0;
-    object-fit: cover;
+    margin: 20px auto;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
 }
 
-.banner-text {
+.home-user-banner-wrapper {
+    flex: 2;
+    overflow: hidden;
+    position: relative;
+    height: 250px;
+    margin: 0 auto;
+}
+
+.home-user-banner {
+    display: flex;
+    width: fit-content;
+    transition: transform 0.5s ease-in-out;
+}
+
+.home-user-banner-image {
+    flex-shrink: 0;
+    width: 100%;
+    height: 250px;
+    object-fit: contain;
+}
+
+.home-user-banner-prev,
+.home-user-banner-next {
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
     color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 20px;
 }
 
-.banner-text h1 {
-    font-size: 2.5rem;
+.home-user-banner-prev {
+    left: 10px;
+}
+
+.home-user-banner-next {
+    right: 10px;
+}
+
+.home-user-ads {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 auto;
+    align-items: stretch;
+    width: 100%;
+}
+
+.home-user-ad img {
+    width: 100%;
+    height: 120px;
+    object-fit: fill;
+}
+
+.home-user-shop-by-categories {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.home-user-shop-by-categories h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: left;
+    margin-top: 20px;
+}
+
+.home-user-categories-container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-user-category {
+    text-align: center;
+    flex: 1;
+}
+
+.home-user-category img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.home-user-category p {
+    font-size: 18px;
+    color: #333;
+    margin-top: 10px;
+}
+
+.home-user-shop-by-brands {
+    margin-top: 20px; /* Mengurangi jarak */
+    text-align: center;
+}
+
+.home-user-shop-by-brands h2 {
+    color: #fff;
+    font-size: 16px;
     font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+    background-color: #4a7c5b;
+    display: inline-block;
+    padding: 5px 10px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 
-.banner-text p {
-    font-size: 1rem;
+.home-user-brands-container {
+    background-color: #4a7c5b;
+    margin-top: -10px;
+    padding: 10px;
+    border-radius: 30px;
+    overflow-x: auto;
+    display: flex;
+    gap: 5px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.home-user-brands-container::-webkit-scrollbar {
+    display: none;
+}
+
+.home-user-brand {
+    flex: 0 0 auto;
+    cursor: pointer;
+    text-align: center;
+    width: 150px; /* Lebar elemen lebih kecil */
+}
+
+.home-user-brand img {
+    width: 150px; /* Lebar gambar lebih kecil */
+    height: 120px; /* Tinggi gambar lebih kecil */
+    object-fit: cover;
+    border-radius: 15px; /* Radius lebih kecil */
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .home-user-banner-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .home-user-banner-wrapper {
+        height: 180px;
+    }
+
+    .home-user-banner-image {
+        height: auto;
+    }
+
+    .home-user-ads {
+        flex-direction: row;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .home-user-ad img {
+        height: 80px;
+    }
+
+    .home-user-categories-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .home-user-category img {
+        height: 150px;
+    }
 }
