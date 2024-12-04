@@ -12,24 +12,42 @@ class CostumersController extends Controller
 {
     public function index(Request $request)
     {
+        // Ambil nilai dari query string
+        $search = $request->input('search');
+        $role = $request->input('role');
+        $sortId = $request->input('sort_id');
+        $sortName = $request->input('sort_name');
+
+        // Query dasar
         $query = User::query();
 
-        if ($request->has('search') && $request->search != '') {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%');
-            });
+        // Filter pencarian berdasarkan nama atau email
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
         }
 
-        if ($request->has('role') && $request->role != 'all') {
-            $query->where('role', $request->role);
+        // Filter berdasarkan role
+        if ($role && $role != 'all') {
+            $query->where('role', $role);
         }
 
-        $users = $query->get();
+        // Filter pengurutan berdasarkan ID
+        if ($sortId) {
+            $query->orderBy('id', $sortId);
+        }
 
+        // Filter pengurutan berdasarkan nama
+        if ($sortName) {
+            $query->orderBy('name', $sortName);
+        }
+
+        // Ambil hasil dengan pagination
+        $users = $query->paginate(10);
+
+        // Kirim data ke view
         return view('costumers.index', compact('users'));
     }
-
 
     public function create()
     {

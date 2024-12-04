@@ -115,6 +115,13 @@
                                             <i class="fas fa-heart {{ in_array($product->id, session('wishlist', [])) ? 'text-danger' : 'text-secondary' }}"
                                                 style="font-size: 18px;"></i>
                                         </button>
+
+                                        <button type="button" class="btn p-0 product-user-view-toggle-cart-btn"
+                                            data-product-id="{{ $product->id }}"
+                                            style="background: {{ in_array($product->id, session('cart', [])) ? 'none' : 'transparent' }};">
+                                            <i class="fas fa-shopping-cart {{ in_array($product->id, session('cart', [])) ? 'text-danger' : 'text-secondary' }}"
+                                                style="font-size: 18px;"></i>
+                                        </button>
                                     @else
                                         <p><a href="{{ route('login') }}">Login</a> untuk menambahkan ke wishlist</p>
                                     @endif
@@ -137,6 +144,35 @@
         const filterButtons = document.querySelectorAll('.product-user-view-filter-btn');
         const hiddenInputsContainer = document.getElementById('hidden-inputs');
         const filterForm = document.getElementById('filter-form');
+
+        $('.product-user-view-toggle-cart-btn').on('click', function(event) {
+            event.preventDefault();
+
+            var productId = $(this).data('product-id');
+            var button = $(this);
+            var icon = button.find('i');
+
+            $.ajax({
+                url: '{{ route('cart.add') }}',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    _token: '{{ csrf_token() }}',
+                },
+                success: function(response) {
+                    if (response.status === 'added') {
+                        icon.removeClass('text-secondary').addClass('text-danger');
+                    } else if (response.status === 'removed') {
+                        icon.removeClass('text-danger').addClass('text-secondary');
+                    }
+
+                    $('#wishlist-count').text(response.wishlistCount);
+                },
+                error: function() {
+                    alert('Terjadi kesalahan saat memperbarui cart.');
+                }
+            });
+        });
 
         $('.product-user-view-toggle-wishlist-btn').on('click', function(event) {
             event.preventDefault();
@@ -352,6 +388,13 @@
         position: absolute;
         bottom: 6px;
         right: 6px;
+        z-index: 10;
+    }
+
+    .product-user-view-toggle-cart-btn {
+        position: absolute;
+        bottom: 6px;
+        right: 30px;
         z-index: 10;
     }
 </style>

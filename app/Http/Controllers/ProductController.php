@@ -10,9 +10,36 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['subCategory', 'brand', 'subVariant'])->paginate(10);
+        // Ambil nilai dari query string
+        $search = $request->input('search');
+        $sortId = $request->input('sort_id');
+        $sortName = $request->input('sort_name');
+
+        // Query dasar dengan relasi
+        $query = Product::with(['subCategory', 'brand', 'subVariant']);
+
+        // Filter pencarian berdasarkan ID atau nama produk
+        if ($search) {
+            $query->where('id', 'like', "%{$search}%")
+                ->orWhere('name', 'like', "%{$search}%");
+        }
+
+        // Filter pengurutan berdasarkan ID
+        if ($sortId) {
+            $query->orderBy('id', $sortId);
+        }
+
+        // Filter pengurutan berdasarkan nama
+        if ($sortName) {
+            $query->orderBy('name', $sortName);
+        }
+
+        // Ambil hasil dengan pagination
+        $products = $query->paginate(10);
+
+        // Kirim data ke view
         return view('products.index', compact('products'));
     }
 

@@ -3,41 +3,28 @@
 @section('title', 'Product Details')
 
 @section('content')
-    <div class="container mt-4">
-        <div class="card product-show-card mb-4 shadow-sm">
-            <div class="card-header product-show-card-header d-flex justify-content-between">
-                <a href="{{ route('products.index') }}" class="btn product-show-btn-return">
+    <div class="brand-show-container mt-4">
+        <div class="product-show-card shadow-lg">
+            <div class="product-show-card-header d-flex justify-content-between align-items-center">
+                <h2 class="product-show-title mb-0">Product Details</h2>
+                <a href="{{ route('products.index') }}" class=" product-show-btn-return">
                     <i class="fas fa-arrow-left"></i> Return
                 </a>
             </div>
             <div class="card-body product-show-card-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
-                            class="img-fluid">
+                        <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" class="img-fluid product-show-image">
                     </div>
                     <div class="col-md-8">
-                        {{-- product --}}
-                        <h3>{{ $product->name }}</h3>
-                        <p><strong>Price:</strong>{{ number_format($product->price, 2) }}</p>
-                        <p><strong>Description:</strong> {{ $product->description }}</p>
+                        <h3 class="product-show-title">{{ $product->name }}</h3>
+                        <p class="product-show-price"><strong>Price:</strong> {{ number_format($product->price, 2) }}</p>
+                        <p class="product-show-description"><strong>Description:</strong> {{ $product->description }}</p>
+                        <p class="product-show-subcategory"><strong>Subcategory:</strong> {{ $product->subCategory->name }}</p>
+                        <p class="product-show-brand"><strong>Brand:</strong> {{ $product->brand->name }}</p>
 
-                        {{-- SubCategory --}}
-                        <p><strong>Subcategory:</strong> {{ $product->subCategory->name }}</p>
-
-                        {{-- Brand --}}
-                        <p><strong>Brand:</strong> {{ $product->brand->name }}</p>
-
-                        {{-- Variants --}}
-                        <h4>Variants:</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Color</th>
-                                    <th>Size</th>
-                                    <th>Stock</th>
-                                </tr>
-                            </thead>
+                        <h4 class="product-show-variants-title">Variants:</h4>
+                        <table class="table product-show-variants-table">
                             <tbody>
                                 @foreach ($product->subVariant as $variant)
                                     <tr>
@@ -54,53 +41,3 @@
         </div>
     </div>
 @endsection
-
-    <style>
-        .product-show-card-header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .product-show-btn-return {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .product-show-card-body {
-            padding: 20px;
-        }
-
-        .product-show-title {
-            font-weight: bold;
-            font-size: 24px;
-        }
-
-        .btn {
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 4px;
-        }
-
-        .btn-warning {
-            background-color: #f39c12;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background-color: #e67e22;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-    </style>
