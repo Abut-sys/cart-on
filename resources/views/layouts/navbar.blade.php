@@ -20,7 +20,9 @@
 
     @if (!Auth::check() || Auth::user()->role != 'admin')
         <div class="link-section">
-            <i class="fas fa-home link-icon"></i>
+            <a href="{{ url('/') }}">
+                <i class="fas fa-home link-icon"></i>
+            </a>
         </div>
 
         <div class="link-section">
@@ -82,8 +84,8 @@
                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Profile
                 </a>
-                @if (Auth::user()->role != 'admin')
-                    <a class="dropdown-item" href="{{ route('logout') }}"
+                @if (Auth::user()->role != 'admin')o
+                    <a class="dropdown-item" href="{{ route('logut') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i> Log Out
                     </a>

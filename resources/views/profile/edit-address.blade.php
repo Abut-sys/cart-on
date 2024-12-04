@@ -30,7 +30,7 @@
 
                     <div class="profile-edit-field">
                         <label for="address_line2">
-                            <i class="fas fa-home"></i> Address Line 2 (Optional)
+                            <i class="fa-solid fa-house-crack"></i> More Detailed Address (Optional)
                         </label>
                         <input type="text" id="address_line2" name="address_line2" value="{{ old('address_line2') }}">
                     </div>
@@ -51,7 +51,7 @@
 
                     <div class="profile-edit-field">
                         <label for="postal_code">
-                            <i class="fas fa-mailbox"></i> Postal Code
+                            <i class="fa-brands fa-usps"></i> Postal Code
                         </label>
                         <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code') }}" required>
                     </div>
@@ -63,7 +63,7 @@
                         <input type="text" id="country" name="country" value="{{ old('country') }}" required>
                     </div>
 
-                    <div class="profile-edit-actions">
+                    <div class="profile-edit-actions mt-2">
                         <button type="submit" class="profile-edit-btn primary">Add Address</button>
                     </div>
                 </form>
@@ -73,7 +73,7 @@
                         @foreach ($addresses as $address)
                             <div class="address-item">
                                 <p><strong>Address Line 1:</strong> {{ $address->address_line1 }}</p>
-                                <p><strong>Address Line 2:</strong> {{ $address->address_line2 }}</p>
+                                <p><strong>More Detailed Address:</strong> {{ $address->address_line2 }}</p>
                                 <p><strong>City:</strong> {{ $address->city }}</p>
                                 <p><strong>State:</strong> {{ $address->state }}</p>
                                 <p><strong>Postal Code:</strong> {{ $address->postal_code }}</p>
