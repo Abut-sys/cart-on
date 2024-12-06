@@ -6,9 +6,6 @@
     <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
             <h2 class="text-center w-100 fw-bold">Order List</h2>
-            <a href="{{ route('orders.create') }}" class="btn order-index-btn-add-order">
-                <i class="fas fa-plus"></i> Add Order
-            </a>
         </div>
 
         <div class="order-index-form">
@@ -47,13 +44,13 @@
                     </div>
                 </div>
             </form>
-        </div>             
+        </div>
 
         <div class="table-responsive mt-4">
             <table class="table order-index-table">
                 <thead class="order-index-thead-light">
                     <tr>
-                        <th>#</th>
+                        <th>No</th>
                         <th>Order ID</th>
                         <th>Order Date</th>
                         <th>Amount</th>

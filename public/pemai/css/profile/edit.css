@@ -4,6 +4,7 @@
     align-items: center;
     padding: 2rem;
     min-height: 100vh;
+    background-color: #f4f8f5;
 }
 
 .profile-edit-card {
@@ -34,11 +35,9 @@
     0% {
         background-position: 0% 50%;
     }
-
     50% {
         background-position: 100% 50%;
     }
-
     100% {
         background-position: 0% 50%;
     }
@@ -61,19 +60,18 @@
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 .profile-edit-fields {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .profile-edit-field {
     display: flex;
     flex-direction: column;
-    position: relative;
 }
 
 .profile-edit-field label {
@@ -90,7 +88,8 @@
     font-size: 1.2rem;
 }
 
-.profile-edit-field input {
+.profile-edit-field input,
+.profile-edit-field select {
     padding: 0.75rem 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -102,7 +101,8 @@
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.profile-edit-field input:focus {
+.profile-edit-field input:focus,
+.profile-edit-field select:focus {
     border-color: #8ed081;
     box-shadow: 0 0 8px rgba(142, 208, 129, 0.5);
     background-color: #ffffff;
@@ -113,10 +113,16 @@
     font-style: italic;
 }
 
+.image-preview img {
+    margin-top: 10px;
+    max-width: 100px;
+    border-radius: 8px;
+}
+
 .profile-edit-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 1rem;
+    justify-content: space-between;
 }
 
 .profile-edit-btn {
@@ -125,7 +131,6 @@
     font-weight: bold;
     border-radius: 8px;
     text-align: center;
-    text-decoration: none;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     border: none;
@@ -161,3 +166,14 @@
     font-size: 0.875rem;
 }
 
+@media (max-width: 768px) {
+    .profile-edit-card {
+        flex-direction: column;
+    }
+
+    .profile-edit-header,
+    .profile-edit-body {
+        flex: unset;
+        width: 100%;
+    }
+}
