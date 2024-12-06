@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\WishlistHelper;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\SubCategoryProduct;
@@ -18,6 +19,7 @@ class ProductAllController extends Controller
         $brand = Brand::pluck('name');
         $category = SubCategoryProduct::pluck('name');
 
+        $userWishlistIds = WishlistHelper::getUserWishlistIds();
         $query = Product::query();
 
         if ($request->filled('color')) {
@@ -62,17 +64,17 @@ class ProductAllController extends Controller
         }
 
         $products = $query->paginate(10);
-        $wishlist = auth()->user()->wishlists->pluck('id')->toArray();
 
-        return view('products.all', compact('products', 'color', 'size', 'category', 'brand', 'wishlist'));
+        return view('products.all', compact('products', 'color', 'size', 'category', 'brand', 'userWishlistIds'));
     }
 
 
     public function show($id)
     {
+        $userWishlistIds = WishlistHelper::getUserWishlistIds();
         $product = Product::with(['subCategory', 'brand', 'subVariant'])->findOrFail($id);
 
-        return view('products.show-user', compact('product'));
+        return view('products.show-user', compact('product', 'userWishlistIds'));
     }
 
     public function getStock(Request $request)

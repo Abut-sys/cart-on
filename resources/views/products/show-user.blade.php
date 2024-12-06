@@ -77,16 +77,23 @@
 
                 <div class="product-user-show-action-buttons mt-4" style="margin-left: -10px;">
                     <button class="btn btn-warning product-user-show-btn-add-to-cart me-3">🛒 Add To Cart</button>
-                    <button class="btn btn-primary product-user-show-btn-buy-now">Buy Now</button>
+                    <form action="{{ route('checkout.show', $product->id) }}" method="GET">
+                        @csrf
+                        <input type="hidden" name="quantity" value="1" id="quantityInput">
+                        <input type="hidden" name="color" class="hidden-color-input">
+                        <input type="hidden" name="size" class="hidden-size-input">
+                        <button type="submit" class="btn btn-primary product-user-show-btn-buy-now ">Buy Now</button>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <button id="product-user-show-toggle-wishlist-btn" class="btn product-user-show-toggle-wishlist-btn"
-            data-product-id="{{ $product->id }}">
-            <i
-                class="fas fa-heart {{ in_array($product->id, session('wishlist', [])) ? 'text-danger' : 'text-secondary' }}"></i>
-        </button>
+        @if (auth()->check())
+            <i class="fas fa-heart product-user-show-toggle-wishlist-btn 
+        {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                data-product-id="{{ $product->id }}">
+            </i>
+        @else
+        @endif
     </div>
 
     <style>
@@ -144,6 +151,11 @@
             border-color: aquamarine !important;
         }
 
+        .product-user-show-action-buttons {
+            display: flex;
+            align-items: center;
+        }
+
         .product-user-show-description {
             font-size: 1.2rem;
             color: #555;
@@ -184,6 +196,15 @@
             color: #fff;
         }
 
+        .product-user-show-btn-add-to-cart,
+        .product-user-show-btn-buy-now {
+            margin-right: 10px;
+        }
+
+        .product-user-show-btn-buy-now {
+            margin-left: 0;
+        }
+
         .product-user-show-btn-add-to-cart:hover {
             background-color: #e0a800;
         }
@@ -193,11 +214,8 @@
             top: 20px;
             right: 20px;
             z-index: 10;
+            font-size: 26px;
             background: transparent;
-        }
-
-        .product-user-show-toggle-wishlist-btn i {
-            font-size: 24px;
         }
 
         .product-user-show-toggle-wishlist-btn i.text-danger {
@@ -220,81 +238,19 @@
             let selectedColor = null;
             let selectedSize = null;
             const subVariant = @json($product->subVariant ?? []);
-
-            document.querySelectorAll('.product-user-show-color-option').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (selectedColor === this.dataset.color) {
-                        selectedColor = null;
-                        this.classList.remove('active');
-                    } else {
-                        selectedColor = this.dataset.color;
-
-                        document.querySelectorAll('.product-user-show-color-option').forEach(btn =>
-                            btn.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-
-                    updateStock();
-                });
-            });
-
-            document.querySelectorAll('.product-user-show-size-option').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (selectedSize === this.dataset.size) {
-                        selectedSize = null;
-                        this.classList.remove('active');
-                    } else {
-                        selectedSize = this.dataset.size;
-
-                        document.querySelectorAll('.product-user-show-size-option').forEach(btn =>
-                            btn.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-
-                    updateStock();
-                });
-            });
-
+            const stockDisplay = document.querySelector('.product-user-show-stock-display');
             const quantityInput = document.querySelector('.product-user-show-quantity-input');
             const btnIncrease = document.querySelector('.product-user-show-btn-increase');
             const btnDecrease = document.querySelector('.product-user-show-btn-decrease');
+            const colorInput = document.querySelector('.hidden-color-input');
+            const sizeInput = document.querySelector('.hidden-size-input');
+            const quantityHiddenInput = document.querySelector('#quantityInput');
 
-            btnIncrease.addEventListener('click', function() {
-                let currentQuantity = parseInt(quantityInput.value);
-                quantityInput.value = currentQuantity + 1;
-            });
-
-            btnDecrease.addEventListener('click', function() {
-                let currentQuantity = parseInt(quantityInput.value);
-                if (currentQuantity > 1) {
-                    quantityInput.value = currentQuantity - 1;
-                }
-            });
-
-            function updateStock() {
-                const stockDisplay = document.querySelector('.product-user-show-stock-display');
-
-                if (selectedColor && selectedSize) {
-                    const variant = subVariant.find(variant => variant.color === selectedColor && variant.size ===
-                        selectedSize);
-
-                    if (variant) {
-                        stockDisplay.textContent = `Stock: ${variant.stock}`;
-                    } else {
-                        stockDisplay.textContent = 'Stock: Out Of Stock';
-                    }
-                } else if (!selectedColor && !selectedSize) {
-                    stockDisplay.textContent = 'Select Color And Size';
-                } else {
-                    stockDisplay.textContent = 'Select Color And Size';
-                }
-            }
-
-            $('#product-user-show-toggle-wishlist-btn').on('click', function(event) {
+            $('.product-user-show-toggle-wishlist-btn ').on('click', function(event) {
                 event.preventDefault();
 
                 var productId = $(this).data('product-id');
-                var icon = $(this).find('i');
+                var $this = $(this);
 
                 $.ajax({
                     url: '{{ route('wishlist.add') }}',
@@ -305,35 +261,119 @@
                     },
                     success: function(response) {
                         if (response.status === 'added') {
-                            icon.removeClass('text-secondary').addClass('text-danger');
+                            $this.removeClass('text-secondary').addClass(
+                                'text-danger');
                         } else if (response.status === 'removed') {
-                            icon.removeClass('text-danger').addClass('text-secondary');
+                            $this.removeClass('text-danger').addClass(
+                                'text-secondary');
                         }
 
-                        $('#wishlist-count').text(response.wishlistCount);
+                        $('#wishlist-count').text(response
+                            .wishlistCount);
                     },
-                    error: function() {
+                    error: function(xhr, status, error) {
                         alert('Terjadi kesalahan saat memperbarui wishlist.');
+                        console.error("AJAX error: " + status + ": " + error);
                     }
                 });
             });
 
-            function toggleDescription() {
-                var descText = $('#product-user-show-description-text');
-                var btn = $('#product-user-show-btn-see-more');
+            document.querySelectorAll('.product-user-show-color-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (selectedColor === this.dataset.color) {
+                        selectedColor = null;
+                        this.classList.remove('active');
+                    } else {
+                        selectedColor = this.dataset.color;
+                        document.querySelectorAll('.product-user-show-color-option')
+                            .forEach(btn =>
+                                btn.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                    updateStock();
+                    updateHiddenFields();
+                });
+            });
 
-                if (descText.css('max-height') === '25px') {
-                    descText.css('max-height', '500px');
-                    btn.text('See Less');
+            document.querySelectorAll('.product-user-show-size-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (selectedSize === this.dataset.size) {
+                        selectedSize = null;
+                        this.classList.remove('active');
+                    } else {
+                        selectedSize = this.dataset.size;
+                        document.querySelectorAll('.product-user-show-size-option')
+                            .forEach(btn =>
+                                btn.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                    updateStock();
+                    updateHiddenFields();
+                });
+            });
+
+            function updateStock() {
+                if (selectedColor && selectedSize) {
+                    const variant = subVariant.find(variant =>
+                        variant.color === selectedColor && variant.size === selectedSize);
+
+                    if (variant) {
+                        stockDisplay.textContent = `Stock: ${variant.stock}`;
+                        quantityInput.max = variant.stock;
+                        if (parseInt(quantityInput.value) > variant.stock) {
+                            quantityInput.value = variant.stock;
+                        }
+                    } else {
+                        stockDisplay.textContent = 'Stock: Out Of Stock';
+                        quantityInput.max = 1;
+                    }
                 } else {
-                    descText.css('max-height', '25px');
-                    btn.text('See More');
+                    stockDisplay.textContent = 'Select Color And Size';
+                    quantityInput.max = 1;
                 }
             }
 
-            $('#product-user-show-btn-see-more').on('click', function() {
-                toggleDescription();
+            function updateHiddenFields() {
+                colorInput.value = selectedColor || '';
+                sizeInput.value = selectedSize || '';
+                quantityHiddenInput.value = quantityInput.value;
+            }
+
+            btnIncrease.addEventListener('click', function() {
+                let currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity < quantityInput.max) {
+                    quantityInput.value = currentQuantity + 1;
+                    updateHiddenFields();
+                }
             });
+
+            btnDecrease.addEventListener('click', function() {
+                let currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity > 1) {
+                    quantityInput.value = currentQuantity - 1;
+                    updateHiddenFields();
+                }
+            });
+
+            updateStock();
+            updateHiddenFields();
+        });
+
+        function toggleDescription() {
+            const descText = $('#product-user-show-description-text');
+            const btn = $('#product-user-show-btn-see-more');
+
+            if (descText.css('max-height') === '25px') {
+                descText.css('max-height', '500px');
+                btn.text('See Less');
+            } else {
+                descText.css('max-height', '25px');
+                btn.text('See More');
+            }
+        }
+
+        $('#product-user-show-btn-see-more').on('click', function() {
+            toggleDescription();
         });
     </script>
 @endsection

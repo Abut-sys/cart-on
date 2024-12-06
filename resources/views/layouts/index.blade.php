@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CartON')</title>
     <link href="{{ asset('/') }}assets/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -41,13 +42,14 @@
             @yield('content')
         </div>
     </div>
+
+    {{-- Jquery --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     {{-- end content --}}
     <script src="{{ asset('/') }}assets/js/bootstrap.bundle.min.js"
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous">
     </script>
-
-    {{-- wishlist --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     {{-- sidebar --}}
     <script src="{{ asset('pemai/js/sidebar.js') }}"></script>
@@ -174,15 +176,16 @@
         });
     </script>
 
+    {{-- midtrans --}}
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+    </script>
+
     {{-- Dashboard --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @yield('dashboard')
 
     {{-- Select 2 --}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-
-    {{-- Jquery --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     {{-- sweet alert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>

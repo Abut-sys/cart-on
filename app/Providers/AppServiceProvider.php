@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Voucher;
 use App\Observers\VoucherObserver;
+use App\Services\PaymentService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(PaymentService::class, function ($app) {
+            return new PaymentService();
+        });
     }
 
     /**

@@ -45,6 +45,12 @@ class Voucher extends Model
             ->orWhereDate('start_date', '>', Carbon::today());
     }
 
+    public function scopeValid($query)
+    {
+        return $query->where('start_date', '<=', now())
+            ->where('end_date', '>=', now());
+    }
+
     /**
      * Accessor untuk mendapatkan status aktif atau tidak aktif berdasarkan tanggal
      */
@@ -78,6 +84,11 @@ class Voucher extends Model
             $this->status = $newStatus;
             $this->save();
         }
+    }
+
+    public function checkouts()
+    {
+        return $this->hasMany(Checkout::class, 'voucher_code', 'code');
     }
 
     // scopeActive: Mengambil semua voucher yang aktif berdasarkan tanggal.

@@ -97,7 +97,7 @@
                     </div>
                 </div>
 
-                <div class="product-user-view-row-cols row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
                     @foreach ($products as $product)
                         <div class="col">
                             <a href="{{ route('products-all.show', $product->id) }}" class="card product-user-view-card">
@@ -108,15 +108,10 @@
                                     <p class="product-user-view-card-price">
                                         Rp{{ number_format($product->price, 0, ',', '.') }}
                                     </p>
-                                    @if (Auth::check())
-                                        <button type="button" class="btn p-0 product-user-view-toggle-wishlist-btn"
-                                            data-product-id="{{ $product->id }}"
-                                            style="background: {{ in_array($product->id, session('wishlist', [])) ? 'none' : 'transparent' }};">
-                                            <i class="fas fa-heart {{ in_array($product->id, session('wishlist', [])) ? 'text-danger' : 'text-secondary' }}"
-                                                style="font-size: 18px;"></i>
-                                        </button>
+                                    @if (auth()->check())
+                                        <i class="fas fa-heart product-user-view-toggle-wishlist-btn {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                                            data-product-id="{{ $product->id }}"></i>
                                     @else
-                                        <p><a href="{{ route('login') }}">Login</a> untuk menambahkan ke wishlist</p>
                                     @endif
                                 </div>
                             </a>
@@ -142,8 +137,7 @@
             event.preventDefault();
 
             var productId = $(this).data('product-id');
-            var button = $(this);
-            var icon = button.find('i');
+            var $this = $(this);
 
             $.ajax({
                 url: '{{ route('wishlist.add') }}',
@@ -154,15 +148,19 @@
                 },
                 success: function(response) {
                     if (response.status === 'added') {
-                        icon.removeClass('text-secondary').addClass('text-danger');
+                        $this.removeClass('text-secondary').addClass(
+                            'text-danger');
                     } else if (response.status === 'removed') {
-                        icon.removeClass('text-danger').addClass('text-secondary');
+                        $this.removeClass('text-danger').addClass(
+                            'text-secondary');
                     }
 
-                    $('#wishlist-count').text(response.wishlistCount);
+                    $('#wishlist-count').text(response
+                        .wishlistCount);
                 },
-                error: function() {
+                error: function(xhr, status, error) {
                     alert('Terjadi kesalahan saat memperbarui wishlist.');
+                    console.error("AJAX error: " + status + ": " + error);
                 }
             });
         });
@@ -353,5 +351,6 @@
         bottom: 6px;
         right: 6px;
         z-index: 10;
+        font-size: 20px;
     }
 </style>

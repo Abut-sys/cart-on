@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -58,6 +59,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
 
+    Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
 });
 
 // Route guest

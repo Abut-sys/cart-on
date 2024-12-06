@@ -42,4 +42,9 @@ class Product extends Model
     {
         return $this->hasMany(Wishlist::class);
     }
+
+    public function checkouts()
+    {
+        return $this->hasMany(Checkout::class);
+    }
 }
