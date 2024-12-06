@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/show.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/edit.css">
@@ -31,6 +32,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/orders/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/home_user/home.css">
 </head>
 

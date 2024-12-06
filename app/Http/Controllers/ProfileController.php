@@ -16,7 +16,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $profile = $user->profile;
-        // Using `collect([])` to ensure $addresses is always a Collection
+        // Using collect([]) to ensure $addresses is always a Collection
         $addresses = $profile ? $profile->addresses : collect([]);
 
         if ($user->hasRole('admin')) {
@@ -61,10 +61,11 @@ class ProfileController extends Controller
         $profile->user_id = $user->id;
 
         if ($request->hasFile('profile_picture')) {
-            if ($profile->profile_picture && Storage::exists($profile->profile_picture)) {
-                Storage::delete($profile->profile_picture);
+            if ($user->profile && $user->profile->profile_picture) {
+                Storage::delete('public/profile_pictures/' . $user->profile->profile_picture);
             }
-            $profile->profile_picture = $request->file('profile_picture')->store('profile_pictures');
+            $profilePicture = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $user->profile->profile_picture = basename($profilePicture); // Menyimpan nama file
         }
 
         // Update gender dan date_of_birth

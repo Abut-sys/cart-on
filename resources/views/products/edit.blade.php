@@ -3,58 +3,64 @@
 @section('title', 'Edit Product')
 
 @section('content')
-    <div class="container mt-4">
-        <div class="card product-create-card mb-4 shadow-sm">
-            <div class="card-header product-create-card-header d-flex justify-content-between">
-                <h2 class="mb-0 product-create-title">Edit Product</h2>
-                <a href="{{ route('products.index') }}" class="btn product-create-btn-return">
+    <div class="product-edit-container mt-5">
+        <div class="product-edit-card shadow-lg">
+            <div class="product-edit-card-header d-flex justify-content-between align-items-center">
+                <h2 class="product-edit-title mb-0 fw-bold">Edit Product</h2>
+                <a href="{{ route('products.index') }}" class="product-edit-btn product-edit-btn-return">
                     <i class="fas fa-arrow-left"></i> Return
                 </a>
             </div>
-            <div class="card-body product-create-card-body">
+
+            <div class="product-edit-card-body">
                 <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    <div class="form-group product-create-form-group">
-                        <label for="name" class="product-create-label">Name</label>
-                        <input type="text" name="name" id="name" class="form-control product-create-input"
-                            value="{{ old('name', $product->name) }}" required>
+                    <!-- Product Name -->
+                    <div class="product-edit-form-group mb-4">
+                        <label for="name" class="product-edit-label">Name</label>
+                        <input type="text" name="name" id="name" class="product-edit-input"
+                            value="{{ old('name', $product->name) }}" required placeholder="Product Name">
                         @error('name')
-                            <div class="product-create-alert-danger">{{ $message }}</div>
+                            <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group product-create-form-group">
-                        <label for="image_path" class="product-create-label">Image</label>
-                        <input type="file" name="image_path" id="image_path" class="form-control product-create-input"
+
+                    <!-- Product Image -->
+                    <div class="product-edit-form-group mb-4">
+                        <label for="image_path" class="product-edit-label">Image</label>
+                        <input type="file" name="image_path" id="image_path" class="product-edit-input-file"
                             accept="image/*">
-                        @if ($product->image_path)
-                            <div class="mt-2">
-                                <img src="{{ Storage::url($product->image_path) }}" alt="Product Image" width="100">
-                            </div>
-                        @endif
+                        <small class="text-muted">Current Image: {{ $product->image_path }}</small>
                         @error('image_path')
-                            <div class="product-create-alert-danger">{{ $message }}</div>
+                            <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group product-create-form-group">
-                        <label for="price" class="product-create-label">Price</label>
-                        <input type="number" name="price" id="price" class="form-control product-create-input"
-                            value="{{ old('price', $product->price) }}" required>
+
+                    <!-- Price -->
+                    <div class="product-edit-form-group mb-4">
+                        <label for="price" class="product-edit-label">Price</label>
+                        <input type="number" name="price" id="price" class="product-edit-input"
+                            value="{{ old('price', $product->price) }}" required placeholder="Price">
                         @error('price')
-                            <div class="product-create-alert-danger">{{ $message }}</div>
+                            <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group product-create-form-group">
-                        <label for="description" class="product-create-label">Description</label>
-                        <textarea name="description" id="description" class="form-control product-create-input" rows="4">{{ old('description', $product->description) }}</textarea>
+
+                    <!-- Product Description -->
+                    <div class="product-edit-form-group mb-4">
+                        <label for="description" class="product-edit-label">Description</label>
+                        <textarea name="description" id="description" class="product-edit-input" rows="4">{{ old('description', $product->description) }}</textarea>
                         @error('description')
-                            <div class="product-create-alert-danger">{{ $message }}</div>
+                            <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group product-create-form-group">
-                        <label for="sub_category_product_id" class="product-create-label">Sub-Category</label>
-                        <select name="sub_category_product_id" id="sub_category_product_id"
-                            class="form-control product-create-input" required>
+
+                    <!-- Sub-Category -->
+                    <div class="product-edit-form-group mb-4">
+                        <label for="sub_category_product_id" class="product-edit-label">Sub-Category</label>
+                        <select name="sub_category_product_id" id="sub_category_product_id" class="product-edit-input"
+                            required>
                             <option value="">Choose Sub-Category</option>
                             @foreach ($subcategories as $subcategory)
                                 <option value="{{ $subcategory->id }}"
@@ -64,12 +70,14 @@
                             @endforeach
                         </select>
                         @error('sub_category_product_id')
-                            <div class="product-create-alert-danger">{{ $message }}</div>
+                            <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group product-create-form-group">
-                        <label for="brand_id" class="product-create-label">Brand</label>
-                        <select name="brand_id" id="brand_id" class="form-control product-create-input" required>
+
+                    <!-- Brand -->
+                    <div class="product-edit-form-group mb-4">
+                        <label for="brand_id" class="product-edit-label">Brand</label>
+                        <select name="brand_id" id="brand_id" class="product-edit-input" required>
                             <option value="">Choose Brand</option>
                             @foreach ($brands as $brand)
                                 <option value="{{ $brand->id }}"
@@ -79,50 +87,48 @@
                             @endforeach
                         </select>
                         @error('brand_id')
-                            <div class="product-create-alert-danger">{{ $message }}</div>
+                            <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <h3 class="mt-4">Product Variants</h3>
-                    <ul class="list-unstyled product-create-variations-list" id="variations-container">
+
+                    <h3 class="mt-4 mb-4">Product Variant</h3>
+                    <ul class="list-unstyled product-edit-variations-list" id="variations-container">
                         @foreach ($product->subVariant as $index => $variant)
-                            <li class="product-create-variasi-item mb-3">
+                            <li class="product-edit-variasi-item mb-3">
                                 <div class="d-flex flex-wrap align-items-center">
                                     <div class="me-3">
                                         <label for="variants[{{ $index }}][color]"
-                                            class="product-create-label">Color</label>
+                                            class="product-edit-label">Color</label>
                                         <input type="text" name="variants[{{ $index }}][color]"
-                                            class="form-control product-create-input"
-                                            value="{{ old('variants.' . $index . '.color', $variant->color) }}">
+                                            class="product-edit-input"
+                                            value="{{ old("variants.$index.color", $variant->color) }}">
                                     </div>
                                     <div class="me-3">
                                         <label for="variants[{{ $index }}][size]"
-                                            class="product-create-label">Size</label>
+                                            class="product-edit-label">Size</label>
                                         <input type="text" name="variants[{{ $index }}][size]"
-                                            class="form-control product-create-input"
-                                            value="{{ old('variants.' . $index . '.size', $variant->size) }}">
+                                            class="product-edit-input"
+                                            value="{{ old("variants.$index.size", $variant->size) }}">
                                     </div>
                                     <div class="me-3">
                                         <label for="variants[{{ $index }}][stock]"
-                                            class="product-create-label">Stock</label>
+                                            class="product-edit-label">Stock</label>
                                         <input type="number" name="variants[{{ $index }}][stock]"
-                                            class="form-control product-create-input"
-                                            value="{{ old('variants.' . $index . '.stock', $variant->stock) }}">
+                                            class="product-edit-input"
+                                            value="{{ old("variants.$index.stock", $variant->stock) }}">
                                     </div>
-                                    <div>
-                                        <button type="button" class="btn product-create-btn-remove"
-                                            onclick="removeVariant(this)">Remove</button>
-                                    </div>
+                                    <button type="button" class="btn product-edit-btn-remove">Delete</button>
                                 </div>
                             </li>
                         @endforeach
                     </ul>
 
-                    <button type="button" class="btn product-create-btn-add" onclick="addVariant()">Add More
-                        Variant</button>
+                    <button type="button" class="product-edit-btn product-edit-btn-add w-100">More Variant</button>
 
                     <div class="mt-4">
-                        <button type="submit" class="btn btn-success w-100 product-create-btn-confirm">Update
-                            Product</button>
+                        <button type="submit" class="product-edit-btn product-edit-btn-confirm w-100">
+                            Save Product
+                        </button>
                     </div>
                 </form>
             </div>
@@ -130,109 +136,58 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let variationIndex = {{ count($product->subVariant) }};
+        function handleProductVariantForm() {
+            const variationsContainer = document.getElementById('variations-container');
+            let variationIndex = variationsContainer.children.length; // Start with the number of existing variants
 
-            // Add variant input fields
-            window.addVariant = function() {
-                let container = document.getElementById('variations-container');
-                let newVariation = document.createElement('li');
-                newVariation.classList.add('product-create-variasi-item', 'mb-3');
-                newVariation.innerHTML = `
+            document.querySelector('.product-edit-btn-add').addEventListener('click', function() {
+                // Create new variation item with dynamic index
+                const newVariationItem = document.createElement('li');
+                newVariationItem.className = 'product-edit-variasi-item mb-3 product-edit-variant-animated';
+                newVariationItem.innerHTML = `
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="me-3">
-                            <label for="variants[${variationIndex}][color]" class="product-create-label">Color</label>
-                            <input type="text" name="variants[${variationIndex}][color]" class="form-control product-create-input">
+                            <label class="product-edit-label">Color</label>
+                            <input type="text" name="variants[${variationIndex}][color]" class="product-edit-input">
                         </div>
                         <div class="me-3">
-                            <label for="variants[${variationIndex}][size]" class="product-create-label">Size</label>
-                            <input type="text" name="variants[${variationIndex}][size]" class="form-control product-create-input">
+                            <label class="product-edit-label">Size</label>
+                            <input type="text" name="variants[${variationIndex}][size]" class="product-edit-input">
                         </div>
                         <div class="me-3">
-                            <label for="variants[${variationIndex}][stock]" class="product-create-label">Stock</label>
-                            <input type="number" name="variants[${variationIndex}][stock]" class="form-control product-create-input">
+                            <label class="product-edit-label">Stock</label>
+                            <input type="number" name="variants[${variationIndex}][stock]" class="product-edit-input">
                         </div>
-                        <button type="button" class="btn product-create-btn-remove" onclick="removeVariant(this)">Remove</button>
+                        <button type="button" class="btn product-edit-btn-remove">Delete</button>
                     </div>
                 `;
-                container.appendChild(newVariation);
-                variationIndex++;
-            };
+                variationsContainer.appendChild(newVariationItem);
 
-            window.removeVariant = function(button) {
-                button.closest('li').remove();
-            };
+                // Increment the index for the next variant
+                variationIndex++;
+
+                // Remove the animation class after a short delay
+                setTimeout(() => {
+                    newVariationItem.classList.remove('product-edit-variant-animated');
+                }, 400);
+            });
+
+            // Event delegation to handle removing dynamically added variants
+            variationsContainer.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('product-edit-btn-remove')) {
+                    const variationItem = e.target.closest('li');
+                    variationItem.classList.add('product-edit-variant-deleting');
+
+                    setTimeout(() => {
+                        variationItem.remove();
+                    }, 400);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            handleProductVariantForm();
         });
     </script>
 
-    <style>
-        .product-create-card-header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .product-create-btn-return {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .product-create-card-body {
-            padding: 20px;
-        }
-
-        .product-create-form-group {
-            margin-bottom: 20px;
-        }
-
-        .product-create-label {
-            font-weight: bold;
-        }
-
-        .product-create-input {
-            width: 100%;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .product-create-alert-danger {
-            color: red;
-            font-size: 14px;
-        }
-
-        .product-create-btn-remove {
-            background-color: red;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .product-create-btn-add {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .product-create-btn-confirm {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .product-create-variasi-item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-    </style>
 @endsection

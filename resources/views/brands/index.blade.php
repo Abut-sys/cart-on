@@ -14,32 +14,33 @@
         <!-- Filter Form -->
         <div class="brand-index-form">
             <form method="GET" action="{{ route('brands.index') }}" class="mb-4">
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <input type="text" name="search" class="form-control brand-index-search"
-                            placeholder="Search by ID or Name" value="{{ request('search') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <div class="d-flex align-items-center position-relative">
-                            <select name="sort_id" class="form-select brand-index-select">
-                                <option value="">Sort ID</option>
-                                <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>Ascending</option>
-                                <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>Descending</option>
-                            </select>
-                            <i class="fas fa-sort-down position-absolute end-0 me-2 sort-icon"></i>
+                <div class="brand-index-head-row d-flex justify-content-between align-items-center">
+                    <div class="brand-index-left-col d-flex">
+                        <div class="brand-index-col-md-3 me-2">
+                            <input type="text" name="search" class="form-control brand-index-search" placeholder="Search by ID or Name" value="{{ request('search') }}">
+                        </div>
+                        <div class="brand-index-col-md-2 me-2">
+                            <div class="d-flex align-items-center position-relative">
+                                <select name="sort_id" class="form-select brand-index-select">
+                                    <option value disabled selected ="">Sort ID</option>
+                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>Asc</option>
+                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>Dsc</option>
+                                </select>
+                                <i class="fas fa-sort-down position-absolute end-0 me-2 brand-index-sort-icon"></i>
+                            </div>
+                        </div>
+                        <div class="brand-index-col-md-2 me-2">
+                            <div class="d-flex align-items-center position-relative">
+                                <select name="sort_name" class="form-select brand-index-select pe-5">
+                                    <option value disabled selected="">Sort Name</option>
+                                    <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z</option>
+                                    <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A</option>
+                                </select>
+                                <i class="fas fa-sort-alpha-down position-absolute end-0 me-2 brand-index-sort-icon"></i>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="d-flex align-items-center position-relative">
-                            <select name="sort_name" class="form-select brand-index-select">
-                                <option value="">Sort Name</option>
-                                <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z</option>
-                                <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A</option>
-                            </select>
-                            <i class="fas fa-sort-alpha-down position-absolute end-0 me-2 sort-icon"></i>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="brand-index-right-col">
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn brand-index-btn-filter">Search</button>
                             <a href="{{ route('brands.index') }}" class="btn brand-index-btn-reset ms-2">Reset</a>

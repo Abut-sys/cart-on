@@ -71,7 +71,6 @@
             subcategoryList.addEventListener('click', function (e) {
                 if (e.target && e.target.classList.contains('remove-subcategory')) {
                     const subcategoryItem = e.target.closest('li');
-                    
                     subcategoryItem.classList.add('subcategory-deleting');
     
                     setTimeout(() => {

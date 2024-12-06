@@ -85,6 +85,7 @@
                         <button type="submit" class="btn btn-primary product-user-show-btn-buy-now ">Buy Now</button>
                     </form>
                 </div>
+
             </div>
         </div>
         @if (auth()->check())
@@ -92,7 +93,11 @@
         {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                 data-product-id="{{ $product->id }}">
             </i>
-        @else
+            <button id="product-user-show-toggle-cart-btn" class="btn product-user-show-toggle-cart-btn"
+                data-product-id="{{ $product->id }}">
+                <i
+                    class="fas fa-shopping-cart {{ in_array($product->id, session('cart', [])) ? 'text-danger' : 'text-secondary' }}"></i>
+            </button>
         @endif
     </div>
 
@@ -209,6 +214,26 @@
             background-color: #e0a800;
         }
 
+        .product-user-show-toggle-cart-btn {
+            position: absolute;
+            top: 20px;
+            right: 65px;
+            z-index: 10;
+            background: transparent;
+        }
+
+        .product-user-show-toggle-cart-btn i {
+            font-size: 24px;
+        }
+
+        .product-user-show-toggle-cart-btn i.text-danger {
+            color: #dc3545;
+        }
+
+        .product-user-show-toggle-cart-btn i.text-secondary {
+            color: #6c757d;
+        }
+
         .product-user-show-toggle-wishlist-btn {
             position: absolute;
             top: 20px;
@@ -245,6 +270,35 @@
             const colorInput = document.querySelector('.hidden-color-input');
             const sizeInput = document.querySelector('.hidden-size-input');
             const quantityHiddenInput = document.querySelector('#quantityInput');
+
+            $('.product-user-view-toggle-cart-btn').on('click', function(event) {
+                event.preventDefault();
+
+                var productId = $(this).data('product-id');
+                var button = $(this);
+                var icon = button.find('i');
+
+                $.ajax({
+                    url: '{{ route('cart.add') }}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        if (response.status === 'added') {
+                            icon.removeClass('text-secondary').addClass('text-danger');
+                        } else if (response.status === 'removed') {
+                            icon.removeClass('text-danger').addClass('text-secondary');
+                        }
+
+                        $('#wishlist-count').text(response.wishlistCount);
+                    },
+                    error: function() {
+                        alert('Terjadi kesalahan saat memperbarui cart.');
+                    }
+                });
+            });
 
             $('.product-user-show-toggle-wishlist-btn ').on('click', function(event) {
                 event.preventDefault();
@@ -357,6 +411,28 @@
 
             updateStock();
             updateHiddenFields();
+        });
+
+        document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+
+            fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({
+                        product_id: productId
+                    }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.message) {
+                        alert(data.message); // Notify the user
+                    }
+                })
+                .catch((error) => console.error('Error:', error));
         });
 
         function toggleDescription() {

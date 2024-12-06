@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById("sidebar");
     const menuToggle = document.getElementById("menuToggle");
     const categoryLinks = document.querySelectorAll(".category-link");
-    const userInfo = document.querySelector(".user-info");
+    const userInfo = document.querySelector(".user-wrapper");
     const navItems = document.querySelectorAll(".nav-item a");
+    const links = document.querySelectorAll('.link-icon');
 
     // Fungsi untuk menyimpan status sidebar di localStorage
     function saveSidebarState() {

@@ -27,14 +27,14 @@
                 <!-- Tombol Pencarian -->
                 <button type="submit" class="voucher-index-btn voucher-index-btn-search">
                     <i class="fas fa-search"></i>
-                </button>                
+                </button>
             </div>
         </form>
 
         <!-- Voucher List -->
         <div class="voucher-index-container">
             @foreach ($vouchers as $voucher)
-                <div class="voucher-index-row">
+                <div class="voucher-index-row {{ $voucher->status == 'inactive' ? 'voucher-inactive-bg' : '' }}">
                     <div class="voucher-index-item">
                         <strong>Code:</strong> {{ $voucher->code }}
                     </div>
@@ -70,7 +70,6 @@
                     </div>
                 </div>
             @endforeach
-
         </div>
     </div>
 @endsection

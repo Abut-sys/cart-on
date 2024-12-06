@@ -25,9 +25,13 @@ class OtpNotification extends Notification
 
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-            ->subject('Your OTP Code')
-            ->line('Your OTP code is: ' . $this->otp)
-            ->line('This code will expire in 10 minutes.');
+        return (new MailMessage())
+            ->greeting('Hello!')
+            ->line('Thank you for using our services.')
+            ->line('To proceed with your request, please use the One-Time Password (OTP) provided below:')
+            ->with(['otp' => $this->otp])
+            ->line('This code is valid for the next 10 minutes. Please do not share it with anyone.')
+            ->line('If you did not request this code, please ignore this email or contact our support team.')
+            ->salutation('Regards, The CartON Team');
     }
 }

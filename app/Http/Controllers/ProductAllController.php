@@ -14,38 +14,45 @@ class ProductAllController extends Controller
 {
     public function index(Request $request)
     {
+        // Mengambil warna, ukuran, brand, dan kategori untuk filter
         $color = SubVariant::distinct()->pluck('color');
         $size = SubVariant::distinct()->pluck('size');
-        $brand = Brand::pluck('name');
-        $category = SubCategoryProduct::pluck('name');
+        $brand = Brand::pluck('name'); 
+        $category = SubCategoryProduct::pluck('name');  // Mengambil semua kategori produk
 
         $userWishlistIds = WishlistHelper::getUserWishlistIds();
+
         $query = Product::query();
 
+        // Menangani filter berdasarkan warna (color)
         if ($request->filled('color')) {
             $query->whereHas('subVariant', function ($q) use ($request) {
                 $q->whereIn('color', (array) $request->color);
             });
         }
 
+        // Menangani filter berdasarkan ukuran (size)
         if ($request->filled('size')) {
             $query->whereHas('subVariant', function ($q) use ($request) {
                 $q->whereIn('size', (array) $request->size);
             });
         }
 
+        // Menangani filter berdasarkan brand
         if ($request->filled('brand')) {
             $query->whereHas('brand', function ($q) use ($request) {
-                $q->whereIn('name', (array) $request->brand);
+                $q->whereIn('name', (array) $request->brand); 
             });
         }
 
+        // Menangani filter berdasarkan kategori (category)
         if ($request->filled('category')) {
             $query->whereHas('subCategory', function ($q) use ($request) {
                 $q->whereIn('name', (array) $request->category);
             });
         }
 
+        // Menangani pengurutan produk berdasarkan sort
         if ($request->filled('sort')) {
             switch ($request->sort) {
                 case 'newest':
@@ -63,10 +70,12 @@ class ProductAllController extends Controller
             }
         }
 
+        // Menampilkan produk yang sudah difilter dan diurutkan
         $products = $query->paginate(10);
 
         return view('products.all', compact('products', 'color', 'size', 'category', 'brand', 'userWishlistIds'));
     }
+
 
 
     public function show($id)

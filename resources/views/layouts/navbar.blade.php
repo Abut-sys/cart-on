@@ -7,48 +7,57 @@
         @endif
     @endauth
 
-    @if (!Auth::check() || Auth::user()->role != 'admin')
         <div class="logo-container" oncontextmenu="return false;">
             <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
         </div>
-    @endif
-
-    <div class="search-bar">
-        <input type="text" placeholder="Tap to search" class="search-input" />
-        <i class="fas fa-search search-icon"></i>
-    </div>
-
-    @if (!Auth::check() || Auth::user()->role != 'admin')
-        <div class="link-section">
-            <i class="fas fa-home link-icon"></i>
+        
+        @if (!Auth::check() || Auth::user()->role != 'admin')
+        <div class="search-bar">
+            <input type="text" placeholder="Tap to search" class="search-input" />
+            <i class="fas fa-search search-icon"></i>
         </div>
 
         <div class="link-section">
-            <a href="{{ route('products-all.index') }}">
+            <a href="{{ route('home.index') }}" class="{{ request()->is('/') ? 'active' : '' }}">
+                <i class="fas fa-home link-icon"></i>
+            </a>
+        </div>
+        
+        <div class="link-section">
+            <a href="{{ route('products-all.index') }}" class="{{ request()->is('products-all') ? 'active' : '' }}">
                 <i class="fas fa-boxes link-icon"></i>
             </a>
         </div>
-
+        
         <div class="link-section">
-            <i class="fas fa-shopping-cart link-icon"></i>
-        </div>
-
-        <div class="link-section">
-            <a href="{{ route('wishlist.index') }}">
-                <i class="fas fa-heart link-icon"></i>
+            <a href="{{ route('cart.index') }}">
+                <i class="fas fa-shopping-cart link-icon {{ request()->is('cart') ? 'active' : '' }}"></i>
                 @if (Auth::check())
-                    <span id="wishlist-count" class="badge bg-danger">
-                        {{ Auth::user()->wishlists->count() }}
+                    <span id="cart-count" class="badge bg-danger">
+                        {{ Auth::user()->carts->count() }}
                     </span>
                 @else
-                    <span id="wishlist-count" class="badge bg-danger" style="display:none;"></span>
+                    <span id="cart-count" class="badge bg-danger" style="display:none;"></span>
                 @endif
             </a>
         </div>
+        
+        <div class="link-section">
+            <a href="{{ route('wishlist.index') }}" class="{{ request()->is('wishlist') ? 'active' : '' }}">
+                <i class="fas fa-heart link-icon"></i>
+                @if (Auth::check())
+                    <span id="wishlist-count" class="badge">
+                        {{ Auth::user()->wishlists->count() }}
+                    </span>
+                @else
+                    <span id="wishlist-count" class="badge" style="display:none;"></span>
+                @endif
+            </a>
+        </div>          
     @endif
 
     {{-- Notification and User Info --}}
-    <div class="notification-section">
+    <div class="link-section">
         @auth
             <!-- Icon Notifikasi -->
             <i class="fas fa-bell notification-icon" id="notificationIcon" style="cursor: pointer;"></i>
@@ -75,7 +84,7 @@
         @endauth
     </div>
 
-    <div class="user-info">
+    <div class="user-wrapper">
         @auth
             <a href="#" class="username" id="adminToggle">{{ Auth::user()->name }}</a>
             <div class="user-dropdown" id="userDropdown">
@@ -97,7 +106,7 @@
 </nav>
 
 <div class="sidebar" id="sidebar" @if (Auth::check() && Auth::user()->role != 'admin') style="display: none;" @endif>
-    <div class="logo">
+    <div class="logo-sidebar">
         <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" />
     </div>
 
@@ -117,7 +126,7 @@
                 <i class="fas fa-shapes icon"></i> Category
             </a>
             <div class="dropdown">
-                <a href="{{ route('categories.index') }}" class="dropdown-item">
+                <a href="{{ route('categories.index') }}" class="dropdown-item-">
                     <i class="fas fa-tag"></i> Product Category
                 </a>
                 <a href="{{ route('brands.index') }}" class="dropdown-item">
