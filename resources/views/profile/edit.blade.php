@@ -14,25 +14,28 @@
                     @csrf
                     @method('PUT')
                     <div class="profile-edit-fields">
-                        <!-- Section untuk Profile Picture dan Name -->
                         <div class="profile-edit-field horizontal">
                             <label for="profile_picture" class="d-flex align-items-center">
-                                <!-- Tampilkan gambar profil jika ada, jika tidak tampilkan default -->
                                 <div class="profile-picture-wrapper">
-                                    <img id="profile_picture_preview"
-                                        src="{{ old('profile_picture')
-                                            ? asset('storage/' . old('profile_picture'))
-                                            : (optional($user->profile)->profile_picture
-                                                ? Storage::url('profile_pictures/' . $user->profile->profile_picture)
-                                                : asset('images/default-profile.png')) }}"
-                                        alt="Profile Picture" class="image-preview"
-                                        onclick="document.getElementById('profile_picture').click();">
-                                    <!-- Tombol upload gambar yang tersembunyi -->
+                                    @if (optional($user->profile)->profile_picture)
+                                        <img id="profile_picture_preview"
+                                            src="{{ old('profile_picture')
+                                                ? asset('storage/' . old('profile_picture'))
+                                                : (optional($user->profile)->profile_picture
+                                                    ? Storage::url('profile_pictures/' . $user->profile->profile_picture)
+                                                    : asset('images/default-profile.png')) }}"
+                                            alt="Profile Picture" class="image-preview"
+                                            onclick="document.getElementById('profile_picture').click();">
+                                    @else
+                                        <div class="default-avatar" id="profile_picture_preview">
+                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                     <input type="file" id="profile_picture" name="profile_picture" accept="image/*"
                                         onchange="previewImage(event)" style="display: none;">
                                 </div>
+
                                 <span class="ml-3">
-                                    <!-- Input untuk nama yang bisa diedit -->
                                     <input type="text" id="name" name="name"
                                         value="{{ old('name', $user->name) }}" required
                                         style="border: none; background: none; font-size: 16px; font-weight: bold;">
@@ -40,7 +43,6 @@
                             </label>
                         </div>
 
-                        <!-- Bagian Form lainnya -->
                         <div class="profile-edit-field horizontal">
                             <label for="email">
                                 <i class="fas fa-envelope"></i> Email
@@ -48,6 +50,7 @@
                             <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
                                 required>
                         </div>
+
                         <div class="profile-edit-field horizontal">
                             <label for="phone_number">
                                 <i class="fas fa-phone"></i> Phone
@@ -148,7 +151,34 @@
         .profile-picture-wrapper {
             position: relative;
             display: inline-block;
+            width: 80px;
+            height: 80px;
         }
+
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #99bc85;
+            object-fit: cover;
+            display: block;
+        }
+
+        .default-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #99bc85;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
 
         .profile-picture-wrapper input[type="file"] {
             position: absolute;

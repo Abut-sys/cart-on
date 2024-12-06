@@ -20,7 +20,6 @@
                     @method('PUT')
 
                     <div class="profile-edit-fields">
-                        <!-- Name Field -->
                         <div class="profile-edit-field">
                             <label for="name">
                                 <i class="fas fa-user"></i> Name
@@ -28,7 +27,6 @@
                             <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required>
                         </div>
 
-                        <!-- Email Field -->
                         <div class="profile-edit-field">
                             <label for="email">
                                 <i class="fas fa-envelope"></i> Email
@@ -36,7 +34,6 @@
                             <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
                         </div>
 
-                        <!-- Password Field (optional) -->
                         <div class="profile-edit-field">
                             <label for="password">
                                 <i class="fas fa-lock"></i> Password
@@ -44,7 +41,6 @@
                             <input type="password" id="password" name="password">
                         </div>
 
-                        <!-- Confirm Password Field -->
                         <div class="profile-edit-field">
                             <label for="password_confirmation">
                                 <i class="fas fa-lock"></i> Confirm Password

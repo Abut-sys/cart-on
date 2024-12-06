@@ -16,7 +16,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $profile = $user->profile;
-        // Using `collect([])` to ensure $addresses is always a Collection
+        // Using collect([]) to ensure $addresses is always a Collection
         $addresses = $profile ? $profile->addresses : collect([]);
 
         if ($user->hasRole('admin')) {

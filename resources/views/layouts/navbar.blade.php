@@ -93,8 +93,8 @@
                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Profile
                 </a>
-                @if (Auth::user()->role != 'admin')o
-                    <a class="dropdown-item" href="{{ route('logut') }}"
+                @if (Auth::user()->role != 'admin')
+                    <a class="dropdown-item" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i> Log Out
                     </a>

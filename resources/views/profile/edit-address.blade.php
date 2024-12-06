@@ -10,12 +10,7 @@
                 <p>Add, edit, or delete your addresses here</p>
             </div>
             <div class="profile-edit-body">
-                @if (session('msg'))
-                    <div class="profile-edit-alert">
-                        <strong>Success!</strong> {{ session('msg') }}
-                    </div>
-                @endif
-
+                
                 <!-- Add Address Form -->
                 <form action="{{ route('profile.address.add') }}" method="POST">
                     @csrf
