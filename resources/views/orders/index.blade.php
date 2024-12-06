@@ -79,9 +79,6 @@
                             </td>
                             <td><strong>{{ $orderCounts[$order->unique_order_id] ?? 0 }}</strong></td>
                             <td>
-                                <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-sm btn-warning order-index-btn-edit-order">
-                                    <i class="fas fa-edit"></i>
-                                </a>
                                 <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
