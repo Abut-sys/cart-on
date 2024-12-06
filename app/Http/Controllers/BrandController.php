@@ -39,7 +39,7 @@ class BrandController extends Controller
         }
 
         // Paginate hasilnya
-        $brands = $query->paginate(10);
+        $brands = $query->paginate(4);
 
         // Return ke view dengan data
         return view('brands.index', compact('brands'));

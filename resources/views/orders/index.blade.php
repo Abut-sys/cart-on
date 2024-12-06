@@ -18,7 +18,7 @@
                         <div class="order-index-col-md-2 me-2">
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_id" class="form-select order-index-select pe-3">
-                                    <option value="">Sort ID</option>
+                                    <option value disabled selected ="">Sort ID</option>
                                     <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>Ascending</option>
                                     <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>Descending</option>
                                 </select>
@@ -28,7 +28,7 @@
                         <div class="order-index-col-md-2">
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_date" class="form-select order-index-select pe-5">
-                                    <option value="">Sort Date</option>
+                                    <option value disabled selected ="">Sort Date</option>
                                     <option value="asc" {{ request('sort_date') == 'asc' ? 'selected' : '' }}>Oldest</option>
                                     <option value="desc" {{ request('sort_date') == 'desc' ? 'selected' : '' }}>Newest</option>
                                 </select>
