@@ -38,13 +38,13 @@
                             <div class="d-flex flex-wrap gap-2">
                                 @foreach ($brand as $cat)
                                     <button type="button"
-                                        class="btn btn-outline-secondary product-user-view-filter-btn {{ in_array($cat, (array) request('brand')) ? 'active' : '' }}"
-                                        data-value="{{ $cat }}" data-target="brand">
+                                            class="btn btn-outline-secondary product-user-view-filter-btn {{ in_array($cat, (array) request('brand')) ? 'active' : '' }}"
+                                            data-value="{{ $cat }}" data-target="brand">
                                         {{ ucfirst($cat) }}
                                     </button>
                                 @endforeach
                             </div>
-                        </div>
+                        </div>                        
 
                         <div class="mb-3">
                             <label class="product-user-view-form-label">Category</label>
@@ -97,7 +97,7 @@
                     </div>
                 </div>
 
-                <div class="product-user-view-row-cols row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
                     @foreach ($products as $product)
                         <div class="col">
                             <a href="{{ route('products-all.show', $product->id) }}" class="card product-user-view-card">
