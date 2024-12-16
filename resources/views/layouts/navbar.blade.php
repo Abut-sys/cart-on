@@ -7,11 +7,13 @@
         @endif
     @endauth
 
-        <div class="logo-container" oncontextmenu="return false;">
+    <div class="logo-container" oncontextmenu="return false;">
+        <a href="/">
             <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
-        </div>
-        
-        @if (!Auth::check() || Auth::user()->role != 'admin')
+        </a>
+    </div>
+
+    @if (!Auth::check() || Auth::user()->role != 'admin')
         <div class="search-bar">
             <input type="text" placeholder="Tap to search" class="search-input" />
             <i class="fas fa-search search-icon"></i>
@@ -22,13 +24,13 @@
                 <i class="fas fa-home link-icon"></i>
             </a>
         </div>
-        
+
         <div class="link-section">
             <a href="{{ route('products-all.index') }}" class="{{ request()->is('products-all') ? 'active' : '' }}">
                 <i class="fas fa-boxes link-icon"></i>
             </a>
         </div>
-        
+
         <div class="link-section">
             <a href="{{ route('cart.index') }}">
                 <i class="fas fa-shopping-cart link-icon {{ request()->is('cart') ? 'active' : '' }}"></i>
@@ -41,7 +43,7 @@
                 @endif
             </a>
         </div>
-        
+
         <div class="link-section">
             <a href="{{ route('wishlist.index') }}" class="{{ request()->is('wishlist') ? 'active' : '' }}">
                 <i class="fas fa-heart link-icon"></i>
@@ -53,7 +55,7 @@
                     <span id="wishlist-count" class="badge" style="display:none;"></span>
                 @endif
             </a>
-        </div>          
+        </div>
     @endif
 
     {{-- Notification and User Info --}}
