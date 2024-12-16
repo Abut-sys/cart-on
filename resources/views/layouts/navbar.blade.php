@@ -32,14 +32,14 @@
         </div>
 
         <div class="link-section">
-            <a href="{{ route('cart.index') }}">
-                <i class="fas fa-shopping-cart link-icon {{ request()->is('cart') ? 'active' : '' }}"></i>
+            <a href="{{ route('cart.index') }}" class="{{ request()->is('cart') ? 'active' : '' }}">
+                <i class="fas fa-shopping-cart link-icon"></i>
                 @if (Auth::check())
-                    <span id="cart-count" class="badge bg-danger">
+                    <span id="cart-count" class="badge">
                         {{ Auth::user()->carts->count() }}
                     </span>
                 @else
-                    <span id="cart-count" class="badge bg-danger" style="display:none;"></span>
+                    <span id="cart-count" class="badge" style="display:none;"></span>
                 @endif
             </a>
         </div>

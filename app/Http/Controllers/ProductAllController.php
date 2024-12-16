@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CartHelper;
 use App\Helpers\WishlistHelper;
 use App\Models\Brand;
 use App\Models\Product;
@@ -17,10 +18,12 @@ class ProductAllController extends Controller
         // Mengambil warna, ukuran, brand, dan kategori untuk filter
         $color = SubVariant::distinct()->pluck('color');
         $size = SubVariant::distinct()->pluck('size');
-        $brand = Brand::pluck('name'); 
+        $brand = Brand::pluck('name');
         $category = SubCategoryProduct::pluck('name');  // Mengambil semua kategori produk
 
+        $userCartIds = CartHelper::getUserCartIds();
         $userWishlistIds = WishlistHelper::getUserWishlistIds();
+
 
         $query = Product::query();
 
@@ -41,7 +44,7 @@ class ProductAllController extends Controller
         // Menangani filter berdasarkan brand
         if ($request->filled('brand')) {
             $query->whereHas('brand', function ($q) use ($request) {
-                $q->whereIn('name', (array) $request->brand); 
+                $q->whereIn('name', (array) $request->brand);
             });
         }
 
@@ -73,17 +76,19 @@ class ProductAllController extends Controller
         // Menampilkan produk yang sudah difilter dan diurutkan
         $products = $query->paginate(10);
 
-        return view('products.all', compact('products', 'color', 'size', 'category', 'brand', 'userWishlistIds'));
+        return view('products.all', compact('products', 'color', 'size', 'category', 'brand', 'userCartIds','userWishlistIds'));
     }
 
 
 
     public function show($id)
     {
-        $userWishlistIds = WishlistHelper::getUserWishlistIds();
-        $product = Product::with(['subCategory', 'brand', 'subVariant'])->findOrFail($id);
+    $userCartIds = CartHelper::getUserCartIds(); // Ensure this returns an array
+    $userWishlistIds = WishlistHelper::getUserWishlistIds();
 
-        return view('products.show-user', compact('product', 'userWishlistIds'));
+    $product = Product::with(['subCategory', 'brand', 'subVariant'])->findOrFail($id);
+
+    return view('products.show-user', compact('product', 'userCartIds', 'userWishlistIds'));
     }
 
     public function getStock(Request $request)

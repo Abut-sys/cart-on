@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade');
             $table->string('voucher_code')->nullable();
             $table->integer('quantity')->default(1);;
-            $table->string('shipping_method', ['standard', 'express', 'jne']);
+            $table->string('shipping_method');
             $table->decimal('amount', 10, 2);
             $table->timestamps();
         });

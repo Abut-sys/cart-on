@@ -89,15 +89,15 @@
             </div>
         </div>
         @if (auth()->check())
-            <i class="fas fa-heart product-user-show-toggle-wishlist-btn 
+        <i class="fas fa-shopping-cart product-user-show-toggle-cart-btn
+    {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
+            data-product-id="{{ $product->id }}">
+        </i>
+            <i class="fas fa-heart product-user-show-toggle-wishlist-btn
         {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                 data-product-id="{{ $product->id }}">
             </i>
-            <button id="product-user-show-toggle-cart-btn" class="btn product-user-show-toggle-cart-btn"
-                data-product-id="{{ $product->id }}">
-                <i
-                    class="fas fa-shopping-cart {{ in_array($product->id, session('cart', [])) ? 'text-danger' : 'text-secondary' }}"></i>
-            </button>
+
         @endif
     </div>
 
@@ -217,17 +217,14 @@
         .product-user-show-toggle-cart-btn {
             position: absolute;
             top: 20px;
-            right: 65px;
+            right: 60px;
             z-index: 10;
+            font-size: 26px;
             background: transparent;
         }
 
-        .product-user-show-toggle-cart-btn i {
-            font-size: 24px;
-        }
-
         .product-user-show-toggle-cart-btn i.text-danger {
-            color: #dc3545;
+            color: #9cdc35;
         }
 
         .product-user-show-toggle-cart-btn i.text-secondary {
@@ -271,12 +268,11 @@
             const sizeInput = document.querySelector('.hidden-size-input');
             const quantityHiddenInput = document.querySelector('#quantityInput');
 
-            $('.product-user-view-toggle-cart-btn').on('click', function(event) {
+            $('.product-user-show-toggle-cart-btn ').on('click', function(event) {
                 event.preventDefault();
 
                 var productId = $(this).data('product-id');
-                var button = $(this);
-                var icon = button.find('i');
+                var $this = $(this);
 
                 $.ajax({
                     url: '{{ route('cart.add') }}',
@@ -287,15 +283,19 @@
                     },
                     success: function(response) {
                         if (response.status === 'added') {
-                            icon.removeClass('text-secondary').addClass('text-danger');
+                            $this.removeClass('text-secondary').addClass(
+                                'text-danger');
                         } else if (response.status === 'removed') {
-                            icon.removeClass('text-danger').addClass('text-secondary');
+                            $this.removeClass('text-danger').addClass(
+                                'text-secondary');
                         }
 
-                        $('#wishlist-count').text(response.wishlistCount);
+                        $('#cart-count').text(response
+                            .cartCount);
                     },
-                    error: function() {
+                    error: function(xhr, status, error) {
                         alert('Terjadi kesalahan saat memperbarui cart.');
+                        console.error("AJAX error: " + status + ": " + error);
                     }
                 });
             });
