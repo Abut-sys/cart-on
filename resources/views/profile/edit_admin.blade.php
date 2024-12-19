@@ -10,11 +10,6 @@
                 <p>Update your profile here</p>
             </div>
             <div class="profile-edit-body">
-                @if (session('msg'))
-                    <div class="profile-edit-alert">
-                        <strong>Success!</strong> {{ session('msg') }}
-                    </div>
-                @endif
                 <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')

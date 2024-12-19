@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -64,6 +65,9 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('cart', [CartController::class, 'addToCart'])->name('cart.add');
     Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    
+    Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
 });
 
 // Route guest

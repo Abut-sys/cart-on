@@ -77,23 +77,28 @@
 
                 <div class="product-user-show-action-buttons mt-4" style="margin-left: -10px;">
                     <button class="btn btn-warning product-user-show-btn-add-to-cart me-3">🛒 Add To Cart</button>
-                    <button class="btn btn-primary product-user-show-btn-buy-now">Buy Now</button>
+                    <form action="{{ route('checkout.show', $product->id) }}" method="GET">
+                        @csrf
+                        <input type="hidden" name="quantity" value="1" id="quantityInput">
+                        <input type="hidden" name="color" class="hidden-color-input">
+                        <input type="hidden" name="size" class="hidden-size-input">
+                        <button type="submit" class="btn btn-primary product-user-show-btn-buy-now ">Buy Now</button>
+                    </form>
                 </div>
 
             </div>
         </div>
-
-        <button id="product-user-show-toggle-wishlist-btn" class="btn product-user-show-toggle-wishlist-btn"
+        @if (auth()->check())
+        <i class="fas fa-shopping-cart product-user-show-toggle-cart-btn
+    {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
             data-product-id="{{ $product->id }}">
-            <i
-                class="fas fa-heart {{ in_array($product->id, session('wishlist', [])) ? 'text-danger' : 'text-secondary' }}"></i>
-        </button>
+        </i>
+            <i class="fas fa-heart product-user-show-toggle-wishlist-btn
+        {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                data-product-id="{{ $product->id }}">
+            </i>
 
-        <button id="product-user-show-toggle-cart-btn" class="btn product-user-show-toggle-cart-btn"
-            data-product-id="{{ $product->id }}">
-            <i
-                class="fas fa-shopping-cart {{ in_array($product->id, session('cart', [])) ? 'text-danger' : 'text-secondary' }}"></i>
-        </button>
+        @endif
     </div>
 
     <style>
@@ -151,6 +156,11 @@
             border-color: aquamarine !important;
         }
 
+        .product-user-show-action-buttons {
+            display: flex;
+            align-items: center;
+        }
+
         .product-user-show-description {
             font-size: 1.2rem;
             color: #555;
@@ -191,6 +201,15 @@
             color: #fff;
         }
 
+        .product-user-show-btn-add-to-cart,
+        .product-user-show-btn-buy-now {
+            margin-right: 10px;
+        }
+
+        .product-user-show-btn-buy-now {
+            margin-left: 0;
+        }
+
         .product-user-show-btn-add-to-cart:hover {
             background-color: #e0a800;
         }
@@ -198,17 +217,14 @@
         .product-user-show-toggle-cart-btn {
             position: absolute;
             top: 20px;
-            right: 65px;
+            right: 60px;
             z-index: 10;
+            font-size: 26px;
             background: transparent;
         }
 
-        .product-user-show-toggle-cart-btn i {
-            font-size: 24px;
-        }
-
         .product-user-show-toggle-cart-btn i.text-danger {
-            color: #dc3545;
+            color: #9cdc35;
         }
 
         .product-user-show-toggle-cart-btn i.text-secondary {
@@ -220,11 +236,8 @@
             top: 20px;
             right: 20px;
             z-index: 10;
+            font-size: 26px;
             background: transparent;
-        }
-
-        .product-user-show-toggle-wishlist-btn i {
-            font-size: 24px;
         }
 
         .product-user-show-toggle-wishlist-btn i.text-danger {
@@ -243,11 +256,162 @@
     </style>
 
     <script>
-        document.getElementById('buy-now-btn').addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            window.location.href = `/checkout?product_id=${productId}`;
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedColor = null;
+            let selectedSize = null;
+            const subVariant = @json($product->subVariant ?? []);
+            const stockDisplay = document.querySelector('.product-user-show-stock-display');
+            const quantityInput = document.querySelector('.product-user-show-quantity-input');
+            const btnIncrease = document.querySelector('.product-user-show-btn-increase');
+            const btnDecrease = document.querySelector('.product-user-show-btn-decrease');
+            const colorInput = document.querySelector('.hidden-color-input');
+            const sizeInput = document.querySelector('.hidden-size-input');
+            const quantityHiddenInput = document.querySelector('#quantityInput');
 
+            $('.product-user-show-toggle-cart-btn ').on('click', function(event) {
+                event.preventDefault();
+
+                var productId = $(this).data('product-id');
+                var $this = $(this);
+
+                $.ajax({
+                    url: '{{ route('cart.add') }}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        if (response.status === 'added') {
+                            $this.removeClass('text-secondary').addClass(
+                                'text-danger');
+                        } else if (response.status === 'removed') {
+                            $this.removeClass('text-danger').addClass(
+                                'text-secondary');
+                        }
+
+                        $('#cart-count').text(response
+                            .cartCount);
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Terjadi kesalahan saat memperbarui cart.');
+                        console.error("AJAX error: " + status + ": " + error);
+                    }
+                });
+            });
+
+            $('.product-user-show-toggle-wishlist-btn ').on('click', function(event) {
+                event.preventDefault();
+
+                var productId = $(this).data('product-id');
+                var $this = $(this);
+
+                $.ajax({
+                    url: '{{ route('wishlist.add') }}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        if (response.status === 'added') {
+                            $this.removeClass('text-secondary').addClass(
+                                'text-danger');
+                        } else if (response.status === 'removed') {
+                            $this.removeClass('text-danger').addClass(
+                                'text-secondary');
+                        }
+
+                        $('#wishlist-count').text(response
+                            .wishlistCount);
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Terjadi kesalahan saat memperbarui wishlist.');
+                        console.error("AJAX error: " + status + ": " + error);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.product-user-show-color-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (selectedColor === this.dataset.color) {
+                        selectedColor = null;
+                        this.classList.remove('active');
+                    } else {
+                        selectedColor = this.dataset.color;
+                        document.querySelectorAll('.product-user-show-color-option')
+                            .forEach(btn =>
+                                btn.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                    updateStock();
+                    updateHiddenFields();
+                });
+            });
+
+            document.querySelectorAll('.product-user-show-size-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (selectedSize === this.dataset.size) {
+                        selectedSize = null;
+                        this.classList.remove('active');
+                    } else {
+                        selectedSize = this.dataset.size;
+                        document.querySelectorAll('.product-user-show-size-option')
+                            .forEach(btn =>
+                                btn.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                    updateStock();
+                    updateHiddenFields();
+                });
+            });
+
+            function updateStock() {
+                if (selectedColor && selectedSize) {
+                    const variant = subVariant.find(variant =>
+                        variant.color === selectedColor && variant.size === selectedSize);
+
+                    if (variant) {
+                        stockDisplay.textContent = `Stock: ${variant.stock}`;
+                        quantityInput.max = variant.stock;
+                        if (parseInt(quantityInput.value) > variant.stock) {
+                            quantityInput.value = variant.stock;
+                        }
+                    } else {
+                        stockDisplay.textContent = 'Stock: Out Of Stock';
+                        quantityInput.max = 1;
+                    }
+                } else {
+                    stockDisplay.textContent = 'Select Color And Size';
+                    quantityInput.max = 1;
+                }
+            }
+
+            function updateHiddenFields() {
+                colorInput.value = selectedColor || '';
+                sizeInput.value = selectedSize || '';
+                quantityHiddenInput.value = quantityInput.value;
+            }
+
+            btnIncrease.addEventListener('click', function() {
+                let currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity < quantityInput.max) {
+                    quantityInput.value = currentQuantity + 1;
+                    updateHiddenFields();
+                }
+            });
+
+            btnDecrease.addEventListener('click', function() {
+                let currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity > 1) {
+                    quantityInput.value = currentQuantity - 1;
+                    updateHiddenFields();
+                }
+            });
+
+            updateStock();
+            updateHiddenFields();
+        });
 
         document.getElementById('add-to-cart-btn').addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
@@ -271,152 +435,21 @@
                 .catch((error) => console.error('Error:', error));
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            let selectedColor = null;
-            let selectedSize = null;
-            const subVariant = @json($product->subVariant ?? []);
+        function toggleDescription() {
+            const descText = $('#product-user-show-description-text');
+            const btn = $('#product-user-show-btn-see-more');
 
-            document.querySelectorAll('.product-user-show-color-option').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (selectedColor === this.dataset.color) {
-                        selectedColor = null;
-                        this.classList.remove('active');
-                    } else {
-                        selectedColor = this.dataset.color;
-
-                        document.querySelectorAll('.product-user-show-color-option').forEach(btn =>
-                            btn.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-
-                    updateStock();
-                });
-            });
-
-            document.querySelectorAll('.product-user-show-size-option').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (selectedSize === this.dataset.size) {
-                        selectedSize = null;
-                        this.classList.remove('active');
-                    } else {
-                        selectedSize = this.dataset.size;
-
-                        document.querySelectorAll('.product-user-show-size-option').forEach(btn =>
-                            btn.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-
-                    updateStock();
-                });
-            });
-
-            const quantityInput = document.querySelector('.product-user-show-quantity-input');
-            const btnIncrease = document.querySelector('.product-user-show-btn-increase');
-            const btnDecrease = document.querySelector('.product-user-show-btn-decrease');
-
-            btnIncrease.addEventListener('click', function() {
-                let currentQuantity = parseInt(quantityInput.value);
-                quantityInput.value = currentQuantity + 1;
-            });
-
-            btnDecrease.addEventListener('click', function() {
-                let currentQuantity = parseInt(quantityInput.value);
-                if (currentQuantity > 1) {
-                    quantityInput.value = currentQuantity - 1;
-                }
-            });
-
-            function updateStock() {
-                const stockDisplay = document.querySelector('.product-user-show-stock-display');
-
-                if (selectedColor && selectedSize) {
-                    const variant = subVariant.find(variant => variant.color === selectedColor && variant.size ===
-                        selectedSize);
-
-                    if (variant) {
-                        stockDisplay.textContent = `Stock: ${variant.stock}`;
-                    } else {
-                        stockDisplay.textContent = 'Stock: Out Of Stock';
-                    }
-                } else if (!selectedColor && !selectedSize) {
-                    stockDisplay.textContent = 'Select Color And Size';
-                } else {
-                    stockDisplay.textContent = 'Select Color And Size';
-                }
+            if (descText.css('max-height') === '25px') {
+                descText.css('max-height', '500px');
+                btn.text('See Less');
+            } else {
+                descText.css('max-height', '25px');
+                btn.text('See More');
             }
+        }
 
-            $('#product-user-show-toggle-cart-btn').on('click', function(event) {
-                event.preventDefault();
-
-                var productId = $(this).data('product-id');
-                var icon = $(this).find('i');
-
-                $.ajax({
-                    url: '{{ route('cart.add') }}',
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        _token: '{{ csrf_token() }}',
-                    },
-                    success: function(response) {
-                        if (response.status === 'added') {
-                            icon.removeClass('text-secondary').addClass('text-danger');
-                        } else if (response.status === 'removed') {
-                            icon.removeClass('text-danger').addClass('text-secondary');
-                        }
-
-                        $('#cart-count').text(response.cartCount);
-                    },
-                    error: function() {
-                        alert('Terjadi kesalahan saat memperbarui cart.');
-                    }
-                });
-            });
-
-            $('#product-user-show-toggle-wishlist-btn').on('click', function(event) {
-                event.preventDefault();
-
-                var productId = $(this).data('product-id');
-                var icon = $(this).find('i');
-
-                $.ajax({
-                    url: '{{ route('wishlist.add') }}',
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        _token: '{{ csrf_token() }}',
-                    },
-                    success: function(response) {
-                        if (response.status === 'added') {
-                            icon.removeClass('text-secondary').addClass('text-danger');
-                        } else if (response.status === 'removed') {
-                            icon.removeClass('text-danger').addClass('text-secondary');
-                        }
-
-                        $('#wishlist-count').text(response.wishlistCount);
-                    },
-                    error: function() {
-                        alert('Terjadi kesalahan saat memperbarui wishlist.');
-                    }
-                });
-            });
-
-            function toggleDescription() {
-                var descText = $('#product-user-show-description-text');
-                var btn = $('#product-user-show-btn-see-more');
-
-                if (descText.css('max-height') === '25px') {
-                    descText.css('max-height', '500px');
-                    btn.text('See Less');
-                } else {
-                    descText.css('max-height', '25px');
-                    btn.text('See More');
-                }
-            }
-
-            $('#product-user-show-btn-see-more').on('click', function() {
-                toggleDescription();
-            });
+        $('#product-user-show-btn-see-more').on('click', function() {
+            toggleDescription();
         });
     </script>
 @endsection

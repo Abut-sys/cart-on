@@ -27,11 +27,13 @@
             </a>
         </div>
 
+
         <div class="link-section">
             <a href="{{ route('products-all.index') }}" class="{{ request()->is('products-all') ? 'active' : '' }}">
                 <i class="fas fa-boxes link-icon"></i>
             </a>
         </div>
+
 
         <div class="link-section">
             <a href="{{ route('cart.index') }}">
@@ -43,6 +45,7 @@
             </a>
         </div>
 
+
         <div class="link-section">
             <a href="{{ route('wishlist.index') }}" class="{{ request()->is('wishlist') ? 'active' : '' }}">
                 <i class="fas fa-heart link-icon"></i>
@@ -50,6 +53,7 @@
                     {{ Auth::check() ? Auth::user()->wishlists->count() : '' }}
                 </span>
             </a>
+        </div>
         </div>
     @endif
 

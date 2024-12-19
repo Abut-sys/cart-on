@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CartHelper;
 use App\Models\Product;
 use App\Models\Cart;
 use Illuminate\Http\Request;
@@ -9,10 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+
     public function index(Request $request)
     {
-        $userCartIds = Cart::where('user_id', auth()->id())
-            ->pluck('product_id')->toArray();
+        $userCartIds = CartHelper::getUserCartIds();
 
         $query = Cart::where('user_id', auth()->id())->with('product');
 
@@ -25,12 +26,14 @@ class CartController extends Controller
                     $query->orderBy('sales', 'desc');
                     break;
                 case 'lowest_price':
-                    $query->join('products', 'carts.product_id', '=', 'products.id')
-                        ->orderBy('products.price', 'asc');
+                    $query->with(['product' => function ($query) {
+                        $query->orderBy('price', 'asc');
+                    }]);
                     break;
                 case 'highest_price':
-                    $query->join('products', 'carts.product_id', '=', 'products.id')
-                        ->orderBy('products.price', 'desc');
+                    $query->with(['product' => function ($query) {
+                        $query->orderBy('price', 'desc');
+                    }]);
                     break;
             }
         }
@@ -40,12 +43,12 @@ class CartController extends Controller
         return view('cart', compact('carts', 'userCartIds'));
     }
 
+
     public function addToCart(Request $request)
     {
-        $productId = $request->product_id;
-
         if (Auth::check()) {
             $user = auth()->user();
+            $productId = $request->product_id;
 
             $cart = Cart::where('user_id', $user->id)
                 ->where('product_id', $productId)
@@ -53,34 +56,25 @@ class CartController extends Controller
 
             if ($cart) {
                 $cart->delete();
-                $cartCount = Cart::where('user_id', $user->id)->count();
+                $status = 'removed';
             } else {
                 Cart::create([
                     'user_id' => $user->id,
                     'product_id' => $productId,
                 ]);
-                $cartCount = Cart::where('user_id', $user->id)->count();
+                $status = 'added';
             }
 
+            $cartCount = Cart::where('user_id', $user->id)->count();
+
             return response()->json([
-                'status' => $cart ? 'removed' : 'added',
-                'cartCount' => $cartCount,
+                'status' => $status,
+                'cartCount' => $cartCount
             ], 200);
         } else {
-            $cart = session('cart', []);
-
-            if (in_array($productId, $cart)) {
-                $cart = array_diff($cart, [$productId]);
-            } else {
-                $cart[] = $productId;
-            }
-
-            session(['cart' => $cart]);
-
             return response()->json([
-                'status' => in_array($productId, $cart) ? 'added' : 'removed',
-                'cartCount' => count($cart),
-            ], 200);
+                'status' => 'login_required'
+            ], 401);
         }
     }
 

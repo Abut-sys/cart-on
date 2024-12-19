@@ -55,12 +55,9 @@
                     <div class="home-product-newest-body text-center">
                         <h6 class="home-product-newest-title" style="color: black">{{ $product->name }}</h6>
                         <p class="home-product-newest-price">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
-                        @if (Auth::check())
-                            <button type="button" class="btn p-0 home-product-newest-wishlist-icon"
-                                data-product-id="{{ $product->id }}">
-                                <i class="fas fa-heart {{ in_array($product->id, session('wishlist', [])) ? 'text-danger' : 'text-secondary' }}"
-                                    style="font-size: 18px;"></i>
-                            </button>
+                        @if (auth()->check())
+                            <i class="fas fa-heart home-product-newest-wishlist-icon {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                                data-product-id="{{ $product->id }}"></i>
                         @endif
                     </div>
                 </a>
@@ -98,88 +95,94 @@
         let currentIndex = 0;
         const totalBanners = banners.length;
 
-        function updateBannerPosition() {
-            banner.style.transform = `translateX(-${currentIndex * 100}%)`;
-        }
+        $('.home-product-newest-wishlist-icon').on('click', function(event) {
+            event.preventDefault();
 
-        function slideBanner() {
-            currentIndex = (currentIndex + 1) % totalBanners;
-            updateBannerPosition();
-        }
+            var productId = $(this).data('product-id');
+            var $this = $(this);
 
-        function slideToPrev() {
-            currentIndex = (currentIndex - 1 + totalBanners) % totalBanners;
-            updateBannerPosition();
-        }
-
-        prevButton.addEventListener('click', slideToPrev);
-        nextButton.addEventListener('click', slideBanner);
-
-        setInterval(slideBanner, 5000);
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const brandsContainers = document.querySelectorAll('.home-user-brands-container');
-
-        brandsContainers.forEach(brandsContainer => {
-            brandsContainer.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                brandsContainer.scrollLeft += e.deltaY * 0.5;
-            });
-
-            let isDragging = false;
-            let startX;
-            let scrollLeft;
-
-            brandsContainer.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                brandsContainer.classList.add('dragging');
-                startX = e.pageX - brandsContainer.offsetLeft;
-                scrollLeft = brandsContainer.scrollLeft;
-            });
-
-            brandsContainer.addEventListener('mouseleave', () => {
-                isDragging = false;
-                brandsContainer.classList.remove('dragging');
-            });
-
-            brandsContainer.addEventListener('mouseup', () => {
-                isDragging = false;
-                brandsContainer.classList.remove('dragging');
-            });
-
-            brandsContainer.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-                const x = e.pageX - brandsContainer.offsetLeft;
-                const walk = (x - startX) * 2;
-                brandsContainer.scrollLeft = scrollLeft - walk;
-            });
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var wishlistButtons = document.querySelectorAll('.home-product-newest-wishlist-icon');
-
-        wishlistButtons.forEach(function(button) {
-            button.addEventListener('click', function(event) {
-                event.preventDefault(); // Mencegah pindah halaman
-                var productId = button.getAttribute('data-product-id');
-
-                // Kirim request untuk menambah ke wishlist (gunakan AJAX atau sesuaikan dengan kebutuhan Anda)
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', '/wishlist', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        // Update UI atau beri feedback kepada pengguna (misalnya mengganti warna ikon)
-                        var icon = button.querySelector('i');
-                        icon.classList.toggle('text-danger');
-                        icon.classList.toggle('text-secondary');
+            $.ajax({
+                url: '{{ route('wishlist.add') }}',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    _token: '{{ csrf_token() }}',
+                },
+                success: function(response) {
+                    if (response.status === 'added') {
+                        $this.removeClass('text-secondary').addClass(
+                            'text-danger');
+                    } else if (response.status === 'removed') {
+                        $this.removeClass('text-danger').addClass(
+                            'text-secondary');
                     }
-                };
-                xhr.send('product_id=' + productId);
+
+                    $('#wishlist-count').text(response
+                        .wishlistCount);
+                },
+                error: function(xhr, status, error) {
+                    alert('Terjadi kesalahan saat memperbarui wishlist.');
+                    console.error("AJAX error: " + status + ": " + error);
+                }
+            });
+
+            function updateBannerPosition() {
+                banner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
+
+            function slideBanner() {
+                currentIndex = (currentIndex + 1) % totalBanners;
+                updateBannerPosition();
+            }
+
+            function slideToPrev() {
+                currentIndex = (currentIndex - 1 + totalBanners) % totalBanners;
+                updateBannerPosition();
+            }
+
+            prevButton.addEventListener('click', slideToPrev);
+            nextButton.addEventListener('click', slideBanner);
+
+            setInterval(slideBanner, 5000);
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const brandsContainers = document.querySelectorAll('.home-user-brands-container');
+
+            brandsContainers.forEach(brandsContainer => {
+                brandsContainer.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    brandsContainer.scrollLeft += e.deltaY * 0.5;
+                });
+
+                let isDragging = false;
+                let startX;
+                let scrollLeft;
+
+                brandsContainer.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    brandsContainer.classList.add('dragging');
+                    startX = e.pageX - brandsContainer.offsetLeft;
+                    scrollLeft = brandsContainer.scrollLeft;
+                });
+
+                brandsContainer.addEventListener('mouseleave', () => {
+                    isDragging = false;
+                    brandsContainer.classList.remove('dragging');
+                });
+
+                brandsContainer.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    brandsContainer.classList.remove('dragging');
+                });
+
+                brandsContainer.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const x = e.pageX - brandsContainer.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    brandsContainer.scrollLeft = scrollLeft - walk;
+                });
             });
         });
     });

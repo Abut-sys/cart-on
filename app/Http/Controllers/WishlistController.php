@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\WishlistHelper;
 use App\Models\Product;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
@@ -11,8 +12,7 @@ class WishlistController extends Controller
 {
     public function index(Request $request)
     {
-        $userWishlistIds = Wishlist::where('user_id', auth()->id())
-            ->pluck('product_id')->toArray();
+        $userWishlistIds = WishlistHelper::getUserWishlistIds();
 
         $query = Wishlist::where('user_id', auth()->id())->with('product');
 
@@ -25,12 +25,14 @@ class WishlistController extends Controller
                     $query->orderBy('sales', 'desc');
                     break;
                 case 'lowest_price':
-                    $query->join('products', 'wishlists.product_id', '=', 'products.id')
-                        ->orderBy('products.price', 'asc');
+                    $query->with(['product' => function ($query) {
+                        $query->orderBy('price', 'asc');
+                    }]);
                     break;
                 case 'highest_price':
-                    $query->join('products', 'wishlists.product_id', '=', 'products.id')
-                        ->orderBy('products.price', 'desc');
+                    $query->with(['product' => function ($query) {
+                        $query->orderBy('price', 'desc');
+                    }]);
                     break;
             }
         }
@@ -42,10 +44,9 @@ class WishlistController extends Controller
 
     public function addToWishlist(Request $request)
     {
-        $productId = $request->product_id;
-
         if (Auth::check()) {
             $user = auth()->user();
+            $productId = $request->product_id;
 
             $wishlist = Wishlist::where('user_id', $user->id)
                 ->where('product_id', $productId)
@@ -53,34 +54,25 @@ class WishlistController extends Controller
 
             if ($wishlist) {
                 $wishlist->delete();
-                $wishlistCount = Wishlist::where('user_id', $user->id)->count();
+                $status = 'removed';
             } else {
                 Wishlist::create([
                     'user_id' => $user->id,
                     'product_id' => $productId,
                 ]);
-                $wishlistCount = Wishlist::where('user_id', $user->id)->count();
+                $status = 'added';
             }
 
+            $wishlistCount = Wishlist::where('user_id', $user->id)->count();
+
             return response()->json([
-                'status' => $wishlist ? 'removed' : 'added',
-                'wishlistCount' => $wishlistCount,
+                'status' => $status,
+                'wishlistCount' => $wishlistCount
             ], 200);
         } else {
-            $wishlist = session('wishlist', []);
-
-            if (in_array($productId, $wishlist)) {
-                $wishlist = array_diff($wishlist, [$productId]);
-            } else {
-                $wishlist[] = $productId;
-            }
-
-            session(['wishlist' => $wishlist]);
-
             return response()->json([
-                'status' => in_array($productId, $wishlist) ? 'added' : 'removed',
-                'wishlistCount' => count($wishlist),
-            ], 200);
+                'status' => 'login_required'
+            ], 401);
         }
     }
 }

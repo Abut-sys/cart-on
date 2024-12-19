@@ -126,6 +126,20 @@
     color: white;
 }
 
+.voucher-inactive-bg {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.voucher-inactive-bg:hover {
+    background-color: #f5a6ab;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
 .voucher-index-btn-edit {
     background-color: #99bc85;
 }

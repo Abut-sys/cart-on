@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->decimal('amount', 10, 2);
             $table->enum('payment_status', ['pending', 'completed', 'failed']);
             $table->enum('order_status', ['pending', 'shipped', 'delivered', 'canceled']);
-            $table->timestamps(); // created_at and updated_at
+            $table->timestamps();
         });
     }
     

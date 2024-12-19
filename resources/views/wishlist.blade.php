@@ -23,7 +23,7 @@
             </div>
 
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3 wishlist-product-list">
-                @forelse ($wishlists as $wishlist)
+                @foreach ($wishlists as $wishlist)
                     <div class="col" id="wishlist-item-{{ $wishlist->product->id }}">
                         <a href="{{ route('products-all.show', $wishlist->product->id) }}" class="card wishlist-card">
                             <img src="{{ asset('storage/' . $wishlist->product->image_path) }}"
@@ -31,18 +31,15 @@
                             <div class="wishlist-card-body text-center">
                                 <h6 class="wishlist-card-title">{{ $wishlist->product->name }}</h6>
                                 <p class="wishlist-card-price">
-                                    Rp{{ number_format($wishlist->product->price, 0, ',', '.') }}</p>
-                                <button type="button" class="btn p-0 wishlist-toggle-btn"
-                                    data-product-id="{{ $wishlist->product->id }}">
-                                    <i class="fas fa-heart {{ in_array($wishlist->product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
-                                        style="font-size: 18px;"></i>
-                                </button>
+                                    Rp{{ number_format($wishlist->product->price, 0, ',', '.') }}
+                                </p>
                             </div>
+                            <i class="fas fa-heart wishlist-toggle-btn
+                                {{ in_array($wishlist->product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                                data-product-id="{{ $wishlist->product->id }}"></i>
                         </a>
                     </div>
-                @empty
-                    <p>Your wishlist is empty.</p>
-                @endforelse
+                @endforeach
             </div>
 
             <div class="d-flex justify-content-center mt-4">
@@ -54,33 +51,31 @@
 
 <script>
     $(document).ready(function() {
-        $('.wishlist-toggle-btn').on('click', function(event) {
+        $(document).on('click', '.wishlist-toggle-btn', function(event) {
             event.preventDefault();
             event.stopPropagation();
 
             var productId = $(this).data('product-id');
-            var button = $(this);
-            var icon = button.find('i');
+            var $this = $(this);
+            var $wishlistItem = $('#wishlist-item-' + productId);
 
             $.ajax({
                 url: '{{ route('wishlist.add') }}',
                 type: 'POST',
                 data: {
                     product_id: productId,
-                    _token: '{{ csrf_token() }}',
+                    _token: $('meta[name="csrf-token"]').attr('content'),
                 },
                 success: function(response) {
                     if (response.status === 'added') {
-                        icon.removeClass('text-secondary').addClass('text-danger');
+                        $this.removeClass('text-secondary').addClass('text-danger');
                     } else if (response.status === 'removed') {
-                        icon.removeClass('text-danger').addClass('text-secondary');
-                        $('#wishlist-item-' + productId).remove();
+                        $wishlistItem.remove();
                     }
-
                     $('#wishlist-count').text(response.wishlistCount);
                 },
-                error: function() {
-                    alert('Terjadi kesalahan saat memperbarui wishlist.');
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', xhr.responseText);
                 }
             });
         });
@@ -140,6 +135,7 @@
         bottom: 5px;
         right: 5px;
         z-index: 10;
+        cursor: pointer;
     }
 
     .wishlist-btn-group {

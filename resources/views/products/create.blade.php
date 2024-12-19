@@ -59,7 +59,7 @@
                         <label for="sub_category_product_id" class="product-create-label">Sub-Category</label>
                         <select name="sub_category_product_id" id="sub_category_product_id" class="product-create-input"
                             required>
-                            <option value="">Choose Sub-Category</option>
+                            <option value disabled selected ="">Choose Sub-Category</option>
                             @foreach ($subcategories as $subcategory)
                                 <option value="{{ $subcategory->id }}"
                                     {{ old('sub_category_product_id') == $subcategory->id ? 'selected' : '' }}>
@@ -76,7 +76,7 @@
                     <div class="product-create-form-group mb-4">
                         <label for="brand_id" class="product-create-label">Brand</label>
                         <select name="brand_id" id="brand_id" class="product-create-input" required>
-                            <option value="">Choose Brand</option>
+                            <option value disabled selected ="">Choose Brand</option>
                             @foreach ($brands as $brand)
                                 <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
                                     {{ $brand->name }}
@@ -127,7 +127,7 @@
         function handleProductVariantForm() {
             const variationsContainer = document.getElementById('variations-container');
             let variationIndex = variationsContainer.children.length; // Start with the number of existing variants
-    
+
             document.querySelector('.product-create-btn-add').addEventListener('click', function() {
                 // Create a new variation item with a dynamic index
                 const newVariationItem = document.createElement('li');
@@ -150,32 +150,32 @@
                     </div>
                 `;
                 variationsContainer.appendChild(newVariationItem);
-    
+
                 // Increment the index for the next variant
                 variationIndex++;
-    
+
                 // Remove the animation class after a short delay
                 setTimeout(() => {
                     newVariationItem.classList.remove('product-create-variant-animated');
                 }, 400);
             });
-    
+
             // Event delegation to handle removing dynamically added variants
             variationsContainer.addEventListener('click', function(e) {
                 if (e.target && e.target.classList.contains('product-create-btn-remove')) {
                     const variationItem = e.target.closest('li');
                     variationItem.classList.add('product-create-variant-deleting');
-    
+
                     setTimeout(() => {
                         variationItem.remove();
                     }, 400);
                 }
             });
         }
-    
+
         document.addEventListener('DOMContentLoaded', function() {
             handleProductVariantForm();
         });
-    </script>    
+    </script>
 
 @endsection

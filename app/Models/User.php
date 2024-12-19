@@ -45,15 +45,16 @@ class User extends Authenticatable
         return $this->email_verified_at !== null;
     }
 
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+    
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
     }
 
-    public function carts()
-    {
-        return $this->hasMany(Cart::class);
-    }
 
     public function profile()
     {
@@ -68,5 +69,10 @@ class User extends Authenticatable
     public function addresses()
     {
         return $this->hasMany(Address::class);
+    }
+
+    public function checkouts()
+    {
+        return $this->hasMany(Checkout::class);
     }
 }

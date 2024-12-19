@@ -11,7 +11,6 @@ class Address extends Model
 
     protected $fillable = ['profile_id', 'address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country'];
 
-    // Relasi ke Profile
     public function profile()
     {
         return $this->belongsTo(Profile::class);
@@ -20,5 +19,10 @@ class Address extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function checkouts()
+    {
+        return $this->hasMany(Checkout::class);
     }
 }

@@ -21,7 +21,7 @@
                         <div class="category-index-col-md-2 me-2">
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_id" class="form-select category-index-select pe-3">
-                                    <option value="">Sort ID</option>
+                                    <option value disabled selected ="">Sort ID</option>
                                     <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>Ascending</option>
                                     <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>Descending</option>
                                 </select>
@@ -31,7 +31,7 @@
                         <div class="category-index-col-md-2">
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_name" class="form-select category-index-select pe-5">
-                                    <option value="">Sort Name</option>
+                                    <option value disabled selected ="">Sort Name</option>
                                     <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z</option>
                                     <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A</option>
                                 </select>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </form>
-        </div>             
+        </div>
 
         <div class="table-responsive mt-4">
             <table class="table category-index-table">
