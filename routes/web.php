@@ -19,6 +19,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProductAllController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WishlistController;
 
 /*
@@ -56,6 +57,8 @@ Route::middleware('auth')->group(function () {
 
 // Route untuk user
 Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
+
     Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
     Route::get('cart', [CartController::class, 'index'])->name('cart.index');

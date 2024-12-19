@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/footer.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
@@ -43,6 +44,20 @@
             @yield('content')
         </div>
     </div>
+
+    @auth
+        @unless (auth()->user()->hasRole('admin'))
+            <!-- Konten hanya untuk user yang login dan bukan admin -->
+            @include('layouts.footer')
+        @endunless
+    @endauth
+
+    @guest
+        <!-- Konten untuk guest -->
+        @include('layouts.footer')
+    @endguest
+
+
     {{-- end content --}}
     <script src="{{ asset('/') }}assets/js/bootstrap.bundle.min.js"
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous">
