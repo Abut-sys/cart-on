@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CartHelper;
 use App\Helpers\WishlistHelper;
 use App\Models\CategoryProduct;
 use App\Models\Product;
@@ -18,12 +19,14 @@ class HomeController extends Controller
             ->whereIn('name', $importantCategories)
             ->get();
 
-        $userWishlistIds = WishlistHelper::getUserWishlistIds();
+            $userCartIds = CartHelper::getUserCartIds();
+            $userWishlistIds = WishlistHelper::getUserWishlistIds();
+
 
         // Ambil semua produk dari database
         $products = Product::all();
 
         // Kirim data ke view
-        return view('home_user.home', compact('categories', 'products', 'userWishlistIds'));
+        return view('home_user.home', compact('categories','products', 'userCartIds', 'userWishlistIds'));
     }
 }

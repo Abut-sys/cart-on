@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'All Product')
+
 @section('content')
     <div class="container-fluid mt-4">
         <div class="row product-user-view-row">
@@ -38,13 +40,13 @@
                             <div class="d-flex flex-wrap gap-2">
                                 @foreach ($brand as $cat)
                                     <button type="button"
-                                            class="btn btn-outline-secondary product-user-view-filter-btn {{ in_array($cat, (array) request('brand')) ? 'active' : '' }}"
-                                            data-value="{{ $cat }}" data-target="brand">
+                                        class="btn btn-outline-secondary product-user-view-filter-btn {{ in_array($cat, (array) request('brand')) ? 'active' : '' }}"
+                                        data-value="{{ $cat }}" data-target="brand">
                                         {{ ucfirst($cat) }}
                                     </button>
                                 @endforeach
                             </div>
-                        </div>                        
+                        </div>
 
                         <div class="mb-3">
                             <label class="product-user-view-form-label">Category</label>
@@ -109,14 +111,12 @@
                                         Rp{{ number_format($product->price, 0, ',', '.') }}
                                     </p>
                                     @if (auth()->check())
+                                        <i class="fas fa-shopping-cart product-user-view-toggle-cart-btn {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
+                                            data-product-id="{{ $product->id }}"></i>
+
                                         <i class="fas fa-heart product-user-view-toggle-wishlist-btn {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                                             data-product-id="{{ $product->id }}"></i>
 
-                                        <button type="button" class="btn p-0 product-user-view-toggle-cart-btn"
-                                            data-product-id="{{ $product->id }}"
-                                            style="background: {{ in_array($product->id, session('cart', [])) ? 'none' : 'transparent' }};">
-                                            <i class="fas fa-shopping-cart {{ in_array($product->id, session('cart', [])) ? 'text-danger' : 'text-secondary' }}"
-                                                style="font-size: 18px;"></i>
                                         </button>
                                     @endif
                                 </div>
@@ -143,8 +143,7 @@
             event.preventDefault();
 
             var productId = $(this).data('product-id');
-            var button = $(this);
-            var icon = button.find('i');
+            var $this = $(this);
 
             $.ajax({
                 url: '{{ route('cart.add') }}',
@@ -155,15 +154,19 @@
                 },
                 success: function(response) {
                     if (response.status === 'added') {
-                        icon.removeClass('text-secondary').addClass('text-danger');
+                        $this.removeClass('text-secondary').addClass(
+                            'text-success');
                     } else if (response.status === 'removed') {
-                        icon.removeClass('text-danger').addClass('text-secondary');
+                        $this.removeClass('text-success').addClass(
+                            'text-secondary');
                     }
 
-                    $('#wishlist-count').text(response.wishlistCount);
+                    $('#cart-count').text(response
+                        .cartCount);
                 },
-                error: function() {
+                error: function(xhr, status, error) {
                     alert('Terjadi kesalahan saat memperbarui cart.');
+                    console.error("AJAX error: " + status + ": " + error);
                 }
             });
         });
@@ -381,6 +384,14 @@
         color: #fff;
     }
 
+    .product-user-view-toggle-cart-btn {
+        position: absolute;
+        bottom: 6px;
+        right: 30px;
+        z-index: 10;
+        font-size: 20px;
+    }
+
     .product-user-view-toggle-wishlist-btn {
         position: absolute;
         bottom: 6px;
@@ -389,10 +400,5 @@
         font-size: 20px;
     }
 
-    .product-user-view-toggle-cart-btn {
-        position: absolute;
-        bottom: 6px;
-        right: 30px;
-        z-index: 10;
-    }
+
 </style>

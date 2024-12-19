@@ -46,8 +46,8 @@
 
     <div class="home-user-shop-by-products-newest">
         <h2>Newest product :</h2>
-        <div class="home-product-newest-container">
-            @forelse ($products as $product)
+        <div class="home-product-newest-container d-flex flex-wrap justify-content-start">
+            @forelse ($products->take(5) as $product)
                 <a href="{{ Auth::check() ? route('products-all.show', $product->id) : route('login') }}"
                     class="home-product-newest-card">
                     <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
@@ -66,7 +66,7 @@
             @endforelse
         </div>
     </div>
-
+    
     <div class="home-user-shop-by-brands">
         @foreach ($categories as $category)
             <h2>Featured {{ $category->name }}</h2>
