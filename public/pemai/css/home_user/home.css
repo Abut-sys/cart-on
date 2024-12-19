@@ -137,6 +137,7 @@
     color: inherit;
     width: 19%;
     margin-bottom: 20px;
+    margin-right: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
     overflow: hidden; 
