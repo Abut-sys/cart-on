@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'All Product')
+
 @section('content')
     <div class="container-fluid mt-4">
         <div class="row product-user-view-row">
@@ -44,7 +46,7 @@
                                     </button>
                                 @endforeach
                             </div>
-                        </div>                        
+                        </div>
 
                         <div class="mb-3">
                             <label class="product-user-view-form-label">Category</label>
