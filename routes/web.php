@@ -65,6 +65,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     
     Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
+    Route::post('voucher/check', [CheckoutController::class, 'checkVoucher'])->name('voucher.check');
 });
 
 // Route guest

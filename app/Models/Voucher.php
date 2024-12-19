@@ -27,22 +27,47 @@ class Voucher extends Model
         'end_date' => 'datetime:Y-m-d',
     ];
 
-    /**
-     * Scope untuk mengambil voucher aktif berdasarkan tanggal
-     */
+    public function userVouchers()
+    {
+        return $this->hasMany(UserVoucher::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_voucher');
+    }
+
+    public function isUsedByUser(User $user)
+    {
+        return $this->users()->where('user_id', $user->id)->exists();
+    }
+
+    public function decrementUsage()
+    {
+        if ($this->usage_limit > 0) {
+            $this->usage_limit--;
+            $this->used_count++;
+            $this->save();
+
+            if ($this->usage_limit === 0) {
+                $this->status = 'inactive';
+                $this->save();
+            }
+        }
+    }
+
     public function scopeActive($query)
     {
         return $query->whereDate('start_date', '<=', Carbon::today())
-            ->whereDate('end_date', '>=', Carbon::today());
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->where('usage_limit', '>', 0);
     }
 
-    /**
-     * Scope untuk mengambil voucher yang tidak aktif berdasarkan tanggal
-     */
     public function scopeInactive($query)
     {
         return $query->whereDate('end_date', '<', Carbon::today())
-            ->orWhereDate('start_date', '>', Carbon::today());
+            ->orWhereDate('start_date', '>', Carbon::today())
+            ->orWhere('usage_limit', '=', 0);
     }
 
     public function scopeValid($query)
@@ -51,35 +76,22 @@ class Voucher extends Model
             ->where('end_date', '>=', now());
     }
 
-    /**
-     * Accessor untuk mendapatkan status aktif atau tidak aktif berdasarkan tanggal
-     */
     public function getStatusAttribute()
     {
         return $this->isActive() ? 'active' : 'inactive';
     }
 
-    /**
-     * Menentukan apakah voucher aktif berdasarkan tanggal
-     */
     public function isActive()
     {
         $today = Carbon::today();
-        return $today->between($this->start_date, $this->end_date);
+        return $today->between($this->start_date, $this->end_date) && $this->usage_limit > 0;
     }
 
-    /**
-     * Update status manual berdasarkan tanggal
-     */
     public function updateStatus()
     {
-        // Mendapatkan tanggal hari ini
         $today = Carbon::today();
+        $newStatus = $this->isActive() ? 'active' : 'inactive';
 
-        // Menentukan status aktif atau tidak berdasarkan tanggal
-        $newStatus = $today->between($this->start_date, $this->end_date) ? 'active' : 'inactive';
-
-        // Hanya update status jika berbeda dengan status sebelumnya
         if ($this->status !== $newStatus) {
             $this->status = $newStatus;
             $this->save();

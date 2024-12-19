@@ -5,12 +5,16 @@ namespace App\Services;
 use Midtrans\Snap;
 use App\Models\Product;
 use App\Models\SubVariant;
+use App\Models\Voucher;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PaymentService
 {
     public function generateSnapToken(Product $product, SubVariant $variant, $quantity, $user, $orderId = null, $grossAmount = null)
     {
-        $orderId = $orderId ?: uniqid('ORDER-');
+        $orderId = $orderId ?: 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
+        
         $grossAmount = $grossAmount ?: $product->price * $quantity;
 
         $transactionDetails = [
