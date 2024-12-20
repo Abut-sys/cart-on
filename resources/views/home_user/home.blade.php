@@ -117,7 +117,7 @@
                             'text-secondary');
                     }
 
-                    $('#wishlist-count').text(response
+                    $('#for-badge-count-wishlist').text(response
                         .wishlistCount);
                 },
                 error: function(xhr, status, error) {

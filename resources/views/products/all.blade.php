@@ -161,7 +161,7 @@
                             'text-secondary');
                     }
 
-                    $('#cart-count').text(response
+                    $('#for-badge-count-cart').text(response
                         .cartCount);
                 },
                 error: function(xhr, status, error) {
@@ -193,7 +193,7 @@
                             'text-secondary');
                     }
 
-                    $('#wishlist-count').text(response
+                    $('#for-badge-count-wishlist').text(response
                         .wishlistCount);
                 },
                 error: function(xhr, status, error) {
