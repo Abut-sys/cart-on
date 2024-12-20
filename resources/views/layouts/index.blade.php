@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/footer.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
@@ -34,6 +35,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/orders/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/home_user/home.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
 </head>
 
 <body>
@@ -44,6 +46,18 @@
             @yield('content')
         </div>
     </div>
+
+    @auth
+        @unless (auth()->user()->hasRole('admin'))
+            <!-- Konten hanya untuk user yang login dan bukan admin -->
+            @include('layouts.footer')
+        @endunless
+    @endauth
+
+    @guest
+        <!-- Konten untuk guest -->
+        @include('layouts.footer')
+    @endguest
 
     {{-- Jquery --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -185,6 +199,9 @@
     {{-- Dashboard --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @yield('dashboard')
+
+    {{-- Flatpickr --}}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     {{-- Select 2 --}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>

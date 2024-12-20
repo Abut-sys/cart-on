@@ -2,19 +2,21 @@
 
 namespace App\Helpers;
 
-use App\Models\Wishlist;
+use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 
-class WishlistHelper
+class CartHelper
 {
     /**
      *
      * @return array
      */
-    public static function getUserWishlistIds()
+    public static function getUserCartIds()
     {
         return Auth::check()
-        ? Wishlist::whereUserId(Auth::id())->pluck('product_id')->all()
+        ? Cart::whereUserId(Auth::id())->pluck('product_id')->all()
         : [];
     }
 }
+
+

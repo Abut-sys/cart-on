@@ -19,8 +19,8 @@
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_id" class="form-select order-index-select pe-3">
                                     <option value disabled selected ="">Sort ID</option>
-                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>Ascending</option>
-                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>Descending</option>
+                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>ASC</option>
+                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>DESC</option>
                                 </select>
                                 <i class="fas fa-sort-down position-absolute end-0 me-2 order-index-sort-icon"></i>
                             </div>

@@ -1,179 +1,265 @@
-.profile-edit-card-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    min-height: 100vh;
-    background-color: #f4f8f5;
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.profile-edit-container {
+    padding: 30px;
+    border-radius: 12px;
+    background: #ffffff; /* Tambah background putih untuk kontainer */
 }
 
 .profile-edit-card {
-    display: flex;
-    flex-direction: row;
-    background-color: #ffffff;
-    border-radius: 24px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    max-width: 800px;
-    width: 100%;
-    overflow: hidden;
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Lebih tajam dan terang */
+    padding: 30px; /* Spasi yang lebih besar untuk elemen di dalam */
 }
 
+/* Header Styles */
 .profile-edit-header {
-    background: linear-gradient(135deg, #99bc85, #6dc27a, #85bca7, #4e9c61);
-    background-size: 300% 300%;
-    color: #fff;
-    padding: 2rem;
-    flex: 1;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    animation: gradientAnimation 6s ease infinite;
-}
-
-@keyframes gradientAnimation {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+    margin-bottom: 30px;
 }
 
 .profile-edit-header h3 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: bold;
-}
-
-.profile-edit-header p {
-    margin-top: 0.5rem;
-    font-size: 1rem;
-    opacity: 0.9;
-}
-
-.profile-edit-body {
-    flex: 2;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-}
-
-.profile-edit-fields {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.profile-edit-field {
-    display: flex;
-    flex-direction: column;
-}
-
-.profile-edit-field label {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
     color: #333;
+    font-size: 2rem; /* Lebih besar untuk kontras */
+    font-weight: 700; /* Menguatkan teks header */
+    letter-spacing: 1px;
+}
+
+/* Profile Picture */
+ .profile-picture-wrapper {
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    width: 100%;
+    height: 150px; /* Sesuaikan dengan kebutuhan */
+    margin-bottom: 20px;
+    }
+
+    .profile-picture-wrapper .image-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%; /* Membuat gambar bulat */
+        object-fit: cover; /* Menyesuaikan gambar */
+        border: 2px solid #f1f1f1; /* Garis tipis */
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Bayangan */
+    }
+
+    .profile-picture-wrapper .upload-icon {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: red;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .upload-text {
+        text-align: center;
+        margin-top: 5px; /* Jarak sedikit dari gambar */
+        color: #ff3333; /* Warna merah */
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .image-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 3px solid white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.profile-edit-field label i {
-    color: #99bc85;
-    font-size: 1.2rem;
+.image-preview:hover {
+    transform: scale(1.1); /* Membesar sedikit */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Menambah bayangan pada hover */
 }
 
-.profile-edit-field input,
-.profile-edit-field select {
-    padding: 0.75rem 1rem;
-    border: 1px solid #ccc;
+.default-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #7aa37a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 60px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    border: 3px solid white;
+}
+
+/* Form Fields */
+.profile-name-field,
+.profile-edit-field {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Label dengan border gradasi */
+label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 0.875rem; /* Mengurangi ukuran font menjadi sedikit lebih kecil */
+    position: relative;
+}
+
+
+/* Tambah Border Gradasi pada Input */
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd; /* Border default abu-abu terang */
     border-radius: 8px;
     font-size: 1rem;
     color: #333;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.3s, box-shadow 0.3s ease;
+    background-color: transparent;
+}
+
+input:focus, select:focus {
+    border-color: #7aa37a; /* Hijau terang saat fokus */
+    box-shadow: 0 0 8px rgba(122, 163, 122, 0.5);
     outline: none;
-    background-color: #f9fdf8;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.profile-edit-field input:focus,
-.profile-edit-field select:focus {
-    border-color: #8ed081;
-    box-shadow: 0 0 8px rgba(142, 208, 129, 0.5);
-    background-color: #ffffff;
-}
-
-.profile-edit-field input::placeholder {
-    color: #aaa;
-    font-style: italic;
-}
-
-.image-preview img {
-    margin-top: 10px;
-    max-width: 100px;
+/* Gradasi border pada label */
+input:focus + label, select:focus + label {
+    color: #7aa37a; /* Warna label berubah saat input fokus */
+    background: linear-gradient(to right, #ffffff, #ffffff); /* Gradasi putih ke abu-abu */
+    padding: 4px 10px;
     border-radius: 8px;
 }
 
+/* Hapus background dari label pada kondisi normal */
+input:not(:focus) + label, select:not(:focus) + label {
+    background: none;
+}
+
+
+.profile-edit-field.horizontal {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Actions */
 .profile-edit-actions {
     display: flex;
-    gap: 1rem;
-    justify-content: space-between;
+    justify-content: center; /* Center the buttons */
+    gap: 10px; /* Optional: Add space between buttons */
+    margin-top: 30px;
 }
 
 .profile-edit-btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    padding: 12px 25px;
     border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Primary Button */
 .profile-edit-btn.primary {
-    background-color: #99bc85;
-    color: #fff;
+    background-color: #7aa37a;
+    color: white;
 }
 
 .profile-edit-btn.primary:hover {
-    background-color: #5ca05f;
-    transform: scale(1.03);
+    background-color: #5d8a5d;
+    transform: scale(1.1) translateY(-5px);
 }
 
+/* Secondary Button */
 .profile-edit-btn.secondary {
-    background-color: #ccc;
-    color: #333;
+    color: #7aa37a;
+    margin-left: 10px;
+    background-color: transparent;
+    border: 1px solid #7aa37a;
 }
 
 .profile-edit-btn.secondary:hover {
-    background-color: #e74c3c;
-    transform: scale(1.03);
-    color: #fff;
+    background-color: #7aa37a;
+    color: white;
+    border-color: #7aa37a;
+    transform: scale(1.1) translateY(-5px);
 }
 
-.profile-edit-alert {
-    background-color: #d4edda;
-    color: #155724;
+/* Save Button */
+.profile-edit-btn.save {
+    background-color: #8e959a;
+    color: white;
+    border: none;
+}
+
+.profile-edit-btn.save:hover {
+    background-color: #7aa37a;
+    color: white;
+    transform: scale(1.1) translateY(-5px);
+}
+
+/* Cancel Button */
+.profile-edit-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.profile-edit-btn.cancel {
+    color: #e74c3c;
+    margin-left: 10px;
+    background-color: transparent;
+    border: 1px solid #e74c3c;
+    padding: 12px 25px;
     border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
+    box-shadow: 0 4px 6px rgba(231, 76, 60, 0.2);
 }
 
-@media (max-width: 768px) {
-    .profile-edit-card {
-        flex-direction: column;
-    }
-
-    .profile-edit-header,
-    .profile-edit-body {
-        flex: unset;
-        width: 100%;
-    }
+.profile-edit-btn.cancel:hover {
+    background-color: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+    transform: scale(1.1) translateY(-5px);
 }
+
+/* Top Section Layout */
+.profile-edit-top-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.profile-edit-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
