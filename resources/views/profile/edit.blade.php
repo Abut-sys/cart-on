@@ -35,25 +35,22 @@
                     <div class="profile-edit-details">
                         <div class="profile-name-field">
                             <label for="name">Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
-                                required>
+                            <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required>
                         </div>
 
                         <div class="profile-edit-field">
                             <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
-                                required>
+                            <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
                         </div>
 
                         <div class="profile-edit-field">
                             <label for="phone_number">Phone</label>
-                            <input type="text" id="phone_number" name="phone_number"
-                                value="{{ old('phone_number', $user->phone_number) }}">
+                            <input type="text" id="phone_number" name="phone_number" value="{{ old('phone_number', $user->phone_number) }}">
                         </div>
 
                         <div class="profile-edit-field">
                             <label for="date_of_birth">Date of Birth</label>
-                            <input type="date" id="date_of_birth" name="date_of_birth"
+                            <input type="text" id="date_of_birth" name="date_of_birth" class="date-picker"
                                 value="{{ old('date_of_birth', optional($user->profile)->date_of_birth) }}">
                         </div>
 
@@ -95,7 +92,6 @@
                             </div>
                         </div>
 
-
                         <div class="profile-edit-field">
                             <label for="password">Password</label>
                             <input type="password" id="password" name="password">
@@ -119,6 +115,7 @@
     </div>
 
     <script>
+        // Preview image function
         function previewImage(event) {
             const preview = document.getElementById('profile_picture_preview');
             const file = event.target.files[0];
@@ -140,18 +137,13 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            flatpickr("#date_of_birth", {
-                dateFormat: "Y-m-d",
-                defaultDate: "{{ old('date_of_birth', optional($user->profile)->date_of_birth) }}",
-                altInput: true,
-                altFormat: "F j, Y",
-                yearRange: [1900, new Date().getFullYear()],
-                allowInput: true,
-                static: true,
-                onReady: function(selectedDates, dateStr, instance) {
-                    instance.currentYearElement.title = "Click to select year";
-                }
+        // Initialize Flatpickr
+        document.addEventListener('DOMContentLoaded', function () {
+            flatpickr('.date-picker', {
+                dateFormat: 'Y-m-d',
+                minDate: '1900-01-01',
+                maxDate: 'today',
+                disableMobile: true,
             });
         });
     </script>

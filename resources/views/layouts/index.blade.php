@@ -34,9 +34,9 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/claim.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/admin.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/orders/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/home_user/home.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
 </head>
 

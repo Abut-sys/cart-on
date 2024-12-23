@@ -49,7 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/addresses', [ProfileController::class, 'addAddress'])->name('profile.address.add');
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
 
-    // web.php
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
     Route::post('/claim/{voucher}', [VoucherController::class, 'claimVoucher'])->name('claim');
