@@ -49,9 +49,9 @@
                     </div>
 
                     <div class="voucher-create-form-group mb-4">
-                        <label for="Terms_and_Conditions" class="voucher-create-form-label">Terms and Conditions</label>
-                        <textarea name="Terms_and_Conditions" id="Terms_and_Conditions" class="voucher-create-form-control"></textarea>
-                        @error('Terms_and_Conditions')
+                        <label for="terms_and_conditions" class="voucher-create-form-label">Terms and Conditions</label>
+                        <textarea name="terms_and_conditions" id="terms_and_conditions" class="voucher-create-form-control"></textarea>
+                        @error('terms_and_conditions')
                             <div class="voucher-create-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>

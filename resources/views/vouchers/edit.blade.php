@@ -54,9 +54,9 @@
                     </div>
 
                     <div class="voucher-edit-form-group mb-4">
-                        <label for="Terms_and_Conditions" class="voucher-edit-form-label">Terms and Conditions</label>
-                        <textarea name="Terms_and_Conditions" id="Terms_and_Conditions" class="voucher-edit-form-control">{{ old('Terms_and_Conditions', $voucher->Terms_and_Conditions) }}</textarea>
-                        @error('Terms_and_Conditions')
+                        <label for="terms_and_conditions" class="voucher-edit-form-label">Terms and Conditions</label>
+                        <textarea name="terms_and_conditions" id="terms_and_conditions" class="voucher-edit-form-control">{{ old('terms_and_conditions', $voucher->terms_and_conditions) }}</textarea>
+                        @error('terms_and_conditions')
                             <div class="voucher-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>

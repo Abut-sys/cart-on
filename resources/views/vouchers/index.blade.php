@@ -42,6 +42,9 @@
                         <strong>Discount:</strong> {{ $voucher->discount_value }}%
                     </div>
                     <div class="voucher-index-item">
+                        <strong>Terms and Conditions:</strong>
+                    </div>
+                    <div class="voucher-index-item">
                         <strong>Start Date:</strong> {{ $voucher->start_date->format('Y-m-d') }}
                     </div>
                     <div class="voucher-index-item">
