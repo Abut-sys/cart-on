@@ -102,49 +102,6 @@
         padding: 20px 30px;
     }
 
-    .profile-edit-header h3 {
-        font-size: 1.5rem;
-        color: #343a40;
-        margin-bottom: 10px;
-    }
-
-    .profile-edit-header p {
-        color: #6c757d;
-        font-size: 0.9rem;
-        margin-bottom: 20px;
-    }
-
-    .profile-edit-fields {
-        margin-bottom: 20px;
-    }
-
-    .profile-edit-field {
-        margin-bottom: 15px;
-    }
-
-    .profile-edit-field label {
-        display: block;
-        font-weight: bold;
-        color: #495057;
-        margin-bottom: 5px;
-    }
-
-    .profile-edit-field input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #7aa37a;
-        border-radius: 5px;
-        font-size: 1rem;
-        color: #495057;
-        outline: none;
-        transition: border-color 0.3s;
-    }
-
-    .profile-edit-field input:focus {
-        border-color: #7aa37a;
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-    }
-
     .password-field {
         display: flex;
         align-items: center;
@@ -162,45 +119,6 @@
 
     .password-field .toggle-password:hover {
         color: #0056b3;
-    }
-
-    .profile-edit-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .profile-edit-btn {
-        padding: 10px 20px;
-        font-size: 1rem;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-    }
-
-    .profile-edit-btn.save {
-        background-color: #7aa37a;
-        color: #ffffff;
-    }
-
-    .profile-edit-btn.save:hover {
-        background-color: #7aa37a;
-        transform: scale(1.05);
-    }
-
-    .profile-edit-btn.cancel {
-        background-color: #6c757d;
-        color: #ffffff;
-    }
-
-    .profile-edit-btn.cancel:hover {
-        background-color: #5a6268;
-        transform: scale(1.05);
     }
 </style>
 

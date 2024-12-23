@@ -14,11 +14,11 @@ body {
 
 .profile-edit-card {
     max-width: 900px;
-    margin: auto;
+    margin: 20px auto;
     background: white;
     border-radius: 15px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Lebih tajam dan terang */
-    padding: 30px; /* Spasi yang lebih besar untuk elemen di dalam */
+    padding: 20px; /* Spasi yang lebih besar untuk elemen di dalam */
 }
 
 /* Header Styles */
@@ -169,7 +169,7 @@ input:not(:focus) + label, select:not(:focus) + label {
 /* Actions */
 .profile-edit-actions {
     display: flex;
-    justify-content: center; /* Center the buttons */
+    justify-content: flex-end; /* Center the buttons */
     gap: 10px; /* Optional: Add space between buttons */
     margin-top: 30px;
 }
@@ -197,6 +197,12 @@ input:not(:focus) + label, select:not(:focus) + label {
 }
 
 /* Secondary Button */
+.profile-edit-actions.add {
+    display: flex;
+    justify-content: flex-end; /* Memindahkan tombol ke kanan */
+    margin-top: 10px; /* Menambahkan jarak atas */
+}
+
 .profile-edit-btn.secondary {
     color: #7aa37a;
     margin-left: 10px;
