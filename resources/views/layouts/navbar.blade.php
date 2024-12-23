@@ -8,7 +8,9 @@
     @endauth
 
     <div class="logo-container" oncontextmenu="return false;">
-        <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
+        <a href="{{ url('/') }}">
+            <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
+        </a>
     </div>
 
     @if (!Auth::check() || Auth::user()->role != 'admin')
@@ -87,6 +89,11 @@
                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Profile
                 </a>
+                @if (Auth::user()->role != 'admin')
+                    <a class="dropdown-item" href="{{ route('voucher.claim') }}">
+                        <i class="fas fa-gift"></i> Claim Voucher
+                    </a>
+                @endif
                 @if (Auth::user()->role != 'admin')
                     <a class="dropdown-item" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
