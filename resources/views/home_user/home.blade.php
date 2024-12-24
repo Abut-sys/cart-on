@@ -83,107 +83,100 @@
             </div>
         @endforeach
     </div>
-
 @endsection
 
+@push('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Banner Slider
         const banner = document.querySelector('.home-user-banner');
         const banners = document.querySelectorAll('.home-user-banner-image');
         const prevButton = document.querySelector('.home-user-banner-prev');
         const nextButton = document.querySelector('.home-user-banner-next');
         let currentIndex = 0;
-        const totalBanners = banners.length;
 
-        $('.home-product-newest-wishlist-icon').on('click', function(event) {
-            event.preventDefault();
+        function updateBannerPosition() {
+            banner.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
 
-            var productId = $(this).data('product-id');
-            var $this = $(this);
+        function slideBanner() {
+            currentIndex = (currentIndex + 1) % banners.length;
+            updateBannerPosition();
+        }
 
-            $.ajax({
-                url: '{{ route('wishlist.add') }}',
-                type: 'POST',
-                data: {
-                    product_id: productId,
-                    _token: '{{ csrf_token() }}',
-                },
-                success: function(response) {
-                    if (response.status === 'added') {
-                        $this.removeClass('text-secondary').addClass(
-                            'text-danger');
-                    } else if (response.status === 'removed') {
-                        $this.removeClass('text-danger').addClass(
-                            'text-secondary');
+        function slideToPrev() {
+            currentIndex = (currentIndex - 1 + banners.length) % banners.length;
+            updateBannerPosition();
+        }
+
+        prevButton.addEventListener('click', slideToPrev);
+        nextButton.addEventListener('click', slideBanner);
+
+        setInterval(slideBanner, 5000);
+
+        // Wishlist AJAX Handler
+        const wishlistIcons = document.querySelectorAll('.home-product-newest-wishlist-icon');
+        wishlistIcons.forEach(icon => {
+            icon.addEventListener('click', function(event) {
+                event.preventDefault();
+                const productId = this.dataset.productId;
+
+                fetch('{{ route('wishlist.add') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ product_id: productId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'added') {
+                        this.classList.remove('text-secondary');
+                        this.classList.add('text-danger');
+                    } else if (data.status === 'removed') {
+                        this.classList.remove('text-danger');
+                        this.classList.add('text-secondary');
                     }
 
-                    $('#wishlist-count').text(response
-                        .wishlistCount);
-                },
-                error: function(xhr, status, error) {
-                    alert('Terjadi kesalahan saat memperbarui wishlist.');
-                    console.error("AJAX error: " + status + ": " + error);
-                }
+                    document.getElementById('wishlist-count').textContent = data.wishlistCount;
+                })
+                .catch(error => console.error('Error:', error));
             });
-
-            function updateBannerPosition() {
-                banner.style.transform = `translateX(-${currentIndex * 100}%)`;
-            }
-
-            function slideBanner() {
-                currentIndex = (currentIndex + 1) % totalBanners;
-                updateBannerPosition();
-            }
-
-            function slideToPrev() {
-                currentIndex = (currentIndex - 1 + totalBanners) % totalBanners;
-                updateBannerPosition();
-            }
-
-            prevButton.addEventListener('click', slideToPrev);
-            nextButton.addEventListener('click', slideBanner);
-
-            setInterval(slideBanner, 5000);
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const brandsContainers = document.querySelectorAll('.home-user-brands-container');
+        // Horizontal Scroll for Brands
+        const brandsContainers = document.querySelectorAll('.home-user-brands-container');
+        brandsContainers.forEach(container => {
+            let isDragging = false;
+            let startX;
+            let scrollLeft;
 
-            brandsContainers.forEach(brandsContainer => {
-                brandsContainer.addEventListener('wheel', (e) => {
-                    e.preventDefault();
-                    brandsContainer.scrollLeft += e.deltaY * 0.5;
-                });
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                container.classList.add('dragging');
+                startX = e.pageX - container.offsetLeft;
+                scrollLeft = container.scrollLeft;
+            });
 
-                let isDragging = false;
-                let startX;
-                let scrollLeft;
+            container.addEventListener('mouseleave', () => {
+                isDragging = false;
+                container.classList.remove('dragging');
+            });
 
-                brandsContainer.addEventListener('mousedown', (e) => {
-                    isDragging = true;
-                    brandsContainer.classList.add('dragging');
-                    startX = e.pageX - brandsContainer.offsetLeft;
-                    scrollLeft = brandsContainer.scrollLeft;
-                });
+            container.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.classList.remove('dragging');
+            });
 
-                brandsContainer.addEventListener('mouseleave', () => {
-                    isDragging = false;
-                    brandsContainer.classList.remove('dragging');
-                });
-
-                brandsContainer.addEventListener('mouseup', () => {
-                    isDragging = false;
-                    brandsContainer.classList.remove('dragging');
-                });
-
-                brandsContainer.addEventListener('mousemove', (e) => {
-                    if (!isDragging) return;
-                    e.preventDefault();
-                    const x = e.pageX - brandsContainer.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    brandsContainer.scrollLeft = scrollLeft - walk;
-                });
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - container.offsetLeft;
+                const walk = (x - startX) * 2;
+                container.scrollLeft = scrollLeft - walk;
             });
         });
     });
 </script>
+@endpush
