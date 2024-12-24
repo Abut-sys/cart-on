@@ -111,8 +111,8 @@
                                         Rp{{ number_format($product->price, 0, ',', '.') }}
                                     </p>
                                     @if (auth()->check())
-                                        <i class="fas fa-shopping-cart product-user-view-toggle-cart-btn {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
-                                            data-product-id="{{ $product->id }}"></i>
+                                        {{-- <i class="fas fa-shopping-cart product-user-view-toggle-cart-btn {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
+                                            data-product-id="{{ $product->id }}"></i> --}}
 
                                         <i class="fas fa-heart product-user-view-toggle-wishlist-btn {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                                             data-product-id="{{ $product->id }}"></i>

@@ -39,6 +39,14 @@
                                 </option>
                             @endforeach
                         </select>
+
+                        <label for="shipping_method" class="form-label mt-3">Shipping Method:</label>
+                        <select name="shipping_method" id="shipping_method" class="form-select">
+                            <option value="standard" {{ old('shipping_method') == 'standard' ? 'selected' : '' }}>Standard
+                            </option>
+                            <option value="express" {{ old('shipping_method') == 'express' ? 'selected' : '' }}>Express
+                            </option>
+                        </select>
                     </div>
                 </div>
             </div>

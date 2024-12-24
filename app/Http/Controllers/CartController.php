@@ -8,21 +8,20 @@ use App\Models\Cart;
 use App\Models\SubVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
 
     public function index(Request $request)
     {
-    $userCartIds = CartHelper::getUserCartIds();
-    $query = Cart::where('user_id', auth()->id())->with('product');
-    $carts = $query->select('carts.*')->paginate(12);
-    $totalPrice = $carts->sum(function ($cart) {
-        return $cart->product ? $cart->product->price : 0;
-    });
+        $userCartIds = CartHelper::getUserCartIds();
+        $query = Cart::where('user_id', auth()->id())->with('product');
+        $carts = $query->select('carts.*')->paginate(12);
+        $totalPrice = $carts->sum(function ($cart) {
+            return $cart->product ? $cart->product->price * $cart->quantity : 0;
+        });
 
-    return view('cart', compact('carts', 'userCartIds', 'totalPrice'));
+        return view('cart', compact('carts', 'userCartIds', 'totalPrice'));
     }
 
     public function addToCart(Request $request)
@@ -30,94 +29,60 @@ class CartController extends Controller
         if (Auth::check()) {
             $user = auth()->user();
             $productId = $request->product_id;
+            $quantity = $request->quantity ?? 1;
+            $size = $request->size;
+            $color = $request->color;
 
             $cart = Cart::where('user_id', $user->id)
                 ->where('product_id', $productId)
+                ->where('size', $size)
+                ->where('color', $color)
                 ->first();
 
             if ($cart) {
-                $cart->delete();
-                $status = 'removed';
+                $cart->quantity += $quantity;
+                $cart->save();
+                $status = 'updated';
             } else {
                 Cart::create([
                     'user_id' => $user->id,
                     'product_id' => $productId,
+                    'quantity' => $quantity,
+                    'size' => $size,
+                    'color' => $color
                 ]);
                 $status = 'added';
             }
 
-            $cartCount = Cart::where('user_id', $user->id)->count();
-
-            return response()->json([
-                'status' => $status,
-                'cartCount' => $cartCount
-            ], 200);
+            return redirect()->route('cart.index')->with('status', 'Product added to cart!');
         } else {
-            return response()->json([
-                'status' => 'login_required'
-            ], 401);
+            return redirect()->route('login')->with('error', 'Please log in to add items to your cart.');
         }
-    }
-
-    public function destroy($id)
-    {
-        $cartItem = Cart::find($id);
-
-        if (!$cartItem) {
-            return redirect()->route('cart.index')->with('error', 'Item not found');
-        }
-        $cartItem->delete();
-
-        return redirect()->route('cart.index')->with('success', 'Item deleted successfully');
     }
 
     public function increase($id)
     {
-    $cart = Cart::findOrFail($id);
-    $cart->quantity += 1;
-    $cart->save();
+        $cart = Cart::findOrFail($id);
+        $cart->quantity += 1;
+        $cart->save();
 
-    return redirect()->back();
+        return redirect()->back();
     }
 
     public function decrease($id)
     {
-    $cart = Cart::findOrFail($id);
-    if ($cart->quantity > 1) {
-        $cart->quantity -= 1;
-        $cart->save();
-    }
+        $cart = Cart::findOrFail($id);
+        if ($cart->quantity > 1) {
+            $cart->quantity -= 1;
+            $cart->save();
+        }
 
-    return redirect()->back();
+        return redirect()->back();
     }
 
     public function remove($id)
     {
-    Cart::findOrFail($id)->delete();
-    return back();
+        Cart::findOrFail($id)->delete();
+        return back();
     }
-
-    public function store(Request $request)
-{
-    $validated = $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-        'size' => 'nullable|string',
-        'color' => 'nullable|string',
-    ]);
-
-    $cart = Cart::updateOrCreate(
-        [
-            'product_id' => $validated['product_id'],
-            'user_id' => auth()->id(),
-            'size' => $validated['size'],
-            'color' => $validated['color'],
-        ],
-        ['quantity' => DB::raw('quantity + ' . $validated['quantity'])]
-    );
-
-    return redirect()->route('cart.index')->with('success', 'Product added to cart!');
-}
-
-
 }

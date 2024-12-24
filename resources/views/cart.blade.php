@@ -1,131 +1,132 @@
 @extends('layouts.index')
 
 @section('content')
-<div class="container mt-5">
-    <h1 class="fw-bold mb-4">Your Cart</h1>
+    <div class="container mt-5">
+        <h1 class="fw-bold mb-4">Your Cart</h1>
 
-    <!-- Cart Total Section -->
-    <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-4 rounded">
-        <h5 class="fw-bold">Total Price</h5>
-        <div>
-            <span id="total-price" class="fw-bold text-success me-3">
-                Rp{{ number_format($totalPrice, 0, ',', '.') }}
-            </span>
-            <a href="{{ route('checkout.process') }}" class="btn btn-success btn-sm">Proceed to Checkout</a>
+        <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-4 rounded">
+            <h5 class="fw-bold">Total Price</h5>
+            <div>
+                <span id="cart-total-price" class="fw-bold text-success me-3">
+                    Rp{{ number_format($totalPrice, 0, ',', '.') }}
+                </span>
+                <a href="{{ route('checkout.process') }}" class="btn btn-success btn-sm">Proceed to Checkout</a>
+            </div>
         </div>
-    </div>
 
-    <!-- Cart Product List -->
-    <div class="row">
-        @forelse ($carts as $cart)
-            <div class="col-12 mb-4 bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <img src="{{ asset('storage/' . $cart->product->image_path) }}"
-                         alt="{{ $cart->product->name }}"
-                         class="img-thumbnail"
-                         style="width: 80px; height: 80px; object-fit: cover;">
+        <div class="row">
+            @forelse ($carts as $cart)
+                <div
+                    class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
+                    <div class="cart-product-info d-flex align-items-center">
+                        <img src="{{ asset('storage/' . $cart->product->image_path) }}" alt="{{ $cart->product->name }}"
+                            class="img-thumbnail cart-product-image" />
 
-                    <div class="ms-3">
-                        <h6 class="mb-1">{{ $cart->product->name }}</h6>
-                        <small class="text-muted">
-                            Size: {{ $cart->size ?? 'N/A' }}
-                        </small>
-                        <small class="text-muted">
-                            Color: {{ $cart->color ?? 'N/A' }}
-                        </small>
+                        <div class="ms-3">
+                            <h6 class="mb-1 cart-product-name">{{ $cart->product->name }}</h6>
+                            <small class="text-muted cart-product-size">
+                                Size: {{ $cart->size ?? 'N/A' }}
+                            </small>
+                            <small class="text-muted cart-product-color">
+                                Color: {{ $cart->color ?? 'N/A' }}
+                            </small>
 
-                        <p class="fw-bold mb-0 text-success">
-                            Rp{{ number_format($cart->product->price, 0, ',', '.') }}
-                        </p>
+                            <p class="fw-bold mb-0 text-success cart-product-price">
+                                Rp{{ number_format($cart->product->price, 0, ',', '.') }}
+                            </p>
+                            <p class="fw-bold mb-0 text-success cart-product-total">
+                                Total: Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}
+                            </p>
+
+                            <div class="form-check">
+                                <input class="form-check-input cart-checkbox" type="checkbox" value="{{ $cart->id }}"
+                                    id="cartItem{{ $cart->id }}" data-price="{{ $cart->product->price }}"
+                                    data-quantity="{{ $cart->quantity }}">
+                                <label class="form-check-label" for="cartItem{{ $cart->id }}"></label>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Cart Item Actions (Remove, Quantity Controls) -->
-                <div class="d-flex align-items-center">
-                    <form action="{{ route('cart.remove', $cart->id) }}" method="POST" class="me-2">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form>
-
-                    <div class="input-group input-group-sm" style="width: 120px;">
-                        <form action="{{ route('cart.decrease', $cart->id) }}" method="POST">
+                    <div class="cart-actions d-flex align-items-center">
+                        <form action="{{ route('cart.remove', $cart->id) }}" method="POST" class="me-2">
                             @csrf
-                            <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </form>
 
-                        <input type="text" class="form-control text-center"
-                               value="{{ $cart->quantity }}" readonly>
+                        <div class="input-group input-group-sm cart-quantity-controls" style="width: 120px;">
+                            <form action="{{ route('cart.decrease', $cart->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
+                            </form>
 
-                        <form action="{{ route('cart.increase', $cart->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
-                        </form>
+                            <input type="text" class="form-control text-center cart-quantity"
+                                value="{{ $cart->quantity }}" readonly>
+
+                            <form action="{{ route('cart.increase', $cart->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @empty
-            <div class="col-12 text-center py-5">
-                <h4 class="text-muted">Your cart is empty!</h4>
-                <a href="{{ route('products.index') }}" class="btn btn-primary mt-3">Continue Shopping</a>
-            </div>
-        @endforelse
-    </div>
+            @empty
+                <div class="col-12 text-center py-5">
+                    <h4 class="text-muted">Your cart is empty!</h4>
+                    <a href="{{ route('products.index') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+                </div>
+            @endforelse
+        </div>
 
-        <div class="checkout-card mb-4">
-            <div class="checkout-card-header">
+        <div class="cart-checkout-card mb-4">
+            <div class="cart-checkout-card-header">
                 <h5>Payment Summary</h5>
             </div>
-            <div class="checkout-card-body">
+            <div class="cart-checkout-card-body">
                 @foreach ($carts as $cart)
-                    <p class="checkout-summary-item">Product: <span class="checkout-summary-value">{{ $cart->product->name }}</span></p>
-                    <p class="checkout-summary-item">Price: <span class="checkout-summary-value">Rp{{ number_format($cart->product->price, 0, ',', '.') }}</span></p>
-                    <p class="checkout-summary-item">Quantity: <span class="checkout-summary-value">{{ $cart->quantity }}</span></p>
+                    <p class="cart-checkout-summary-item">Product: <span
+                            class="cart-checkout-summary-value">{{ $cart->product->name }}</span></p>
+                    <p class="cart-checkout-summary-item">Price: <span
+                            class="cart-checkout-summary-value">Rp{{ number_format($cart->product->price, 0, ',', '.') }}</span>
+                    </p>
+                    <p class="cart-checkout-summary-item">Quantity: <span
+                            class="cart-checkout-summary-value">{{ $cart->quantity }}</span></p>
+                    <p class="cart-checkout-summary-item">Total: <span
+                            class="cart-checkout-summary-value">Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}</span>
+                    </p>
                     <hr>
                 @endforeach
             </div>
         </div>
 
     </div>
-</div>
 
-@endsection
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function updateTotalPrice() {
+                let totalPrice = 0;
 
-<script>
-    $(document).ready(function() {
-        $(document).on('click', '.cart-toggle-btn', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            var productId = $(this).data('product-id');
-            var $this = $(this);
-            var $cartItem = $('#cart-item-' + productId);
-
-            $.ajax({
-                url: '{{ route('cart.add') }}',
-                type: 'POST',
-                data: {
-                    product_id: productId,
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                },
-                success: function(response) {
-                    if (response.status === 'added') {
-                        $this.removeClass('text-secondary').addClass('text-success');
-                    } else if (response.status === 'removed') {
-                        $cartItem.remove();
+                document.querySelectorAll('.cart-checkbox').forEach(function(checkbox) {
+                    if (checkbox.checked) {
+                        let price = parseInt(checkbox.getAttribute('data-price'));
+                        let quantity = parseInt(checkbox.getAttribute('data-quantity'));
+                        totalPrice += price * quantity;
                     }
-                    $('#cart-count').text(response.cartCount);
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', xhr.responseText);
-                }
-            });
-        });
-    });
+                });
 
-</script>
+                document.getElementById('cart-total-price').textContent = 'Rp' + totalPrice.toLocaleString();
+            }
+
+            document.querySelectorAll('.cart-checkbox').forEach(function(checkbox) {
+                checkbox.addEventListener('change', updateTotalPrice);
+            });
+
+            updateTotalPrice();
+        });
+    </script>
+@endsection
 
 <style>
     .cart-card {
@@ -135,7 +136,7 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: space-between;
         text-decoration: none;
         color: inherit;
@@ -147,104 +148,72 @@
         color: inherit;
     }
 
-    .cart-card-img-top {
-        height: 150px;
+    .cart-product-image {
+        width: 80px;
+        height: 80px;
         object-fit: cover;
-        width: 100%;
     }
 
-    .cart-card-body {
-        padding: 15px;
-    }
-
-    .cart-card-title {
-        font-size: 12px;
-        font-weight: bold;
-        margin-bottom: 5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: left;
-    }
-
-    .cart-card-price {
-        font-size: 12px;
-        font-weight: bold;
-        color: #99bc85;
-        margin-bottom: 8px;
-        text-align: left;
-    }
-
-    .cart-toggle-btn {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        z-index: 10;
-        cursor: pointer;
-    }
-
-    .cart-btn-group {
+    .cart-product-info {
         display: flex;
-        gap: 10px;
+        flex-direction: row;
+        align-items: center;
     }
 
-    .cart-btn-group .btn {
-        font-size: 14px;
+    .cart-product-name {
         font-weight: bold;
-        margin-right: 1px;
-        padding: 8px 12px;
+    }
+
+    .cart-product-price,
+    .cart-product-total {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .cart-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .cart-quantity-controls {
+        display: flex;
+        gap: 5px;
+    }
+
+    .cart-checkout-card {
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+    }
+
+    .cart-checkout-card-header {
+        background-color: #f8f9fa;
+        padding: 15px;
         border-radius: 4px;
     }
 
-    .cart-btn-group .btn-light {
-        background-color: #f9f9f9;
-        border: px solid #ddd;
-        color: #4a7c5b;
+    .cart-checkout-card-body {
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 4px;
     }
 
-    .cart-btn-group .btn-light:hover {
-        background-color: #99bc85bd;
-        color: #fff;
-    }
-
-    .cart-btn-group .btn-dark {
-        background-color: #99bc85;
-        border: 1px solid #99bc85;
-        color: #fff;
-    }
-
-    .cart-btn-group .btn-dark:hover {
-        background-color: #99bc85bd;
-        border-color: #99bc85bd;
-        color: #fff;
-    }
-
-    /* Checkout Summary Section */
-    .checkout-summary-item {
+    .cart-checkout-summary-item {
         display: flex;
         justify-content: space-between;
         font-size: 0.9rem;
         color: #333;
     }
 
-    .checkout-summary-item span {
+    .cart-checkout-summary-item span {
         font-weight: bold;
     }
 
-    .checkout-total-price {
+    .cart-total-price {
         font-size: 1.5rem;
         font-weight: bold;
         color: #007bff;
         text-align: right;
         margin-top: 1rem;
     }
-
-    .checkout-form-control {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 0.9rem;
-    }
 </style>
-
