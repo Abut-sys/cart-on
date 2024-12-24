@@ -1,4 +1,4 @@
-.card {
+.voucher-card {
     border: 2px solid #e1e4e8; /* Softer border for a cleaner look */
     border-radius: 15px; /* Rounder corners for a more approachable feel */
     background-color: #ffffff; /* Bright white background for clarity */
@@ -10,8 +10,8 @@
 }
 
 /* Zoom effect on hover for claim button */
-.hover-zoom:hover {
-    transform: scale(4.05); /* Slightly enlarge the button */
+.hover-zoom-voucher:hover {
+    transform: scale(1.05); /* Slightly enlarge the button */
     transition: transform 0.3s ease;
 }
 
@@ -31,7 +31,7 @@
     line-height: 1.5; /* Standard line height */
 }
 
-.card .validity {
+.voucher-card .validity {
     font-weight: 600;
     font-size: 1.1rem; /* Slightly smaller validity text */
     margin: 10px 0; /* Reduced margin for closer spacing */
@@ -39,7 +39,7 @@
     color: #28a745; /* Green color to indicate the validity period */
 }
 
-.card .terms {
+.voucher-card .terms {
     font-size: 0.9rem; /* Smaller font for terms */
     color: #777;
     text-align: center;
@@ -69,7 +69,7 @@
 }
 
 /* Optional: Add a more playful ribbon effect */
-.card::before {
+.voucher-card::before {
     content: 'Exclusive Voucher';
     position: absolute;
     top: -10px; /* Reduced top positioning for the ribbon */
@@ -85,7 +85,7 @@
 }
 
 /* Decorative bottom line */
-.card::after {
+.voucher-card::after {
     content: '';
     position: absolute;
     bottom: -8px; /* Reduced bottom positioning for the blue line */
@@ -97,7 +97,7 @@
     border-radius: 2px;
 }
 
-.card:hover {
+.voucher-card:hover {
     transform: translateY(-5px); /* Slight lift on hover for interactivity */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Deeper shadow on hover */
 }
@@ -118,9 +118,8 @@
     outline: none;
 }
 
-
 /* Add a subtle background pattern */
-.card {
+.voucher-card {
     background-image: url('path/to/your/pattern.png'); /* Optional background pattern */
     background-size: cover;
     background-repeat: no-repeat; /* Prevent repeating the background */
@@ -128,7 +127,7 @@
 }
 
 /* Add a hover effect for the card */
-.card:hover {
+.voucher-card:hover {
     background-color: rgba(255, 255, 255, 0.9); /* Slightly change background on hover */
 }
 
@@ -138,7 +137,7 @@
 }
 
 /* Add a subtle animation for the card */
-.card {
+.voucher-card {
     animation: fadeIn 0.5s ease; /* Fade-in effect when the card appears */
 }
 

@@ -17,7 +17,7 @@
             <div class="row">
                 @foreach($claimedVouchers as $claimedVoucher)
                     <div class="col-md-4 mb-4">
-                        <div class="card ticket-card shadow-lg border-0 rounded-lg">
+                        <div class="card voucher-card shadow-lg border-0 rounded-lg">
                             <div class="card-body">
                                 <h5 class="card-title text-center text-primary font-weight-bold mb-3">
                                     {{ $claimedVoucher->voucher->code }} ({{ $claimedVoucher->voucher->discount_value }}% off)

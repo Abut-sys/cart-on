@@ -19,7 +19,7 @@
             <div class="row">
                 @foreach ($vouchers as $voucher)
                     <div class="col-md-4 mb-4">
-                        <div class="card ticket-card shadow-lg border-0 rounded-lg">
+                        <div class="card voucher-card shadow-lg border-0 rounded-lg"> <!-- Changed class name here -->
                             <div class="card-body">
                                 <h5 class="card-title text-center text-primary font-weight-bold mb-3">
                                     {{ $voucher->code }} ({{ $voucher->discount_value }}% off)
@@ -37,7 +37,7 @@
                                 <form action="{{ route('claim', $voucher->id) }}" method="POST">
                                     @csrf
                                     <button type="submit"
-                                        class="btn btn-success w-100 py-3 font-weight-bold mt-4 shadow-sm hover-zoom">
+                                        class="btn btn-success w-100 py-3 font-weight-bold mt-4 shadow-sm hover-zoom-voucher"> <!-- Updated hover class -->
                                         Claim Now
                                     </button>
                                 </form>
@@ -49,4 +49,3 @@
         @endif
     </div>
 @endsection
-    
