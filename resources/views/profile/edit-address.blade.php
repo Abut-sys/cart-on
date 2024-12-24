@@ -18,14 +18,16 @@
                             <label for="address_line1">
                                 <i class="fas fa-home"></i> Address Line 1
                             </label>
-                            <input type="text" id="address_line1" name="address_line1" value="{{ old('address_line1') }}" required>
+                            <input type="text" id="address_line1" name="address_line1" value="{{ old('address_line1') }}"
+                                required>
                         </div>
 
                         <div class="profile-edit-field">
                             <label for="address_line2">
                                 <i class="fa-solid fa-house-crack"></i> More Detailed Address (Optional)
                             </label>
-                            <input type="text" id="address_line2" name="address_line2" value="{{ old('address_line2') }}">
+                            <input type="text" id="address_line2" name="address_line2"
+                                value="{{ old('address_line2') }}">
                         </div>
 
                         <div class="profile-edit-field">
@@ -46,7 +48,8 @@
                             <label for="postal_code">
                                 <i class="fa-brands fa-usps"></i> Postal Code
                             </label>
-                            <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code') }}" required>
+                            <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code') }}"
+                                required>
                         </div>
 
                         <div class="profile-edit-field">
@@ -65,8 +68,8 @@
                 @if ($addresses->count())
                     <div class="addresses-list">
                         @foreach ($addresses as $address)
-                            <div class="address-item card">
-                                <div class="card-body">
+                            <div class="address-item pors">
+                                <div class="pors-body">
                                     <p><strong>Address Line 1:</strong> {{ $address->address_line1 }}</p>
                                     <p><strong>More Detailed Address:</strong> {{ $address->address_line2 }}</p>
                                     <p><strong>State:</strong> {{ $address->state }}</p>
@@ -163,6 +166,35 @@
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     }
 
+    /* Styling for the "pors" and "pors-body" */
+    .pors {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        padding: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .pors:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .pors-body {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .pors-body p {
+        margin: 8px 0;
+    }
+
+    .pors-body p strong {
+        color: #333;
+    }
+
+    /* Delete Address Button */
     .delete-address-btn {
         background-color: #e74c3c;
         color: #fff;

@@ -49,6 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/addresses', [ProfileController::class, 'addAddress'])->name('profile.address.add');
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
 
+    Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
+    Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
+    Route::post('/claim/{voucher}', [VoucherController::class, 'claimVoucher'])->name('claim');
+
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
     Route::get('/notifications/all', [NotificationController::class, 'showAllNotifications'])->name('allNotifications');
@@ -67,7 +71,6 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::delete('cart/{id}/remove', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
     Route::post('cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
-
 
     Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
@@ -129,5 +132,3 @@ Route::middleware(['guest', 'check.verified'])->group(function () {
         ->middleware('check.verified'); // Tambahkan middleware di sini jika diperlukan
     Route::post('login', [LoginController::class, 'store']);
 });
-
-
