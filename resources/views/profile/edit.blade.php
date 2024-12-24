@@ -71,6 +71,7 @@
                                 </option>
                             </select>
                         </div>
+                    </div>
 
                         <div class="profile-edit-field">
                             <label for="address_id">Address</label>
