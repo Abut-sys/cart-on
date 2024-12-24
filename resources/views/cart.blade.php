@@ -1,73 +1,96 @@
-{{-- @extends('layouts.index')
+@extends('layouts.index')
 
 @section('content')
-    <div class="container mt-4">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold">Your Cart</h2>
-            <a href="{{ route('products.index') }}" class="btn btn-light">← Continue Shopping</a>
+<div class="container mt-5">
+    <h1 class="fw-bold mb-4">Your Cart</h1>
+
+    <!-- Cart Total Section -->
+    <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-4 rounded">
+        <h5 class="fw-bold">Total Price</h5>
+        <div>
+            <span id="total-price" class="fw-bold text-success me-3">
+                Rp{{ number_format($totalPrice, 0, ',', '.') }}
+            </span>
+            <a href="{{ route('checkout.process') }}" class="btn btn-success btn-sm">Proceed to Checkout</a>
         </div>
+    </div>
 
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
+    <!-- Cart Product List -->
+    <div class="row">
+        @forelse ($carts as $cart)
+            <div class="col-12 mb-4 bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <img src="{{ asset('storage/' . $cart->product->image_path) }}"
+                         alt="{{ $cart->product->name }}"
+                         class="img-thumbnail"
+                         style="width: 80px; height: 80px; object-fit: cover;">
 
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
+                    <div class="ms-3">
+                        <h6 class="mb-1">{{ $cart->product->name }}</h6>
+                        <small class="text-muted">
+                            Size: {{ $cart->size ?? 'N/A' }}
+                        </small>
+                        <small class="text-muted">
+                            Color: {{ $cart->color ?? 'N/A' }}
+                        </small>
 
-        <div class="card shadow-sm p-4 bg-light">
-            <!-- Total Price and Buy Button -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5>Total Price</h5>
-                <div class="d-flex align-items-center gap-3">
-                    <h4 class="text-success">
-                        Rp{{ number_format($carts->sum(fn($cart) => $cart->product->price * $cart->quantity), 0, ',', '.') }}
-                    </h4>
-                    <button class="btn btn-success">Buy</button>
-                </div>
-            </div>
-
-            @foreach ($carts as $cart)
-                <div
-                    class="cart-item d-flex align-items-center justify-content-between mb-4 py-3 px-3 bg-white rounded shadow-sm">
-                    <div class="d-flex align-items-center gap-4">
-                        <img src="{{ asset('storage/' . $cart->product->image_path) }}" alt="{{ $cart->product->name }}"
-                            class="cart-item-image">
-                        <div>
-                            <h5>{{ $cart->product->name }}</h5>
-                            <p class="mb-1">Size: {{ $cart->size ?? '-' }}</p>
-                            <p class="mb-1">Color: {{ $cart->color ?? '-' }}</p>
-                        </div>
+                        <p class="fw-bold mb-0 text-success">
+                            Rp{{ number_format($cart->product->price, 0, ',', '.') }}
+                        </p>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <h6>Rp{{ number_format($cart->product->price, 0, ',', '.') }}</h6>
-                        <div class="input-group quantity-control">
-                            <button class="btn btn-outline-secondary btn-sm decrement"
-                                data-id="{{ $cart->id }}">-</button>
-                            <input type="text" class="form-control form-control-sm text-center"
-                                value="{{ $cart->quantity }}" readonly>
-                            <button class="btn btn-outline-secondary btn-sm increment"
-                                data-id="{{ $cart->id }}">+</button>
-                        </div>
+                </div>
 
-                        <form action="{{ route('cart.destroy', $cart->id) }}" method="POST"
-                            onsubmit="return confirm('Are you sure you want to delete this item from your cart?');">
+                <!-- Cart Item Actions (Remove, Quantity Controls) -->
+                <div class="d-flex align-items-center">
+                    <form action="{{ route('cart.remove', $cart->id) }}" method="POST" class="me-2">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+
+                    <div class="input-group input-group-sm" style="width: 120px;">
+                        <form action="{{ route('cart.decrease', $cart->id) }}" method="POST">
                             @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
+                        </form>
+
+                        <input type="text" class="form-control text-center"
+                               value="{{ $cart->quantity }}" readonly>
+
+                        <form action="{{ route('cart.increase', $cart->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
                         </form>
                     </div>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @empty
+            <div class="col-12 text-center py-5">
+                <h4 class="text-muted">Your cart is empty!</h4>
+                <a href="{{ route('products.index') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+            </div>
+        @endforelse
     </div>
+
+        <div class="checkout-card mb-4">
+            <div class="checkout-card-header">
+                <h5>Payment Summary</h5>
+            </div>
+            <div class="checkout-card-body">
+                @foreach ($carts as $cart)
+                    <p class="checkout-summary-item">Product: <span class="checkout-summary-value">{{ $cart->product->name }}</span></p>
+                    <p class="checkout-summary-item">Price: <span class="checkout-summary-value">Rp{{ number_format($cart->product->price, 0, ',', '.') }}</span></p>
+                    <p class="checkout-summary-item">Quantity: <span class="checkout-summary-value">{{ $cart->quantity }}</span></p>
+                    <hr>
+                @endforeach
+            </div>
+        </div>
+
+    </div>
+</div>
+
 @endsection
 
 <script>
@@ -89,122 +112,9 @@
                 },
                 success: function(response) {
                     if (response.status === 'added') {
-                        $this.removeClass('text-secondary').addClass('text-danger');
+                        $this.removeClass('text-secondary').addClass('text-success');
                     } else if (response.status === 'removed') {
                         $cartItem.remove();
-                    }
-                    $('#wishlist-count').text(response.wishlistCount);
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', xhr.responseText);
-                }
-            });
-        });
-    });
-</script>
-
-<style>
-    .cart-item {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-    }
-
-    .cart-item-image {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
-
-    .quantity-control {
-        display: flex;
-        align-items: center;
-        max-width: 100px;
-    }
-
-    .quantity-control input {
-        width: 40px;
-        text-align: center;
-    }
-
-    .delete-cart-item {
-        font-size: 16px;
-    }
-</style> --}}
-
-@extends('layouts.index')
-
-@section('content')
-    <div class="container-fluid mt-4">
-        <div class="row cart-row">
-            <div class="mb-3 d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="fw-bold">Sort by</span>
-                    <a href="{{ route('cart.index') }}" class="btn btn-light ms-2">
-                        <i class="fa fa-times"></i>
-                    </a>
-                </div>
-                <div class="cart-btn-group">
-                    <a href="{{ route('cart.index', ['sort' => 'newest']) }}"
-                        class="btn {{ request('sort') == 'newest' ? 'btn-dark' : 'btn-light' }}">Newest</a>
-                    <a href="{{ route('cart.index', ['sort' => 'bestselling']) }}"
-                        class="btn {{ request('sort') == 'bestselling' ? 'btn-dark' : 'btn-light' }}">Bestselling</a>
-                    <a href="{{ route('cart.index', ['sort' => 'lowest_price']) }}"
-                        class="btn {{ request('sort') == 'lowest_price' ? 'btn-dark' : 'btn-light' }}">Lowest Price</a>
-                    <a href="{{ route('cart.index', ['sort' => 'highest_price']) }}"
-                        class="btn {{ request('sort') == 'highest_price' ? 'btn-dark' : 'btn-light' }}">Highest Price</a>
-                </div>
-            </div>
-
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3 cart-product-list">
-                @foreach ($carts as $cart)
-                    <div class="col" id="cart-item-{{ $cart->product->id }}">
-                        <a href="{{ route('products-all.show', $cart->product->id) }}" class="card cart-card">
-                            <img src="{{ asset('storage/' . $cart->product->image_path) }}"
-                                alt="{{ $cart->product->name }}" class="cart-card-img-top">
-                            <div class="cart-card-body text-center">
-                                <h6 class="cart-card-title">{{ $cart->product->name }}</h6>
-                                <p class="cart-card-price">
-                                    Rp{{ number_format($cart->product->price, 0, ',', '.') }}
-                                </p>
-                            </div>
-                            <i class="fas fa-shopping-cart cart-toggle-btn
-                                {{ in_array($cart->product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
-                                data-product-id="{{ $cart->product->id }}"></i>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                {{ $carts->appends(['sort' => request('sort')])->links() }}
-            </div>
-        </div>
-    </div>
-@endsection
-
-<script>
-    $(document).ready(function() {
-        $(document).on('click', '.cart-toggle-btn', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            var productId = $(this).data('product-id');
-            var $this = $(this);
-            var $wishlistItem = $('#cart-item-' + productId);
-
-            $.ajax({
-                url: '{{ route('cart.add') }}',
-                type: 'POST',
-                data: {
-                    product_id: productId,
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                },
-                success: function(response) {
-                    if (response.status === 'added') {
-                        $this.removeClass('text-secondary').addClass('text-danger');
-                    } else if (response.status === 'removed') {
-                        $wishlistItem.remove();
                     }
                     $('#cart-count').text(response.cartCount);
                 },
@@ -214,6 +124,7 @@
             });
         });
     });
+
 </script>
 
 <style>
@@ -307,6 +218,33 @@
         border-color: #99bc85bd;
         color: #fff;
     }
-</style>
 
+    /* Checkout Summary Section */
+    .checkout-summary-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .checkout-summary-item span {
+        font-weight: bold;
+    }
+
+    .checkout-total-price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #007bff;
+        text-align: right;
+        margin-top: 1rem;
+    }
+
+    .checkout-form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+</style>
 

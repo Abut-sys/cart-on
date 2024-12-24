@@ -1,0 +1,154 @@
+.card {
+    border: 2px solid #e1e4e8; /* Softer border for a cleaner look */
+    border-radius: 15px; /* Rounder corners for a more approachable feel */
+    background-color: #ffffff; /* Bright white background for clarity */
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 20px; /* Increased padding for a more spacious feel */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+/* Zoom effect on hover for claim button */
+.hover-zoom:hover {
+    transform: scale(4.05); /* Slightly enlarge the button */
+    transition: transform 0.3s ease;
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 1.5rem; /* Slightly larger title for emphasis */
+    color: #0056b3; /* Blue color for a clean, professional look */
+    text-align: center;
+    margin-bottom: 10px; /* Reduced margin for a smaller gap */
+}
+
+.card-text {
+    font-size: 1rem; /* Standard text size */
+    color: #333; /* Darker text for better readability */
+    text-align: center;
+    margin-bottom: 15px; /* Reduced margin between text and button */
+    line-height: 1.5; /* Standard line height */
+}
+
+.card .validity {
+    font-weight: 600;
+    font-size: 1.1rem; /* Slightly smaller validity text */
+    margin: 10px 0; /* Reduced margin for closer spacing */
+    text-align: center;
+    color: #28a745; /* Green color to indicate the validity period */
+}
+
+.card .terms {
+    font-size: 0.9rem; /* Smaller font for terms */
+    color: #777;
+    text-align: center;
+    margin-bottom: 15px; /* Reduced bottom margin */
+    line-height: 1.4;
+}
+
+/* Claim Button */
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    font-weight: bold;
+    font-size: 1.1rem; /* Standard font for the button */
+    padding: 12px; /* Standard padding for a comfortable button */
+    width: 100%;
+    margin-top: 15px; /* Space above the button */
+    border-radius: 25px; /* Rounded corners */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    position: relative; /* For positioning effects */
+    overflow: hidden; /* To contain hover effects */
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: scale(1.05); /* Slight scale effect */
+}
+
+/* Optional: Add a more playful ribbon effect */
+.card::before {
+    content: 'Exclusive Voucher';
+    position: absolute;
+    top: -10px; /* Reduced top positioning for the ribbon */
+    left: -10px;
+    background-color: #ffcc00; /* Yellow ribbon */
+    color: #000;
+    padding: 8px 15px; /* Reduced padding for a smaller ribbon */
+    font-weight: bold;
+    font-size: 1rem; /* Smaller font for the ribbon */
+    transform: rotate(-5deg);
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Decorative bottom line */
+.card::after {
+    content: '';
+    position: absolute;
+    bottom: -8px; /* Reduced bottom positioning for the blue line */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%; /* Slightly larger width for the line */
+    height: 4px; /* Increased height for the line */
+    background-color: #007bff; /* Blue line for emphasis */
+    border-radius: 2px;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Slight lift on hover for interactivity */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Deeper shadow on hover */
+}
+
+/* Custom Hover Effect for the View Your Vouchers button */
+.custom-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.custom-hover:hover {
+    transform: translateY(-5px); /* Moves the button up */
+    box-shadow: 0 8px 15px rgba(0, 123, 255, 0.2); /* Adds shadow on hover */
+    background-color: #007bff; /* Change background color on hover */
+}
+
+/* Optional: Add more customization for the button */
+.custom-hover:focus {
+    outline: none;
+}
+
+
+/* Add a subtle background pattern */
+.card {
+    background-image: url('path/to/your/pattern.png'); /* Optional background pattern */
+    background-size: cover;
+    background-repeat: no-repeat; /* Prevent repeating the background */
+    background-position: center; /* Center the background pattern */
+}
+
+/* Add a hover effect for the card */
+.card:hover {
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly change background on hover */
+}
+
+/* Add a glow effect on hover for the button */
+.btn-success:hover {
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5); /* Glow effect on hover */
+}
+
+/* Add a subtle animation for the card */
+.card {
+    animation: fadeIn 0.5s ease; /* Fade-in effect when the card appears */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0; /* Start invisible */
+        transform: translateY(10px); /* Start slightly lower */
+    }
+    to {
+        opacity: 1; /* End fully visible */
+        transform: translateY(0); /* End in original position */
+    }
+}

@@ -94,6 +94,38 @@
         const prevButton = document.querySelector('.home-user-banner-prev');
         const nextButton = document.querySelector('.home-user-banner-next');
         let currentIndex = 0;
+        const totalBanners = banners.length;
+
+        $('.home-product-newest-wishlist-icon').on('click', function(event) {
+            event.preventDefault();
+
+            var productId = $(this).data('product-id');
+            var $this = $(this);
+
+            $.ajax({
+                url: '{{ route('wishlist.add') }}',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    _token: '{{ csrf_token() }}',
+                },
+                success: function(response) {
+                    if (response.status === 'added') {
+                        $this.removeClass('text-secondary').addClass(
+                            'text-danger');
+                    } else if (response.status === 'removed') {
+                        $this.removeClass('text-danger').addClass(
+                            'text-secondary');
+                    }
+
+                    $('#for-badge-count-wishlist').text(response
+                        .wishlistCount);
+                },
+                error: function(xhr, status, error) {
+                    alert('Terjadi kesalahan saat memperbarui wishlist.');
+                    console.error("AJAX error: " + status + ": " + error);
+                }
+            });
 
         function updateBannerPosition() {
             banner.style.transform = `translateX(-${currentIndex * 100}%)`;

@@ -32,9 +32,12 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/claim.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/orders/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/home_user/home.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
 </head>
 
 <body>
@@ -198,6 +201,9 @@
     {{-- Dashboard --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @yield('dashboard')
+
+    {{-- Flatpickr --}}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     {{-- Select 2 --}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>

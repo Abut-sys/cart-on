@@ -25,7 +25,8 @@
 
                     <div class="voucher-create-form-group mb-4">
                         <label for="discount_value" class="voucher-create-form-label">Discount Value (%)</label>
-                        <input type="number" name="discount_value" id="discount_value" class="voucher-create-form-control" min="0" max="100" required>
+                        <input type="number" name="discount_value" id="discount_value" class="voucher-create-form-control"
+                            min="0" max="100" required>
                         <small class="voucher-create-form-text">Enter a value between 0 and 100.</small>
                         @error('discount_value')
                             <div class="voucher-create-alert-danger">{{ $message }}</div>
@@ -34,7 +35,8 @@
 
                     <div class="voucher-create-form-group mb-4">
                         <label for="start_date" class="voucher-create-form-label">Start Date</label>
-                        <input type="date" name="start_date" id="start_date" class="voucher-create-form-control" required>
+                        <input type="date" name="start_date" id="start_date"
+                            class="voucher-create-form-control date-picker" required>
                         @error('start_date')
                             <div class="voucher-create-alert-danger">{{ $message }}</div>
                         @enderror
@@ -42,31 +44,45 @@
 
                     <div class="voucher-create-form-group mb-4">
                         <label for="end_date" class="voucher-create-form-label">End Date</label>
-                        <input type="date" name="end_date" id="end_date" class="voucher-create-form-control" required>
+                        <input type="date" name="end_date" id="end_date" class="voucher-create-form-control date-picker"
+                            required>
                         @error('end_date')
                             <div class="voucher-create-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="voucher-create-form-group mb-4">
-                        <label for="Terms_and_Conditions" class="voucher-create-form-label">Terms and Conditions</label>
-                        <textarea name="Terms_and_Conditions" id="Terms_and_Conditions" class="voucher-create-form-control"></textarea>
-                        @error('Terms_and_Conditions')
+                        <label for="terms_and_conditions" class="voucher-create-form-label">Terms and Conditions</label>
+                        <textarea name="terms_and_conditions" id="terms_and_conditions" class="voucher-create-form-control"></textarea>
+                        @error('terms_and_conditions')
                             <div class="voucher-create-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="voucher-create-form-group mb-4">
                         <label for="usage_limit" class="voucher-create-form-label">Usage Limit</label>
-                        <input type="number" name="usage_limit" id="usage_limit" class="voucher-create-form-control" required>
+                        <input type="number" name="usage_limit" id="usage_limit" class="voucher-create-form-control"
+                            required>
                         @error('usage_limit')
                             <div class="voucher-create-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <button type="submit" class="voucher-create-btn voucher-create-btn-success w-100">Create Voucher</button>
+                    <button type="submit" class="voucher-create-btn voucher-create-btn-success w-100">Create
+                        Voucher</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Flatpickr pada elemen dengan kelas .date-picker
+            flatpickr('.date-picker', {
+                dateFormat: 'Y-m-d', // Format tanggal (tahun-bulan-hari)
+                minDate: 'today', // Menghindari tanggal masa depan
+                disableMobile: true, // Menghindari penggunaan Flatpickr di perangkat mobile
+            });
+        });
+    </script>
 @endsection

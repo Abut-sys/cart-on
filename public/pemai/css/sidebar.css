@@ -110,7 +110,18 @@
     position: relative;
 }
 
-#for-badge-count {
+#for-badge-count-cart {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 50%;
+    background-color: #ff3b30;
+    color: white;
+}
+
+#for-badge-count-wishlist {
     position: absolute;
     top: -5px;
     right: -5px;

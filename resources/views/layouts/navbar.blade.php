@@ -8,7 +8,9 @@
     @endauth
 
     <div class="logo-container" oncontextmenu="return false;">
-        <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
+        <a href="{{ url('/') }}">
+            <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
+        </a>
     </div>
 
     @if (!Auth::check() || Auth::user()->role != 'admin')
@@ -38,7 +40,7 @@
         <div class="link-section">
             <a href="{{ route('cart.index') }}">
                 <i class="fas fa-shopping-cart link-icon {{ request()->is('cart') ? 'active' : '' }}"></i>
-                <span id="for-badge-count" class="badge {{ Auth::check() ? '' : 'bg-danger' }}"
+                <span id="for-badge-count-cart" class="badge {{ Auth::check() ? '' : 'bg-danger' }}"
                     style="{{ Auth::check() ? '' : 'display:none;' }}">
                     {{ Auth::check() ? Auth::user()->carts->count() : '' }}
                 </span>
@@ -49,7 +51,7 @@
         <div class="link-section">
             <a href="{{ route('wishlist.index') }}" class="{{ request()->is('wishlist') ? 'active' : '' }}">
                 <i class="fas fa-heart link-icon"></i>
-                <span id="for-badge-count" class="badge" style="{{ Auth::check() ? '' : 'display:none;' }}">
+                <span id="for-badge-count-wishlist" class="badge" style="{{ Auth::check() ? '' : 'display:none;' }}">
                     {{ Auth::check() ? Auth::user()->wishlists->count() : '' }}
                 </span>
             </a>
@@ -87,6 +89,11 @@
                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Profile
                 </a>
+                @if (Auth::user()->role != 'admin')
+                    <a class="dropdown-item" href="{{ route('voucher.claim') }}">
+                        <i class="fas fa-gift"></i> Claim Voucher
+                    </a>
+                @endif
                 @if (Auth::user()->role != 'admin')
                     <a class="dropdown-item" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

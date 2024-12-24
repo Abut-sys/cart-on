@@ -76,7 +76,6 @@
                 </div>
 
                 <div class="product-user-show-action-buttons mt-4" style="margin-left: -10px;">
-                    <button class="btn btn-warning product-user-show-btn-add-to-cart me-3">🛒 Add To Cart</button>
                     <form action="{{ route('checkout.show', $product->id) }}" method="GET">
                         @csrf
                         <input type="hidden" name="quantity" value="1" id="quantityInput">
@@ -284,13 +283,13 @@
                     success: function(response) {
                         if (response.status === 'added') {
                             $this.removeClass('text-secondary').addClass(
-                                'text-danger');
+                                'text-success');
                         } else if (response.status === 'removed') {
-                            $this.removeClass('text-danger').addClass(
+                            $this.removeClass('text-success').addClass(
                                 'text-secondary');
                         }
 
-                        $('#cart-count').text(response
+                        $('#for-badge-count-cart').text(response
                             .cartCount);
                     },
                     error: function(xhr, status, error) {
@@ -322,7 +321,7 @@
                                 'text-secondary');
                         }
 
-                        $('#wishlist-count').text(response
+                        $('#for-badge-count-wishlist').text(response
                             .wishlistCount);
                     },
                     error: function(xhr, status, error) {
