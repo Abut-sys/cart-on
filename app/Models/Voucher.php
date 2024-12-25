@@ -103,6 +103,11 @@ class Voucher extends Model
         return $this->hasMany(Checkout::class, 'voucher_code', 'code');
     }
 
+    public function claimVoucher()
+    {
+        return $this->hasMany(ClaimVoucher::class);
+    }
+
     // scopeActive: Mengambil semua voucher yang aktif berdasarkan tanggal.
     // scopeInactive: Mengambil semua voucher yang tidak aktif berdasarkan tanggal.
     // getStatusAttribute: Menentukan status berdasarkan tanggal.

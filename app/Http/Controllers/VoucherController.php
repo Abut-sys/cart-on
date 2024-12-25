@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Voucher;
-use App\Models\UserVoucher;
+use App\Models\ClaimVoucher;
 use Illuminate\Http\Request;
-use App\Events\VoucherStatusChanged;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Events\VoucherStatusChanged;
 
 class VoucherController extends Controller
 {
@@ -15,17 +16,17 @@ class VoucherController extends Controller
     {
         $query = Voucher::query();
 
-        // Filter berdasarkan code (mendukung pencarian parsial)
+        // Filter berdasarkan kode voucher
         if ($request->filled('code')) {
             $query->where('code', 'like', '%' . $request->code . '%');
         }
 
-        // Filter berdasarkan status (active atau inactive)
+        // Filter berdasarkan status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Paginate hasil pencarian
+        // Pagination
         $vouchers = $query->paginate(10);
 
         return view('vouchers.index', compact('vouchers'));
@@ -48,10 +49,8 @@ class VoucherController extends Controller
         ]);
 
         $voucher = Voucher::create($validatedData);
-
         $voucher->updateStatus();
 
-        // Trigger event untuk notifikasi
         event(new VoucherStatusChanged($voucher));
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully!');
@@ -74,7 +73,6 @@ class VoucherController extends Controller
         ]);
 
         $voucher->update($validatedData);
-
         $voucher->updateStatus();
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully!');
@@ -83,47 +81,64 @@ class VoucherController extends Controller
     public function destroy(Voucher $voucher)
     {
         $voucher->delete();
+
         return redirect()->route('vouchers.index')->with('success', 'Voucher deleted successfully!');
     }
 
     public function claim()
     {
-        // Retrieve only active vouchers that can be claimed (status = 'active' and within the date range)
-        $claimedVoucherIds = UserVoucher::where('user_id', Auth::id())->pluck('voucher_id')->toArray();
+        $claimedVoucherIds = ClaimVoucher::where('user_id', Auth::id())->pluck('voucher_id')->toArray();
 
         $vouchers = Voucher::where('status', 'active')
             ->where('start_date', '<=', Carbon::now())
             ->where('end_date', '>=', Carbon::now())
-            ->whereNotIn('id', $claimedVoucherIds) // Exclude claimed vouchers
+            ->whereNotIn('id', $claimedVoucherIds)
+            ->whereColumn('used_count', '<', 'usage_limit')
             ->get();
 
-        // Return the claim page with the available vouchers
         return view('vouchers.claim', compact('vouchers'));
     }
 
     public function claimedVouchers()
     {
-        // Ambil voucher yang sudah diklaim oleh pengguna yang sedang login
-        $claimedVouchers = UserVoucher::where('user_id', Auth::id())->with('voucher')->get();
+        $claimedVouchers = ClaimVoucher::where('user_id', Auth::id())->with('voucher')->get();
 
         return view('vouchers.claimed', compact('claimedVouchers'));
     }
 
-    public function claimVoucher($voucherId)
+    public function claimVoucher(Request $request, $voucherId)
     {
+        $userId = Auth::id();
+
         $voucher = Voucher::findOrFail($voucherId);
 
-        // Pastikan voucher masih valid (jika perlu)
-        if ($voucher->start_date <= now() && $voucher->end_date >= now()) {
-            // Simpan klaim voucher
-            UserVoucher::create([
-                'voucher_id' => $voucher->id,
-                'user_id' => auth()->id(), // ID pengguna yang mengklaim
-            ]);
-
-            return redirect()->back()->with('msg', 'Voucher berhasil diklaim!');
+        if ($voucher->status !== 'active') {
+            return redirect()
+                ->back()
+                ->withErrors(['msg' => 'Voucher is not active.']);
         }
 
-        return redirect()->back()->with('msg', 'Voucher tidak valid atau sudah expired.');
+        if ($voucher->used_count >= $voucher->usage_limit) {
+            return redirect()
+                ->back()
+                ->withErrors(['msg' => 'Voucher usage limit reached.']);
+        }
+
+        $alreadyClaimed = ClaimVoucher::where('user_id', $userId)->where('voucher_id', $voucherId)->exists();
+
+        if ($alreadyClaimed) {
+            return redirect()
+                ->back()
+                ->withErrors(['msg' => 'You have already claimed this voucher.']);
+        }
+
+        ClaimVoucher::create([
+            'user_id' => $userId,
+            'voucher_id' => $voucherId,
+        ]);
+
+        $voucher->increment('used_count');
+
+        return redirect()->route('voucher.claim')->with('msg', 'Voucher claimed successfully!');
     }
 }
