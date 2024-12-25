@@ -25,4 +25,9 @@ class ClaimVoucher extends Model
     {
         return $this->belongsTo(Voucher::class);
     }
+
+    public function checkout()
+    {
+        return $this->hasMany(Checkout::class);
+    }
 }
