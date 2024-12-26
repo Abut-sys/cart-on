@@ -66,77 +66,104 @@ class CheckoutController extends Controller
         $user = auth()->user();
 
         $validated = $request->validate([
-            'address_id' => 'required|exists:addresses,id',
             'product_id' => 'required|exists:products,id',
             'variant_id' => 'required|exists:sub_variants,id',
             'quantity' => 'required|integer|min:1',
-            'voucher_code' => 'nullable|string|exists:vouchers,code',
+            'total_price' => 'required|numeric|min:0',
+            'voucher_code' => 'nullable|string',
+            'address_id' => 'required|exists:addresses,id',
+            'shipping_method' => 'required|string|in:standard,express'
         ]);
 
-        $voucherCode = $validated['voucher_code'];
-        $voucher = Voucher::where('code', $voucherCode)->first();
-
-        if ($voucher && $voucher->isUsedByUser($user)) {
-            return redirect()->back()->with('error', 'You have already used this voucher.');
-        }
-
-        if ($voucher && $voucher->status === 'inactive') {
-            return redirect()->back()->with('error', 'This voucher is inactive or expired.');
-        }
+        $voucher = $this->handleVoucher($validated);
 
         $product = Product::findOrFail($validated['product_id']);
         $variant = SubVariant::findOrFail($validated['variant_id']);
+        $this->validateStock($variant, $validated['quantity']);
 
-        if ($validated['quantity'] > $variant->stock) {
-            return redirect()->back()->with('error', 'Insufficient stock for the selected variant.');
+        $totalPrice = $this->calculateTotalPrice($product, $validated['quantity'], $voucher);
+
+        $checkout = $this->createCheckout($validated, $voucher, $totalPrice);
+
+        $order = $this->createOrder($checkout, $totalPrice);
+
+        $addresses = Address::whereHas('profile', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
+        $snapToken = $this->paymentService->generateSnapToken($product, $variant, $validated['quantity'], auth()->user(), $order->unique_order_id, $totalPrice, $voucher);
+
+        $quantity = $validated['quantity'];
+
+        return view('checkout.form', compact('snapToken', 'order', 'product', 'variant', 'validated', 'totalPrice', 'checkout', 'voucher', 'quantity', 'addresses'));
+    }
+
+    private function handleVoucher($validated)
+    {
+        $voucherCode = $validated['voucher_code'];
+        $voucher = null;
+
+        if ($voucherCode) {
+            $voucher = Voucher::where('code', $voucherCode)->first();
+
+            if (!$voucher) {
+                throw new \Exception('Voucher tidak ditemukan.');
+            }
+
+            if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
+                throw new \Exception('Voucher tidak aktif atau sudah kadaluarsa.');
+            }
+
+            if ($voucher->isUsedByUser(auth()->user())) {
+                throw new \Exception('Anda sudah menggunakan voucher ini.');
+            }
         }
 
-        $totalPrice = $product->price * $validated['quantity'];
+        return $voucher;
+    }
+
+    private function validateStock($variant, $quantity)
+    {
+        if ($quantity > $variant->stock) {
+            throw new \Exception('Insufficient stock for the selected variant.');
+        }
+    }
+
+    private function calculateTotalPrice($product, $quantity, $voucher = null)
+    {
+        $totalPrice = $product->price * $quantity;
+
         if ($voucher) {
             $totalPrice -= $voucher->discount_value;
             $totalPrice = max(0, $totalPrice);
         }
 
-        $checkout = Checkout::create([
-            'user_id' => $user->id,
-            'product_id' => $product->id,
+        return $totalPrice;
+    }
+
+    private function createCheckout($validated, $voucher, $totalPrice)
+    {
+        return Checkout::create([
+            'user_id' => auth()->id(),
+            'product_id' => $validated['product_id'],
             'address_id' => $validated['address_id'],
-            'voucher_code' => $voucherCode,
+            'voucher_code' => $validated['voucher_code'],
             'quantity' => $validated['quantity'],
-            'shipping_method' => $request->input('shipping_method', 'standard'),
+            'shipping_method' => $validated['shipping_method'],
             'amount' => $totalPrice,
         ]);
+    }
 
-        $order = Order::create([
+    private function createOrder($checkout, $totalPrice)
+    {
+        return Order::create([
             'checkout_id' => $checkout->id,
             'order_date' => now(),
-            'unique_order_id' => uniqid('ORDER-'),
+            'unique_order_id' => 'ORDER-' . uniqid('', true) . '-' . Str::random(6),
             'address' => $checkout->address->address_line1,
-            'amount' => $checkout->amount,
+            'amount' => $totalPrice,
             'payment_status' => 'pending',
             'order_status' => 'pending',
         ]);
-
-        if ($voucher) {
-            UserVoucher::create([
-                'user_id' => $user->id,
-                'voucher_id' => $voucher->id,
-            ]);
-            $voucher->decrementUsage();
-        }
-
-        $snapToken = $this->paymentService->generateSnapToken($product, $variant,  $validated['quantity'], $user, $order->unique_order_id, $checkout->amount);
-
-        return view('checkout.form', compact(
-            'snapToken',
-            'order',
-            'product',
-            'variant',
-            'validated',
-            'totalPrice',
-            'checkout',
-            'voucher'
-        ));
     }
 
     public function checkVoucher(Request $request)
@@ -152,19 +179,42 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Voucher not found.']);
         }
 
-        if ($voucher->status === 'inactive') {
-            return response()->json(['success' => false, 'message' => 'This voucher is inactive or expired.']);
+        if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
+            return response()->json(['success' => false, 'message' => 'This voucher is inactive, expired, or has no more usage left.']);
         }
 
-        if ($voucher->usage_limit <= 0) {
-            return response()->json(['success' => false, 'message' => 'Voucher has no more usage left.']);
-        }
-
-        $userVoucher = UserVoucher::where('user_id', auth()->id())->where('voucher_id', $voucher->id)->first();
+        $userVoucher = UserVoucher::where('user_id', auth()->id())
+            ->where('voucher_id', $voucher->id)
+            ->first();
 
         if ($userVoucher) {
             return response()->json(['success' => false, 'message' => 'You have already used this voucher.']);
         }
+
+        $newTotal = max(0, $request->total_price - $voucher->discount_value);
+
+        return response()->json([
+            'success' => true,
+            'new_total' => $newTotal,
+        ]);
+    }
+
+    public function updateVoucherUsage(Request $request)
+    {
+        $voucher = Voucher::where('code', $request->voucher_code)->first();
+
+        if (!$voucher) {
+            return response()->json(['success' => false, 'message' => 'Voucher tidak ditemukan.']);
+        }
+
+        if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
+            return response()->json(['success' => false, 'message' => 'Voucher tidak aktif atau sudah kadaluarsa.']);
+        }
+
+        $userVoucher = UserVoucher::create([
+            'user_id' => auth()->id(),
+            'voucher_id' => $voucher->id,
+        ]);
 
         $voucher->decrementUsage();
 
@@ -173,16 +223,6 @@ class CheckoutController extends Controller
             $voucher->save();
         }
 
-        $newTotal = max(0, $request->total_price - $voucher->discount_value);
-
-        UserVoucher::create([
-            'user_id' => auth()->id(),
-            'voucher_id' => $voucher->id,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'new_total' => $newTotal,
-        ]);
+        return response()->json(['success' => true]);
     }
 }

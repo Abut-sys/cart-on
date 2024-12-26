@@ -25,30 +25,7 @@
                     </div>
                 </div>
 
-                <div class="checkout-card mb-4">
-                    <div class="checkout-card-header">
-                        <h5>Shipping Address</h5>
-                    </div>
-                    <div class="checkout-card-body">
-                        <label for="address_id" class="form-label">Select Address:</label>
-                        <select name="address_id" id="address_id" class="form-select">
-                            @foreach ($addresses as $address)
-                                <option value="{{ $address->id }}"
-                                    {{ old('address_id') == $address->id ? 'selected' : '' }}>
-                                    {{ $address->address_line1 }}
-                                </option>
-                            @endforeach
-                        </select>
 
-                        <label for="shipping_method" class="form-label mt-3">Shipping Method:</label>
-                        <select name="shipping_method" id="shipping_method" class="form-select">
-                            <option value="standard" {{ old('shipping_method') == 'standard' ? 'selected' : '' }}>Standard
-                            </option>
-                            <option value="express" {{ old('shipping_method') == 'express' ? 'selected' : '' }}>Express
-                            </option>
-                        </select>
-                    </div>
-                </div>
             </div>
 
             <div class="checkout-summary col-lg-4 col-md-12">
@@ -88,144 +65,201 @@
                     <input type="hidden" name="total_price" value="{{ $totalPrice }}">
                     <input type="hidden" name="voucher_code" id="voucher_code_hidden" value="{{ old('voucher_code') }}">
 
-                    <button id="pay-button" type="button" class="btn btn-primary w-100 mt-3">Pay Now</button>
-                </form>
+                    <div class="checkout-card mb-4">
+                        <div class="checkout-card-header">
+                            <h5>Shipping Address</h5>
+                        </div>
+                        @if ($addresses->isEmpty())
+                            <p>No addresses available.</p>
+                        @else
+                            <div class="checkout-card-body">
+                                <label for="address_id" class="form-label">Select Address:</label>
+                                <select name="address_id" id="address_id" class="form-select">
+                                    @foreach ($addresses as $address)
+                                        <option value="{{ $address->id }}"
+                                            {{ old('address_id') == $address->id ? 'selected' : '' }}>
+                                            {{ $address->address_line1 }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                        @endif
+                        <label for="shipping_method" class="form-label mt-3">Shipping Method:</label>
+                        <select name="shipping_method" id="shipping_method" class="form-select">
+                            <option value="standard" {{ old('shipping_method') == 'standard' ? 'selected' : '' }}>Standard
+                            </option>
+                            <option value="express" {{ old('shipping_method') == 'express' ? 'selected' : '' }}>Express
+                            </option>
+                        </select>
+                    </div>
             </div>
+
+            <button id="pay-button" type="button" class="btn btn-primary w-100 mt-3">Pay Now</button>
+            </form>
         </div>
+    </div>
+    </div>
 
-        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
-        </script>
-        <script>
-            document.getElementById('apply-voucher-btn').addEventListener('click', function() {
-                var voucherCode = document.getElementById('voucher_code').value;
-                var totalPrice = {{ $totalPrice }};
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+    </script>
+    <script>
+        document.getElementById('apply-voucher-btn').addEventListener('click', function() {
+            var voucherCode = document.getElementById('voucher_code').value;
+            var totalPrice = {{ $totalPrice }};
 
-                var errorMessageElement = document.getElementById('voucher-error-message');
-                errorMessageElement.textContent = '';
+            var errorMessageElement = document.getElementById('voucher-error-message');
+            errorMessageElement.textContent = '';
 
-                if (voucherCode === "") {
-                    errorMessageElement.textContent = 'Please enter a voucher code.';
-                    return;
-                }
+            if (voucherCode === "") {
+                errorMessageElement.textContent = 'Please enter a voucher code.';
+                return;
+            }
 
-                fetch('{{ route('voucher.check') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            voucher_code: voucherCode,
-                            total_price: totalPrice
-                        })
+            fetch('{{ route('voucher.check') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        voucher_code: voucherCode,
+                        total_price: totalPrice
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            var newTotal = data.new_total;
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        var newTotal = data.new_total;
 
-                            document.getElementById('total-price').innerText = 'Rp' + newTotal.toLocaleString();
-                            document.querySelector('input[name="total_price"]').value = newTotal;
-                            document.getElementById('voucher_code_hidden').value =
+                        document.getElementById('total-price').innerText = 'Rp' + newTotal.toLocaleString();
+                        document.querySelector('input[name="total_price"]').value = newTotal;
+                        document.getElementById('voucher_code_hidden').value =
                             voucherCode;
 
-                            errorMessageElement.textContent = '';
-                        } else {
-                            errorMessageElement.textContent = data.message ||
-                                'Voucher is invalid, expired, or already used.';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        errorMessageElement.textContent = 'An error occurred while processing the voucher.';
-                    });
-            });
-
-            document.getElementById('pay-button').addEventListener('click', function() {
-                var finalPrice = document.querySelector('input[name="total_price"]').value;
-                snap.pay('{{ $snapToken }}', {
-                    onSuccess: function(result) {
-                        window.location.href = "{{ Route('home.index') }}";
-                    },
-                    onPending: function(result) {
-                        alert("Payment is pending.");
-                    },
-                    onError: function(result) {
-                        console.error(result);
-                        alert('Payment failed');
+                        errorMessageElement.textContent = '';
+                    } else {
+                        errorMessageElement.textContent = data.message ||
+                            'Voucher is invalid, expired, or already used.';
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorMessageElement.textContent = 'An error occurred while processing the voucher.';
                 });
-            });
-        </script>
+        });
+        document.getElementById('pay-button').addEventListener('click', function() {
+            var finalPrice = document.querySelector('input[name="total_price"]').value;
 
-        <style>
-            .checkout-container {
-                max-width: 1200px;
-                margin: auto;
-                background-color: #fff;
-                border-radius: 8px;
-                padding: 20px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
+            snap.pay('{{ $snapToken }}', {
+                onSuccess: function(result) {
+                    document.getElementById('checkout-form').submit();
 
-            .checkout-title {
-                font-size: 28px;
-                font-weight: bold;
-                margin-bottom: 20px;
-            }
+                    setTimeout(function() {
+                        window.location.href = '{{ route('home.index') }}';
 
-            .checkout-card {
-                background-color: #f9f9f9;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                overflow: hidden;
-            }
-
-            .checkout-card-header {
-                background-color: #f1f1f1;
-                padding: 10px 15px;
-                font-size: 16px;
-                font-weight: bold;
-                border-bottom: 1px solid #ddd;
-            }
-
-            .checkout-card-body {
-                padding: 15px;
-            }
-
-            .checkout-product-image img {
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-                border-radius: 4px;
-            }
-
-            .checkout-product-info h4 {
-                font-size: 18px;
-                font-weight: bold;
-            }
-
-            .checkout-summary h4 {
-                font-size: 20px;
-                font-weight: bold;
-                color: #007bff;
-            }
-
-            .checkout-discount {
-                margin-top: 10px;
-                font-size: 14px;
-                color: #6c757d;
-            }
-
-            .checkout-discount .float-end {
-                color: #dc3545;
-            }
-
-
-            @media (max-width: 768px) {
-                .checkout-content {
-                    flex-direction: column;
+                        setTimeout(function() {
+                            fetch('{{ route('voucher.updateUsage') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({
+                                        voucher_code: document
+                                            .getElementById(
+                                                'voucher_code_hidden').value
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(
+                                        "Voucher usage updated successfully");
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('Ada kesalahan dalam memproses voucher.');
+                                });
+                        }, 1000); // Delay to ensure redirection happens before voucher update
+                    }, 100); // Delay to allow form submission before redirection
+                },
+                onPending: function(result) {
+                    alert("Pembayaran sedang diproses.");
+                },
+                onError: function(result) {
+                    console.error(result);
+                    alert('Pembayaran gagal');
                 }
+            });
+        });
+    </script>
+
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkout-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .checkout-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .checkout-card-header {
+            background-color: #f1f1f1;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .checkout-card-body {
+            padding: 15px;
+        }
+
+        .checkout-product-image img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .checkout-product-info h4 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .checkout-summary h4 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .checkout-discount {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .checkout-discount .float-end {
+            color: #dc3545;
+        }
+
+
+        @media (max-width: 768px) {
+            .checkout-content {
+                flex-direction: column;
             }
-        </style>
-    @endsection
+        }
+    </style>
+@endsection
