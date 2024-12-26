@@ -34,4 +34,9 @@ class Checkout extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function claimVoucher()
+    {
+        return $this->belongsTo(ClaimVoucher::class);
+    }
 }

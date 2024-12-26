@@ -31,30 +31,30 @@
                         onchange="previewImage(event)" style="display: none;">
                 </div>
 
-                <div class="profile-edit-top-section">
-                    <div class="profile-edit-details">
-                        <div class="profile-name-field">
+                <div class="profile-section-container">
+                    <div class="profile-section-details">
+                        <div class="profile-field-name">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required>
                         </div>
 
-                        <div class="profile-edit-field">
+                        <div class="profile-field-email">
                             <label for="email">Email</label>
                             <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
                         </div>
 
-                        <div class="profile-edit-field">
+                        <div class="profile-field-phone">
                             <label for="phone_number">Phone</label>
                             <input type="text" id="phone_number" name="phone_number" value="{{ old('phone_number', $user->phone_number) }}">
                         </div>
 
-                        <div class="profile-edit-field">
+                        <div class="profile-field-dob">
                             <label for="date_of_birth">Date of Birth</label>
                             <input type="text" id="date_of_birth" name="date_of_birth" class="date-picker"
                                 value="{{ old('date_of_birth', optional($user->profile)->date_of_birth) }}">
                         </div>
 
-                        <div class="profile-edit-field">
+                        <div class="profile-field-gender">
                             <label for="gender">Gender</label>
                             <select name="gender" id="gender">
                                 <option value="" disabled selected>Select Gender</option>
@@ -64,7 +64,8 @@
                                 </option>
                                 <option value="female"
                                     {{ old('gender', optional($user->profile)->gender) == 'female' ? 'selected' : '' }}>
-                                    Female</option>
+                                    Female
+                                </option>
                                 <option value="other"
                                     {{ old('gender', optional($user->profile)->gender) == 'other' ? 'selected' : '' }}>
                                     Other
@@ -73,37 +74,37 @@
                         </div>
                     </div>
 
-                        <div class="profile-edit-field">
-                            <label for="address_id">Address</label>
-                            <select name="address_id" id="address_id">
-                                <option value="" disabled selected>Select Address</option>
-                                @foreach ($addresses as $address)
-                                    <option value="{{ $address->id }}"
-                                        {{ old('address_id', $user->profile->address_id) == $address->id ? 'selected' : '' }}>
-                                        {{ $address->address_line1 }}, {{ $address->address_line2 }},
-                                        {{ $address->state }}, {{ $address->city }}, {{ $address->postal_code }},
-                                        {{ $address->country }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="profile-edit-actions add">
-                                <a href="{{ route('profile.address.add') }}" class="profile-edit-btn secondary">
-                                    Add New Address
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="profile-edit-field">
-                            <label for="password">Password</label>
-                            <input type="password" id="password" name="password">
-                        </div>
-
-                        <div class="profile-edit-field">
-                            <label for="password_confirmation">Confirm Password</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation">
+                    <div class="profile-field-address">
+                        <label for="address_id">Address</label>
+                        <select name="address_id" id="address_id">
+                            <option value="" disabled selected>Select Address</option>
+                            @foreach ($addresses as $address)
+                                <option value="{{ $address->id }}"
+                                    {{ old('address_id', $user->profile->address_id) == $address->id ? 'selected' : '' }}>
+                                    {{ $address->address_line1 }}, {{ $address->address_line2 }},
+                                    {{ $address->state }}, {{ $address->city }}, {{ $address->postal_code }},
+                                    {{ $address->country }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="profile-edit-actions add">
+                            <a href="{{ route('profile.address.add') }}" class="profile-edit-btn secondary">
+                                Add New Address
+                            </a>
                         </div>
                     </div>
+
+                    <div class="profile-field-password">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password">
+                    </div>
+
+                    <div class="profile-field-password-confirmation">
+                        <label for="password_confirmation">Confirm Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation">
+                    </div>
                 </div>
+
 
                 <div class="profile-edit-fields">
                     <div class="profile-edit-actions">
