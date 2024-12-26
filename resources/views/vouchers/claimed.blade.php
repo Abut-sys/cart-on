@@ -1,37 +1,46 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Your Claimed Vouchers</h1>
+    <div class="container mt-5 voucher-claimed-container">
+        <h1 class="text-center mb-4 voucher-claimed-title">Your Claimed Vouchers</h1>
 
-        <!-- Link to go back to Claim Voucher page -->
-        <div class="text-center mb-4">
-            <a href="{{ route('voucher.claim') }}" class="btn btn-info btn-lg shadow-sm custom-hover">Go to Claim Vouchers</a>
+        <!-- Link to navigate back to Claim Vouchers page -->
+        <div class="text-center mb-4 voucher-claimed-link">
+            <a href="{{ route('voucher.claim') }}" class="voucher-claimed-btn voucher-claimed-btn-info voucher-claimed-btn-lg voucher-claimed-shadow-sm">
+                <i class="fas fa-ticket-alt"></i> Go to Claim Vouchers
+            </a>
         </div>
 
-        @if($claimedVouchers->isEmpty())
-            <div class="alert alert-warning text-center">
+        @if ($claimedVouchers->isEmpty())
+            <div class="voucher-claimed-alert alert alert-warning text-center">
                 You haven't claimed any vouchers yet.
             </div>
         @else
-            <div class="row">
-                @foreach($claimedVouchers as $claimedVoucher)
-                    <div class="col-md-4 mb-4">
-                        <div class="card ticket-card shadow-lg border-0 rounded-lg">
-                            <div class="card-body">
-                                <h5 class="card-title text-center text-primary font-weight-bold mb-3">
-                                    {{ $claimedVoucher->voucher->code }} ({{ $claimedVoucher->voucher->discount_value }}% off)
+            <div class="voucher-claimed-row row">
+                @foreach ($claimedVouchers as $claimedVoucher)
+                    <div class="voucher-claimed-col col-md-4 mb-4">
+                        <div class="voucher-claimed-card card shadow-lg border-0 rounded-lg">
+                            <div class="voucher-claimed-card-body card-body">
+                                <h5 class="voucher-claimed-code card-title text-center font-weight-bold mb-3">
+                                    {{ $claimedVoucher->voucher->code }}
                                 </h5>
+                                
+                                <p class="voucher-claimed-validity card-text text-center">
+                                    <span class="text-muted">Claimed On:</span> 
+                                    <strong>{{ $claimedVoucher->created_at->format('M d, Y') }}</strong>
+                                </p>
 
-                                <p class="card-text text-center">
-                                    <strong class="text-muted">Claimed On:</strong>
-                                    {{ $claimedVoucher->created_at->format('M d, Y') }}
+                                <p class="voucher-claimed-validity card-text text-center">
+                                    <span class="text-muted">Validity:</span> 
+                                    <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->start_date)->format('M d, Y') }}</strong>
+                                    <span> to </span>
+                                    <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->end_date)->format('M d, Y') }}</strong>
                                 </p>
-                                <p class="card-text text-center">
-                                    <strong class="text-muted">Validity:</strong>
-                                    {{ \Carbon\Carbon::parse($claimedVoucher->voucher->start_date)->format('M d, Y') }} to
-                                    {{ \Carbon\Carbon::parse($claimedVoucher->voucher->end_date)->format('M d, Y') }}
-                                </p>
+
+                                <!-- Label Diskon -->
+                                <div class="voucher-claimed-discount">
+                                    {{ $claimedVoucher->voucher->discount_value }}% OFF
+                                </div>
                             </div>
                         </div>
                     </div>
