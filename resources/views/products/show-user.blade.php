@@ -76,6 +76,13 @@
                 </div>
 
                 <div class="product-user-show-action-buttons mt-4" style="margin-left: -10px;">
+                    <form action="{{ route('checkout.show', $product->id) }}" method="GET">
+                        @csrf
+                        <input type="hidden" name="quantity" value="1" id="quantityInput">
+                        <input type="hidden" name="color" class="hidden-color-input">
+                        <input type="hidden" name="size" class="hidden-size-input">
+                        <button type="submit" class="btn btn-primary product-user-show-btn-buy-now ">Buy Now</button>
+                    </form>
                     <form action="{{ route('cart.add') }}" method="POST">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -83,13 +90,6 @@
                         <input type="hidden" name="color" class="hidden-color-input">
                         <input type="hidden" name="size" class="hidden-size-input">
                         <button type="submit" class="btn btn-secondary product-user-show-btn-add-to-cart">Add to Cart</button>
-                    </form>
-                    <form action="{{ route('checkout.show', $product->id) }}" method="GET">
-                        @csrf
-                        <input type="hidden" name="quantity" value="1" id="quantityInput">
-                        <input type="hidden" name="color" class="hidden-color-input">
-                        <input type="hidden" name="size" class="hidden-size-input">
-                        <button type="submit" class="btn btn-primary product-user-show-btn-buy-now ">Buy Now</button>
                     </form>
                 </div>
 

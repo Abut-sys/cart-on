@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Voucher;
 use App\Models\ClaimVoucher;
+use App\Models\UserVoucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -132,13 +133,29 @@ class VoucherController extends Controller
                 ->withErrors(['msg' => 'You have already claimed this voucher.']);
         }
 
-        ClaimVoucher::create([
-            'user_id' => $userId,
-            'voucher_id' => $voucherId,
-        ]);
+        DB::transaction(function () use ($userId, $voucherId, $voucher) {
+            // Buat klaim voucher
+            $claimVoucher = ClaimVoucher::create([
+                'user_id' => $userId,
+                'voucher_id' => $voucherId,
+            ]);
 
-        $voucher->increment('used_count');
+
+            // Update hitungan voucher
+            $voucher->increment('used_count');
+        });
 
         return redirect()->route('voucher.claim')->with('msg', 'Voucher claimed successfully!');
     }
+
+    // public function linkCheckout($claimVoucherId, $checkoutId)
+    // {
+    //     $userVoucher = UserVoucher::where('claim_voucher_id', $claimVoucherId)->firstOrFail();
+
+    //     $userVoucher->update([
+    //         'checkout_id' => $checkoutId,
+    //     ]);
+
+    //     return redirect()->back()->with('msg', 'Checkout linked successfully!');
+    // }
 }

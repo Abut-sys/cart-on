@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('user_voucher', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('voucher_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('claim_voucher_id');
             $table->timestamps();
+
+            // Foreign key constraints
+            $table->foreign('claim_voucher_id')->references('id')->on('claim_voucher')->onDelete('cascade');
         });
     }
 

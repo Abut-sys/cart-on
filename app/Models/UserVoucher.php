@@ -11,18 +11,15 @@ class UserVoucher extends Model
 
     protected $table = 'user_voucher';
 
-    protected $fillable = [
-        'user_id',
-        'voucher_id',
-    ];
+    protected $fillable = ['claim_voucher_id', 'checkout_id'];
 
-    public function user()
+    public function claimVoucher()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(ClaimVoucher::class);
     }
 
-    public function voucher()
+    public function checkout()
     {
-        return $this->belongsTo(Voucher::class);
+        return $this->belongsTo(Checkout::class);
     }
 }

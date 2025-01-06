@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Checkout extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'product_id', 'address_id', 'voucher_code', 'quantity', 'shipping_method', 'amount'];
+    protected $fillable = ['user_id', 'product_id', 'address_id', 'claim_voucher' , 'voucher_code', 'quantity', 'shipping_method', 'amount'];
 
     public function user()
     {
@@ -38,5 +38,10 @@ class Checkout extends Model
     public function claimVoucher()
     {
         return $this->belongsTo(ClaimVoucher::class);
+    }
+
+    public function userVouchers()
+    {
+        return $this->hasMany(UserVoucher::class);
     }
 }

@@ -6,7 +6,8 @@
 
         <!-- Link to navigate to Your Vouchers page -->
         <div class="text-center mb-4">
-            <a href="{{ route('your-vouchers') }}" class="voucher-claim-btn voucher-claim-btn-info voucher-claim-btn-lg voucher-claim-shadow-sm">
+            <a href="{{ route('your-vouchers') }}"
+                class="voucher-claim-btn voucher-claim-btn-info voucher-claim-btn-lg voucher-claim-shadow-sm">
                 <i class="fas fa-ticket-alt"></i> View Your Claimed Vouchers
             </a>
         </div>
@@ -24,34 +25,34 @@
                                 <h5 class="voucher-claim-code card-title text-center font-weight-bold mb-3">
                                     {{ $voucher->code }}
                                 </h5>
-                                
-                            
+
+
                                 <p class="voucher-claim-validity card-text text-center">
-                                    <span class="text-muted">Valid From:</span> 
+                                    <span class="text-muted">Valid From:</span>
                                     <strong>{{ \Carbon\Carbon::parse($voucher->start_date)->format('M d, Y') }}</strong>
                                     <span> to </span>
                                     <strong>{{ \Carbon\Carbon::parse($voucher->end_date)->format('M d, Y') }}</strong>
                                 </p>
-                            
+
                                 <p class="voucher-claim-terms card-text text-center">
-                                    <span class="text-muted">Terms:</span> 
+                                    <span class="text-muted">Terms:</span>
                                     <em>{{ $voucher->terms_and_conditions ?? 'No specific terms apply. Enjoy your savings!' }}</em>
                                 </p>
-                            
+
                                 <form action="{{ route('claim', $voucher->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" 
+                                    <button type="submit"
                                         class="voucher-claim-btn voucher-claim-btn-success w-100 py-3 font-weight-bold mt-4 voucher-claim-shadow-sm">
                                         Claim This Voucher
                                     </button>
                                 </form>
-                            
+
                                 <!-- Label Diskon -->
                                 <div class="voucher-claim-discount">
                                     {{ $voucher->discount_value }}% OFF
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 @endforeach
@@ -59,4 +60,3 @@
         @endif
     </div>
 @endsection
-

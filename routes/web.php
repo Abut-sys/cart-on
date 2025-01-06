@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
     Route::post('/claim/{voucher}', [VoucherController::class, 'claimVoucher'])->name('claim');
+    // Route::post('voucher/{claimVoucherId}/link-checkout/{checkoutId}', [VoucherController::class, 'linkCheckout'])->name('voucher.linkCheckout');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');

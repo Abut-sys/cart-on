@@ -31,7 +31,7 @@ class ProductAllController extends Controller
             $search = $request->input('search');
             $query->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
-        }    
+        }
 
         // Menangani filter berdasarkan warna (color)
         if ($request->filled('color')) {
@@ -84,8 +84,6 @@ class ProductAllController extends Controller
 
         return view('products.all', compact('products', 'color', 'size', 'category', 'brand', 'userCartIds','userWishlistIds'));
     }
-
-
 
     public function show($id)
     {

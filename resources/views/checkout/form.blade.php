@@ -24,8 +24,6 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
 
             <div class="checkout-summary col-lg-4 col-md-12">
@@ -64,6 +62,7 @@
                     <input type="hidden" name="quantity" value="{{ $quantity }}">
                     <input type="hidden" name="total_price" value="{{ $totalPrice }}">
                     <input type="hidden" name="voucher_code" id="voucher_code_hidden" value="{{ old('voucher_code') }}">
+                    <input type="hidden" name="snap_token" value="{{ $snapToken }}">
 
                     <div class="checkout-card mb-4">
                         <div class="checkout-card-header">
@@ -78,7 +77,9 @@
                                     @foreach ($addresses as $address)
                                         <option value="{{ $address->id }}"
                                             {{ old('address_id') == $address->id ? 'selected' : '' }}>
-                                            {{ $address->address_line1 }}
+                                            {{ $address->address_line1 }}, {{ $address->address_line2 }},
+                                            {{ $address->state }}, {{ $address->city }}, {{ $address->postal_code }},
+                                            {{ $address->country }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -146,6 +147,7 @@
                     errorMessageElement.textContent = 'An error occurred while processing the voucher.';
                 });
         });
+
         document.getElementById('pay-button').addEventListener('click', function() {
             var finalPrice = document.querySelector('input[name="total_price"]').value;
 

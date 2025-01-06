@@ -46,7 +46,6 @@ class Voucher extends Model
     {
         if ($this->usage_limit > 0) {
             $this->usage_limit--;
-            $this->used_count++;
             $this->save();
 
             if ($this->usage_limit === 0) {
