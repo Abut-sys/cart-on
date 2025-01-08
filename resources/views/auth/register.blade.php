@@ -1,125 +1,244 @@
-@extends('layouts.index')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #66a3a1, #99bc85, #77d1b3);
+            background-size: 300% 300%;
+            animation: gradient-animation 8s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
 
-@section('title', 'Register')
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-@section('content')
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <!-- Card with rounded corners -->
-                <div class="card shadow-lg border-0 rounded" style="border-radius: 20px;">
+        .background-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            animation: floating 10s ease-in-out infinite;
+        }
 
-                    <!-- Logo Section -->
-                    <div class="card-header bg-white text-center border-0">
-                        <img src="{{ asset('image/logo.png') }}" alt="Logo" style="width: 200px;">
-                        <h1 class="font-weight-bold">{{ __('Register') }}</h1>
+        @keyframes floating {
+            0% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-15px) translateX(10px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+
+        .circle1 { width: 150px; height: 150px; top: 5%; left: 5%; animation-delay: 0s; }
+        .circle2 { width: 100px; height: 100px; top: 15%; left: 85%; animation-delay: 1s; }
+        .circle3 { width: 120px; height: 120px; top: 50%; left: 5%; animation-delay: 2s; }
+        .circle4 { width: 80px; height: 80px; top: 65%; left: 80%; animation-delay: 3s; }
+        .circle5 { width: 180px; height: 180px; top: 90%; left: 10%; animation-delay: 4s; }
+        .circle6 { width: 90px; height: 90px; top: 5%; left: 65%; animation-delay: 5s; }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px 15px;
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .form-control {
+            border-radius: 30px;
+            padding: 10px 15px;
+            border: 1px solid #99bc85;
+        }
+
+        .form-control:focus {
+            border-color: #66a3a1;
+            box-shadow: 0 0 5px rgba(102, 163, 161, 0.5);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #99bc85, #66a3a1);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 15px;
+            color: white;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .btn-register:hover {
+            background: linear-gradient(135deg, #66a3a1, #99bc85);
+        }
+
+        .text-muted {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .text-muted a {
+            color: #99bc85;
+            text-decoration: none;
+        }
+
+        .text-muted a:hover {
+            text-decoration: underline;
+        }
+
+        .input-group-text {
+            background-color: #f7f7f7;
+            border: 1px solid #99bc85;
+            border-radius: 30px;
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+        #eyeIcon, #eyeConfirmIcon {
+            font-size: 18px;
+            color: #99bc85;
+            cursor: pointer;
+        }
+
+        #eyeIcon:hover, #eyeConfirmIcon:hover {
+            color: #66a3a1;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="background-circle circle1"></div>
+    <div class="background-circle circle2"></div>
+    <div class="background-circle circle3"></div>
+    <div class="background-circle circle4"></div>
+    <div class="background-circle circle5"></div>
+    <div class="background-circle circle6"></div>
+
+    <div class="register-card">
+        <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo">
+        <h3 class="title">Sign Up</h3>
+        <form action="{{ url('/register') }}" method="POST" id="registerForm">
+            @csrf
+            <div class="mb-3 row">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="email" class="form-control" placeholder="Email" name="email" required>
                     </div>
-
-                    <div class="card-body p-4">
-                        <form method="POST" action="{{ route('register') }}">
-                            @csrf
-
-                            <!-- Name Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="name" class="form-label">{{ __('Name') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <input id="name" type="text"
-                                        class="form-control form-control-lg @error('name') is-invalid @enderror"
-                                        name="name" value="{{ old('name') }}" required autofocus
-                                        placeholder="Enter your name">
-                                    @error('name')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Email Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="email" class="form-label">{{ __('Email Address') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-envelope"></i>
-                                    </span>
-                                    <input id="email" type="email"
-                                        class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}" required placeholder="Enter your email">
-                                    @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Phone Number Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="phone" class="form-label">{{ __('Phone Number') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-phone"></i>
-                                    </span>
-                                    <input id="phone" type="tel"
-                                        class="form-control form-control-lg @error('phone') is-invalid @enderror"
-                                        name="phone" value="{{ old('phone') }}" required
-                                        placeholder="Enter your phone number">
-                                    @error('phone')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Password Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="password" class="form-label">{{ __('Password') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input id="password" type="password"
-                                        class="form-control form-control-lg @error('password') is-invalid @enderror"
-                                        name="password" required placeholder="Create a password">
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Confirm Password Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="password-confirm" class="form-label">{{ __('Confirm Password') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input id="password-confirm" type="password" class="form-control form-control-lg"
-                                        name="password_confirmation" required placeholder="Confirm your password">
-                                </div>
-                            </div>
-
-                            <!-- Submit Button with Icon -->
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-success btn-lg btn-block shadow-sm rounded-pill">
-                                    {{ __('Sign Up') }}
-                                </button>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <p class="text-muted">Already have an account? <a href="{{ route('login') }}"
-                                        class="text-primary font-weight-bold">{{ __('Login') }}</a></p>
-                            </div>
-                        </form>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number" required>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <input type="text" class="form-control" placeholder="Name" name="name" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="password" required>
+                    <span class="input-group-text" id="togglePassword">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" class="form-control" placeholder="Confirm Password" name="password_confirmation" id="confirmPassword" required>
+                    <span class="input-group-text" id="toggleConfirmPassword">
+                        <i class="fas fa-eye" id="eyeConfirmIcon"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-register">
+                    {{ __('Sign Up') }}
+                </button>
+            </div>
+            <div class="text-center text-muted">
+                <span>Already have an account?</span> <a href="{{ route('login') }}"> Sign In</a>
+            </div>
+        </form>
     </div>
-@endsection
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    @if (session('msg'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Success!',
+                    text: "{{ session('msg') }}",
+                    icon: 'success',
+                    confirmButtonText: 'Return'
+                });
+            });
+        </script>
+    @endif
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Error!',
+                    text: "{{ $errors->first() }}",
+                    icon: 'error',
+                    confirmButtonText: 'Try Again'
+                });
+            });
+        </script>
+    @endif
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const eyeConfirmIcon = document.getElementById('eyeConfirmIcon');
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            eyeConfirmIcon.classList.toggle('fa-eye-slash');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+.d-flex {
+    position: relative;
+}
+
+.voucher-index-btn-add {
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-decoration: none;
+    background-color: #99bc85;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.voucher-index-btn-add:hover {
+    background-color: #5ca05f;
+    transform: scale(1.05);
+    color: white;
+}
+
+.voucher-index-search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+.voucher-index-form-control {
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #99bc85;
+    border-radius: 8px;
+    background-color: #f6fff2;
+    color: #555;
+    width: 250px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.voucher-index-form-control:focus {
+    border-color: #5ca05f;
+    box-shadow: 0 0 5px #5ca05f;
+    outline: none;
+}
+
+.voucher-index-btn-search {
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    background-color: #99bc85;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.voucher-index-btn-search:hover {
+    background-color: #5ca05f;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.voucher-index-btn-search i {
+    pointer-events: none;
+}
+
+.text-center.w-100 {
+    text-align: center;
+    font-size: 1.75rem;
+    margin: 0 auto;
+}
+
+.voucher-index-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.voucher-index-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    border-radius: 8px;
+    background-color: #e8f5e9;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.voucher-index-row:hover {
+    background-color: #d4edda;
+    transform: scale(1.02);
+}
+
+.voucher-index-item {
+    flex: 1;
+    font-size: 14px;
+    color: #555;
+    padding: 0 10px;
+    text-align: left;
+}
+
+.voucher-index-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.voucher-index-btn {
+    text-decoration: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.voucher-inactive-bg {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.voucher-inactive-bg:hover {
+    background-color: #f5a6ab;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.voucher-index-btn-edit {
+    background-color: #99bc85;
+}
+
+.voucher-index-btn-edit:hover {
+    background-color: #5ca05f;
+    color: white;
+}
+
+.voucher-index-btn-delete {
+    background-color: #ff4d4d;
+    border: none;
+}
+
+.voucher-index-btn-delete:hover {
+    background-color: #e60000;
+    color: white;
+}

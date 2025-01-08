@@ -1,0 +1,127 @@
+.brand-show-card {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    max-width: 900px; /* Add a max width to prevent the card from becoming too large */
+    margin: 0 auto; /* Center the card horizontally */
+}
+
+.brand-show-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+}
+
+.brand-show-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.brand-show-title {
+    font-size: 1.5rem; /* Adjusted to be smaller */
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.5px;
+}
+
+.brand-show-btn-return {
+    background-color: #f1f1f1;
+    color: #555;
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 20px; /* Reduced padding for a smaller button */
+    font-size: 14px;
+    border-radius: 30px;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.brand-show-btn-return:hover {
+    background-color: #e74c3c;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.brand-show-card-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.brand-logo-container {
+    flex: 0 0 120px; /* Reduced the size of the logo container */
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.brand-show-img-fluid {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.brand-show-img-fluid:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.brand-details-container {
+    flex: 1;
+}
+
+.brand-show-form-group {
+    margin-bottom: 15px; /* Reduced bottom margin */
+}
+
+.brand-show-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.brand-show-text {
+    color: #555;
+    transition: color 0.3s ease;
+    font-size: 1.1rem;
+    display: inline-block;
+}
+
+.brand-show-text:hover {
+    color: #81c784;
+    cursor: text;
+}
+
+@media (max-width: 768px) {
+    .brand-show-card-body {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .brand-logo-container {
+        margin-bottom: 15px; /* Adjusted for better spacing on mobile */
+    }
+
+    .brand-details-container {
+        text-align: left;
+    }
+
+    .brand-show-btn-return {
+        font-size: 13px;
+    }
+
+    .brand-show-title {
+        font-size: 1.4rem;
+    }
+}
