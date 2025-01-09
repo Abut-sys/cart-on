@@ -12,6 +12,7 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use App\Services\PaymentService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -50,6 +51,12 @@ class CheckoutController extends Controller
             $query->where('user_id', $user->id);
         })->get();
 
+        // $vouchers = DB::table('claim_voucher')
+        //     ->where('user_id', $user->id)
+        //     ->join('vouchers', 'claim_voucher.voucher_id', '=', 'vouchers.id')
+        //     ->select('vouchers.*')
+        //     ->get();
+        
         $vouchers = Voucher::valid()->get();
 
         $totalPrice = $product->price * $quantity;
@@ -183,6 +190,15 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'This voucher is inactive, expired, or has no more usage left.']);
         }
 
+        $isClaimed = DB::table('claim_voucher')
+            ->where('user_id', auth()->id())
+            ->where('voucher_id', $voucher->id)
+            ->exists();
+
+        if (!$isClaimed) {
+            return response()->json(['success' => false, 'message' => 'Voucher belum diklaim']);
+        }
+
         $userVoucher = UserVoucher::where('user_id', auth()->id())
             ->where('voucher_id', $voucher->id)
             ->first();
@@ -211,17 +227,12 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Voucher tidak aktif atau sudah kadaluarsa.']);
         }
 
-        $userVoucher = UserVoucher::create([
+        UserVoucher::create([
             'user_id' => auth()->id(),
             'voucher_id' => $voucher->id,
         ]);
 
         $voucher->decrementUsage();
-
-        if ($voucher->usage_limit == 0) {
-            $voucher->status = 'inactive';
-            $voucher->save();
-        }
 
         return response()->json(['success' => true]);
     }
