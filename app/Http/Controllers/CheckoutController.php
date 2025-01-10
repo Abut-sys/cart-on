@@ -51,13 +51,13 @@ class CheckoutController extends Controller
             $query->where('user_id', $user->id);
         })->get();
 
-        // $vouchers = DB::table('claim_voucher')
-        //     ->where('user_id', $user->id)
-        //     ->join('vouchers', 'claim_voucher.voucher_id', '=', 'vouchers.id')
-        //     ->select('vouchers.*')
-        //     ->get();
+        $vouchers = DB::table('claim_voucher')
+            ->where('user_id', $user->id)
+            ->join('vouchers', 'claim_voucher.voucher_id', '=', 'vouchers.id')
+            ->select('vouchers.*')
+            ->get();
         
-        $vouchers = Voucher::valid()->get();
+        // $vouchers = Voucher::valid()->get();
 
         $totalPrice = $product->price * $quantity;
 
@@ -227,7 +227,7 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Voucher tidak aktif atau sudah kadaluarsa.']);
         }
 
-        UserVoucher::create([
+        $voucherCode = UserVoucher::create([
             'user_id' => auth()->id(),
             'voucher_id' => $voucher->id,
         ]);
