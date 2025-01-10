@@ -10,6 +10,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CostumersController;
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
@@ -75,6 +76,10 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
     Route::post('voucher/check', [CheckoutController::class, 'checkVoucher'])->name('voucher.check');
+
+    Route::get('/delivery', [DeliveryController::class, 'index']);
+    Route::post('/delivery/filter', [DeliveryController::class, 'filter']);
+    Route::get('/delivery/reset', [DeliveryController::class, 'reset']);
 });
 
 // Route guest

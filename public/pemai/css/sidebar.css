@@ -2,13 +2,14 @@
 .navbar-top {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Menyebarkan elemen navbar dengan jarak merata */
+    justify-content: space-between; 
     background-color: #ffffff;
     color: #99bc85;
     padding: 10px 20px;
     position: relative;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease; 
 }
 
 .menu-icon {
@@ -322,6 +323,7 @@
 
 /* --------------------------------------- Sidebar --------------------------------------- */
 
+/* -------------------------------- Sidebar -------------------------------- */
 .sidebar {
     position: fixed;
     top: 0;
@@ -351,6 +353,17 @@
     height: auto;
 }
 
+/* -------------------------------- Category Dropdown -------------------------------- */
+.category-container .dropdown {
+    display: none;
+    padding-left: 20px;
+}
+
+.category-container .category-link.active + .dropdown {
+    display: block;
+}
+
+/* -------------------------------- Navigation Items -------------------------------- */
 .nav-item,
 .nav-dropdown-item,
 .category-link {
@@ -373,7 +386,7 @@
 .nav-item a i,
 .nav-dropdown-item a i,
 .category-link i {
-    margin-right: 10px; /* Jarak antara ikon dan teks */
+    margin-right: 10px;
 }
 
 .nav-item a:hover,
@@ -384,6 +397,10 @@
     font-weight: bold;
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1100;
+    position: relative;
+    margin-right: -5px;
+    padding-right: 5px;
 }
 
 .nav-item a.active,
@@ -392,8 +409,15 @@
     background-color: #967f61;
     color: #fff2e1;
     font-weight: bold;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1100;
+    position: relative;
+    margin-right: -10px;
+    padding-right: 10px;
 }
 
+/* -------------------------------- Logout Button -------------------------------- */
 .logout-container {
     position: absolute;
     bottom: 20px;
@@ -439,4 +463,8 @@
     margin-left: 220px;
     padding: 20px;
     transition: margin-left 0.3s ease;
+}
+
+.main-content.open {
+    margin-left: 0;
 }

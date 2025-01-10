@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInfo = document.querySelector(".user-wrapper");
     const navItems = document.querySelectorAll(".nav-item a");
     const links = document.querySelectorAll('.link-icon');
+    const navbar = document.querySelector('.navbar-top'); // Navbar
+    const mainContent = document.querySelector('.main-content'); // Main content
 
     // Fungsi untuk menyimpan status sidebar di localStorage
     function saveSidebarState() {
@@ -16,26 +18,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fungsi untuk memuat status sidebar dan kategori dari localStorage
     function loadState() {
-        // Cek status login dan role admin
         const isLoggedIn = document.body.classList.contains("logged-in");
         const isAdmin = document.body.classList.contains("admin");
-        
-        // Sidebar hanya tampil jika sudah login dan admin
         if (isLoggedIn && isAdmin) {
             const sidebarActive = JSON.parse(localStorage.getItem("sidebarActive"));
             if (sidebarActive && sidebar) {
                 sidebar.classList.add("active");
-                document.body.style.marginLeft = "200px"; // Atur margin untuk sidebar
+                document.body.style.marginLeft = "200px";
+                // Menambahkan animasi pada navbar dan main content saat sidebar dibuka
+                navbar.classList.add("shifted");
+                mainContent.classList.add("open");
             }
         } else {
-            // Sembunyikan sidebar jika bukan admin atau belum login
             if (sidebar) {
                 sidebar.classList.remove("active");
-                document.body.style.marginLeft = "0"; // Reset margin
+                document.body.style.marginLeft = "0";
+                // Menghapus animasi pada navbar dan main content saat sidebar ditutup
+                navbar.classList.remove("shifted");
+                mainContent.classList.remove("open");
             }
         }
-
-        // Muat kategori yang aktif jika ada
         const activeCategory = localStorage.getItem("activeCategory");
         if (activeCategory) {
             const activeLink = document.querySelector(`.category-link[data-category="${activeCategory}"]`);
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 activeLink.classList.add("active");
                 const dropdown = activeLink.nextElementSibling;
                 if (dropdown && dropdown.classList.contains("dropdown")) {
-                    dropdown.style.display = "block"; // Tampilkan dropdown jika aktif
+                    dropdown.style.display = "block";
                 }
             }
         }
@@ -55,6 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (sidebar) {
                 sidebar.classList.toggle("active");
                 document.body.style.marginLeft = sidebar.classList.contains("active") ? "200px" : "0";
+                
+                // Menambahkan atau menghapus kelas untuk navbar dan main content untuk animasi
+                navbar.classList.toggle("shifted", sidebar.classList.contains("active"));
+                mainContent.classList.toggle("open", sidebar.classList.contains("active"));
+                
                 saveSidebarState();
             }
         });
@@ -68,14 +75,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const isActive = this.classList.toggle("active");
             dropdown.style.display = isActive ? "block" : "none";
 
-            // Simpan kategori aktif ke localStorage
             if (isActive) {
                 localStorage.setItem("activeCategory", this.getAttribute("data-category"));
             } else {
                 localStorage.removeItem("activeCategory");
             }
 
-            // Tutup dropdown lain yang terbuka
             categoryLinks.forEach((otherLink) => {
                 if (otherLink !== this) {
                     otherLink.classList.remove("active");
@@ -91,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Toggle dropdown user info saat diklik
     if (userInfo) {
         userInfo.addEventListener("click", function (e) {
-            e.stopPropagation(); // Mencegah dropdown langsung tertutup
+            e.stopPropagation();
             this.classList.toggle("active");
             const userDropdown = document.getElementById("userDropdown");
             if (userDropdown) {
@@ -100,7 +105,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Menutup dropdown user info jika klik di luar
     document.addEventListener("click", function (e) {
         const userDropdown = document.getElementById("userDropdown");
         if (userInfo && !userInfo.contains(e.target) && userDropdown && !userDropdown.contains(e.target)) {
@@ -117,9 +121,33 @@ document.addEventListener("DOMContentLoaded", function () {
             item.classList.remove("active");
         }
 
-        // Hapus kategori aktif saat menavigasi
         item.addEventListener("click", () => {
             localStorage.removeItem("activeCategory");
+        });
+    });
+
+    // Buka sidebar saat kursor diarahkan ke area hover
+    document.querySelectorAll('.nav-item a, .nav-dropdown-item a, .category-link').forEach((link) => {
+        link.addEventListener('mouseenter', () => {
+            if (sidebar) {
+                sidebar.classList.add("active");
+                document.body.style.marginLeft = "200px";
+                // Menambahkan animasi pada navbar dan main content saat sidebar dibuka
+                navbar.classList.add("shifted");
+                mainContent.classList.add("open");
+            }
+        });
+
+        link.addEventListener('mouseleave', (e) => {
+            if (!e.relatedTarget || !e.relatedTarget.closest('#sidebar')) {
+                if (sidebar) {
+                    sidebar.classList.remove("active");
+                    document.body.style.marginLeft = "0";
+                    // Menghapus animasi pada navbar dan main content saat sidebar ditutup
+                    navbar.classList.remove("shifted");
+                    mainContent.classList.remove("open");
+                }
+            }
         });
     });
 
