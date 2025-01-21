@@ -7,7 +7,7 @@ use App\Models\Checkout;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SubVariant;
-use App\Models\UserVoucher;
+use App\Models\ClaimVoucher;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Midtrans\Config;
@@ -50,7 +50,9 @@ class CheckoutController extends Controller
             $query->where('user_id', $user->id);
         })->get();
 
-        $vouchers = Voucher::valid()->get();
+        $vouchers = Voucher::whereHas('claimVoucher', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->valid()->get();
 
         $totalPrice = $product->price * $quantity;
 
@@ -70,31 +72,12 @@ class CheckoutController extends Controller
             'variant_id' => 'required|exists:sub_variants,id',
             'quantity' => 'required|integer|min:1',
             'total_price' => 'required|numeric|min:0',
-            'voucher_code' => 'nullable|string',
+            'voucher_id' => 'nullable|exists:vouchers,id',
             'address_id' => 'required|exists:addresses,id',
-            'user_voucher_id' => 'nullable|exists:user_voucher,id',
             'shipping_method' => 'required|string|in:standard,express',
         ]);
 
-        // Handle voucher logic
         $voucher = $this->handleVoucher($validated);
-
-        // Check if a valid user voucher is provided
-        if ($validated['user_voucher_id']) {
-            $userVoucher = UserVoucher::find($validated['user_voucher_id']);
-
-            // Ensure the voucher belongs to the current user and is valid
-            if (!$userVoucher || $userVoucher->user_id != auth()->id() || $userVoucher->voucher->status !== 'active') {
-                throw new \Exception('Invalid or expired voucher.');
-            }
-
-            // Ensure the voucher hasn't already been used by this user
-            if ($userVoucher->voucher->isUsedByUser(auth()->user())) {
-                throw new \Exception('Voucher already used.');
-            }
-
-            $voucher = $userVoucher->voucher; // Set the voucher from user_voucher_id
-        }
 
         $product = Product::findOrFail($validated['product_id']);
         $variant = SubVariant::findOrFail($validated['variant_id']);
@@ -106,34 +89,33 @@ class CheckoutController extends Controller
 
         $order = $this->createOrder($checkout, $totalPrice);
 
-        $addresses = Address::whereHas('profile', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->get();
-        $snapToken = $this->paymentService->generateSnapToken($product, $variant, $validated['quantity'], auth()->user(), $order->unique_order_id, $totalPrice, $voucher);
+        $this->updateVoucherUsage($voucher);
+
+        $snapToken = $this->paymentService->generateSnapToken($product, $variant, $validated['quantity'], $user, $order->unique_order_id, $totalPrice, $voucher);
 
         $quantity = $validated['quantity'];
 
-        return view('checkout.form', compact('snapToken', 'order', 'product', 'variant', 'validated', 'totalPrice', 'checkout', 'voucher', 'quantity', 'addresses'));
+        return view('checkout.form', compact('snapToken', 'order', 'product', 'variant', 'validated', 'totalPrice', 'checkout', 'voucher', 'quantity'));
     }
 
     private function handleVoucher($validated)
     {
-        $voucherCode = $validated['voucher_code'];
+        $voucherId = $validated['voucher_id'];
         $voucher = null;
 
-        if ($voucherCode) {
-            $voucher = Voucher::where('code', $voucherCode)->first();
+        if ($voucherId) {
+            $voucher = Voucher::where('id', $voucherId)
+                ->whereHas('claimVoucher', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })
+                ->first();
 
             if (!$voucher) {
-                throw new \Exception('Voucher tidak ditemukan.');
+                throw new \Exception('Voucher tidak ditemukan atau tidak tersedia untuk Anda.');
             }
 
             if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
                 throw new \Exception('Voucher tidak aktif atau sudah kadaluarsa.');
-            }
-
-            if ($voucher->isUsedByUser(auth()->user())) {
-                throw new \Exception('Anda sudah menggunakan voucher ini.');
             }
         }
 
@@ -161,25 +143,11 @@ class CheckoutController extends Controller
 
     private function createCheckout($validated, $voucher, $totalPrice)
     {
-        $userVoucherId = null;
-
-        // If there's a valid voucher, get the user_voucher_id
-        if ($voucher) {
-            $userVoucher = UserVoucher::where('user_id', auth()->id())
-                ->where('voucher_id', $voucher->id)
-                ->first();
-
-            if ($userVoucher) {
-                $userVoucherId = $userVoucher->id;
-            }
-        }
-
         return Checkout::create([
             'user_id' => auth()->id(),
             'product_id' => $validated['product_id'],
             'address_id' => $validated['address_id'],
-            'voucher_code' => $validated['voucher_code'],
-            'user_voucher_id' => $userVoucherId,
+            'voucher_id' => $voucher ? $voucher->id : null,
             'quantity' => $validated['quantity'],
             'shipping_method' => $validated['shipping_method'],
             'amount' => $totalPrice,
@@ -199,63 +167,19 @@ class CheckoutController extends Controller
         ]);
     }
 
-    public function checkVoucher(Request $request)
+    private function updateVoucherUsage($voucher)
     {
-        $request->validate([
-            'voucher_code' => 'required|string',
-            'total_price' => 'required|numeric',
-        ]);
+        if ($voucher) {
+            $voucher->decrementUsage();
 
-        $voucher = Voucher::where('code', $request->voucher_code)->first();
+            if ($voucher->usage_limit <= 0) {
+                $voucher->status = 'inactive';
+                $voucher->save();
+            }
 
-        if (!$voucher) {
-            return response()->json(['success' => false, 'msg' => 'Voucher not found.']);
+            ClaimVoucher::where('user_id', auth()->id())
+                ->where('voucher_id', $voucher->id)
+                ->delete();
         }
-
-        if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
-            return response()->json(['success' => false, 'msg' => 'This voucher is inactive, expired, or has no more usage left.']);
-        }
-
-        $userVoucher = UserVoucher::where('user_id', auth()->id())
-            ->where('voucher_id', $voucher->id)
-            ->first();
-
-        if ($userVoucher) {
-            return response()->json(['success' => false, 'msg' => 'You have already used this voucher.']);
-        }
-
-        $newTotal = max(0, $request->total_price - $voucher->discount_value);
-
-        return response()->json([
-            'success' => true,
-            'new_total' => $newTotal,
-        ]);
-    }
-
-    public function updateVoucherUsage(Request $request)
-    {
-        $voucher = Voucher::where('code', $request->voucher_code)->first();
-
-        if (!$voucher) {
-            return response()->json(['success' => false, 'msg' => 'Voucher tidak ditemukan.']);
-        }
-
-        if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
-            return response()->json(['success' => false, 'msg' => 'Voucher tidak aktif atau sudah kadaluarsa.']);
-        }
-
-        $userVoucher = UserVoucher::create([
-            'user_id' => auth()->id(),
-            'voucher_id' => $voucher->id,
-        ]);
-
-        $voucher->decrementUsage();
-
-        if ($voucher->usage_limit == 0) {
-            $voucher->status = 'inactive';
-            $voucher->save();
-        }
-
-        return response()->json(['success' => true]);
     }
 }

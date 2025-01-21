@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedBigInteger('claim_voucher_id');
             $table->timestamps();
 
-            // Foreign key constraints
             $table->foreign('claim_voucher_id')->references('id')->on('claim_voucher')->onDelete('cascade');
         });
     }
