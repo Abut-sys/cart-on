@@ -14,7 +14,20 @@
             <div class="card-body product-show-card-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" class="img-fluid product-show-image">
+                        <div id="product-images-gallery">
+                            <div id="main-image">
+                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}" class="img-fluid product-show-image">
+                            </div>
+                            <div id="thumbnail-images" class="mt-3">
+                                <div class="row">
+                                    @foreach ($product->images as $image)
+                                        <div class="col-4">
+                                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="Thumbnail" class="img-fluid product-show-thumbnail" data-full-image="{{ asset('storage/' . $image->image_path) }}" style="cursor: pointer;">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-8">
                         <h3 class="product-show-title">{{ $product->name }}</h3>
@@ -40,4 +53,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.querySelectorAll('.product-show-thumbnail').forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                const mainImage = document.getElementById('main-image').querySelector('img');
+                mainImage.src = this.getAttribute('data-full-image');
+            });
+        });
+    </script>
 @endsection

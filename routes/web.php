@@ -49,10 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/addresses', [ProfileController::class, 'addAddress'])->name('profile.address.add');
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
 
-    Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
-    Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
-    Route::post('/claim/{voucher}', [VoucherController::class, 'claimVoucher'])->name('claim');
-
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
     Route::get('/notifications/all', [NotificationController::class, 'showAllNotifications'])->name('allNotifications');
@@ -66,6 +62,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+
+    Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
+    Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
+    Route::post('/claim/{voucher}', [VoucherController::class, 'claimVoucher'])->name('claim');
+    
     Route::get('cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::delete('cart/{id}/remove', [CartController::class, 'remove'])->name('cart.remove');

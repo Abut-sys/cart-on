@@ -12,7 +12,7 @@
                     </div>
                     <div class="checkout-card-body d-flex align-items-start">
                         <div class="checkout-product-image me-3">
-                            <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
+                            <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}"
                                 class="img-fluid rounded">
                         </div>
                         <div class="checkout-product-info">

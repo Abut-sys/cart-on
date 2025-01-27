@@ -16,6 +16,7 @@
                 <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
+
                     <!-- Product Name -->
                     <div class="product-edit-form-group mb-4">
                         <label for="name" class="product-edit-label">Name</label>
@@ -29,10 +30,21 @@
                     <!-- Product Image -->
                     <div class="product-edit-form-group mb-4">
                         <label for="image_path" class="product-edit-label">Image</label>
-                        <input type="file" name="image_path" id="image_path" class="product-edit-input-file"
-                            accept="image/*">
-                        <small class="text-muted">Current Image: {{ $product->image_path }}</small>
-                        @error('image_path')
+                        <input type="file" name="images[]" id="image_path" class="product-edit-input-file"
+                            accept="image/*" multiple>
+                        <small class="text-muted">Curent Image:</small>
+                        <div class="product-edit-current-images">
+                            @foreach ($product->images as $image)
+                                <div class="product-edit-image-wrapper mb-2">
+                                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="Image" width="100"
+                                        class="img-fluid">
+                                        <button type="button" class="btn btn-danger btn-sm product-edit-btn-remove-image" data-id="{{ $image->id }}">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </button>
+                                </div>
+                            @endforeach
+                        </div>
+                        @error('images')
                             <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
@@ -186,7 +198,21 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            handleProductVariantForm();
+            document.querySelectorAll('.product-edit-btn-remove-image').forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-id');
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route('products.update', $product->id) }}';
+                    form.innerHTML = `
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="deleted_images[]" value="${imageId}">
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            });
         });
     </script>
 

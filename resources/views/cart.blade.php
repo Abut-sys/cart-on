@@ -19,8 +19,8 @@
                 <div
                     class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
                     <div class="cart-product-info d-flex align-items-center">
-                        <img src="{{ asset('storage/' . $cart->product->image_path) }}" alt="{{ $cart->product->name }}"
-                            class="img-thumbnail cart-product-image" />
+                        <img src="{{ asset('storage/' . $cart->product->images->first()->image_path ?? 'default-image.jpg') }}"
+                            alt="{{ $cart->product->name }}" class="img-thumbnail cart-product-image" />
 
                         <div class="ms-3">
                             <h6 class="mb-1 cart-product-name">{{ $cart->product->name }}</h6>

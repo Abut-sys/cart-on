@@ -26,7 +26,7 @@
                 @foreach ($wishlists as $wishlist)
                     <div class="col" id="wishlist-item-{{ $wishlist->product->id }}">
                         <a href="{{ route('products-all.show', $wishlist->product->id) }}" class="card wishlist-card">
-                            <img src="{{ asset('storage/' . $wishlist->product->image_path) }}"
+                            <img src="{{ asset('storage/' . $wishlist->product->images->first()->image_path) }}"
                                 alt="{{ $wishlist->product->name }}" class="wishlist-card-img-top">
                             <div class="wishlist-card-body text-center">
                                 <h6 class="wishlist-card-title">{{ $wishlist->product->name }}</h6>

@@ -68,8 +68,8 @@
                         <tr class="product-index-row">
                             <td class="product-index-td">{{ $product->id }}</td>
                             <td class="product-index-td">
-                                @if ($product->image_path)
-                                    <img src="{{ asset('storage/' . $product->image_path) }}"
+                                @if ($product->images->isNotEmpty())
+                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
                                          alt="{{ $product->name }}" width="50" class="img-fluid product-index-img">
                                 @else
                                     <span class="product-index-no-image">No Image</span>

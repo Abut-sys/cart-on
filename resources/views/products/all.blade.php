@@ -103,8 +103,8 @@
                     @foreach ($products as $product)
                         <div class="col">
                             <a href="{{ route('products-all.show', $product->id) }}" class="card product-user-view-card">
-                                <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
-                                    class="product-user-view-card-img-top">
+                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                                    alt="{{ $product->name }}" class="product-user-view-card-img-top">
                                 <div class="product-user-view-card-body text-center">
                                     <h6 class="product-user-view-card-title">{{ $product->name }}</h6>
                                     <p class="product-user-view-card-price">
@@ -399,6 +399,4 @@
         z-index: 10;
         font-size: 20px;
     }
-
-
 </style>

@@ -92,7 +92,7 @@ class ProductAllController extends Controller
     $userCartIds = CartHelper::getUserCartIds(); // Ensure this returns an array
     $userWishlistIds = WishlistHelper::getUserWishlistIds();
 
-    $product = Product::with(['subCategory', 'brand', 'subVariant'])->findOrFail($id);
+    $product = Product::with(['subCategory', 'brand', 'subVariant', 'images'])->findOrFail($id);
 
     return view('products.show-user', compact('product', 'userCartIds', 'userWishlistIds'));
     }

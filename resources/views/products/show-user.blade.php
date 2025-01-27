@@ -5,18 +5,17 @@
         <div class="row product-user-show-row">
             <div class="col-lg-6 product-user-show-col">
                 <div class="text-center mb-4">
-                    <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
-                        class="img-fluid rounded product-user-show-main-image">
+                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}"
+                        class="img-fluid rounded product-user-show-main-image" id="main-image">
                 </div>
-                <div class="d-flex justify-content-center">
-                    @if (!empty($product->additionalImages) && is_array($product->additionalImages))
-                        @foreach ($product->additionalImages as $image)
-                            <img src="{{ asset('storage/' . $image) }}"
-                                class="img-thumbnail mx-2 product-user-show-additional-image" alt="Product image">
-                        @endforeach
-                    @else
-                        <p class="text-muted product-user-show-no-images">No additional images available.</p>
-                    @endif
+
+                <div class="d-flex justify-content-start overflow-x-auto" style="max-width: 100%; white-space: nowrap;">
+                    @foreach ($product->images as $image)
+                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                            class="img-thumbnail mx-2 product-user-show-additional-image" alt="Product image"
+                            data-full-image="{{ asset('storage/' . $image->image_path) }}"
+                            style="cursor: pointer; width: 80px; height: 80px; object-fit: cover;">
+                    @endforeach
                 </div>
             </div>
 
@@ -96,7 +95,7 @@
             </div>
         </div>
         @if (auth()->check())
-        {{-- <i class="fas fa-shopping-cart product-user-show-toggle-cart-btn
+            {{-- <i class="fas fa-shopping-cart product-user-show-toggle-cart-btn
     {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
             data-product-id="{{ $product->id }}">
         </i> --}}
@@ -104,7 +103,6 @@
         {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                 data-product-id="{{ $product->id }}">
             </i>
-
         @endif
     </div>
 
@@ -457,6 +455,13 @@
 
         $('#product-user-show-btn-see-more').on('click', function() {
             toggleDescription();
+        });
+
+        document.querySelectorAll('.product-user-show-additional-image').forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                const mainImage = document.getElementById('main-image');
+                mainImage.src = this.getAttribute('data-full-image');
+            });
         });
     </script>
 @endsection

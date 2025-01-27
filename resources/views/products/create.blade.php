@@ -27,10 +27,9 @@
 
                     <!-- Product Image -->
                     <div class="product-create-form-group mb-4">
-                        <label for="image_path" class="product-create-label">Image</label>
-                        <input type="file" name="image_path" id="image_path" class="product-create-input-file"
-                            accept="image/*" required>
-                        @error('image_path')
+                        <label for="images" class="product-create-label">Images</label>
+                        <input type="file" name="images[]" id="images" class="product-create-input-file" accept="image/*" multiple required>
+                        @error('images.*')
                             <div class="product-create-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
