@@ -10,120 +10,138 @@
                 <span id="cart-total-price" class="fw-bold text-success me-3">
                     Rp{{ number_format($totalPrice, 0, ',', '.') }}
                 </span>
-                <a href="{{ route('checkout.process') }}" class="btn btn-success btn-sm">Proceed to Checkout</a>
+                <form id="checkout-form" action="{{ route('cart.selected') }}" method="POST" class="d-inline">
+                    @csrf
+                    <input type="hidden" name="selected-products" id="selected-products" value="">
+                    <button type="submit" class="btn btn-success btn-sm" id="checkout-button" disabled>Proceed to
+                        Checkout</button>
+                </form>
             </div>
         </div>
 
-        <div class="row">
-            @forelse ($carts as $cart)
-                <div
-                    class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
-                    <div class="cart-product-info d-flex align-items-center">
-                        <img src="{{ asset('storage/' . $cart->product->images->first()->image_path ?? 'default-image.jpg') }}"
-                            alt="{{ $cart->product->name }}" class="img-thumbnail cart-product-image" />
+        <form id="cart-form" method="POST" action="{{ route('cart.selected') }}">
+            @csrf
+            <div class="row">
+                @foreach ($carts as $cart)
+                    @php
+                        $variant = $cart->size || $cart->color
+                            ? \App\Models\SubVariant::where('product_id', $cart->product_id)
+                                ->where('size', $cart->size)
+                                ->where('color', $cart->color)
+                                ->first()
+                            : null;
+                        $stock = $variant ? $variant->stock : $cart->product->stock;
+                    @endphp
 
-                        <div class="ms-3">
-                            <h6 class="mb-1 cart-product-name">{{ $cart->product->name }}</h6>
-                            <small class="text-muted cart-product-size">
-                                Size: {{ $cart->size ?? 'N/A' }}
-                            </small>
-                            <small class="text-muted cart-product-color">
-                                Color: {{ $cart->color ?? 'N/A' }}
-                            </small>
+                    <div class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
+                        <div class="cart-product-info d-flex align-items-center">
+                            <img src="{{ asset('storage/' . ($cart->product->images->first()->image_path ?? 'default-image.jpg')) }}"
+                                alt="{{ $cart->product->name }}" class="img-thumbnail cart-product-image" />
 
-                            <p class="fw-bold mb-0 text-success cart-product-price">
-                                Rp{{ number_format($cart->product->price, 0, ',', '.') }}
-                            </p>
-                            <p class="fw-bold mb-0 text-success cart-product-total">
-                                Total: Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}
-                            </p>
+                            <div class="ms-3">
+                                <h6 class="mb-1 cart-product-name">{{ $cart->product->name }}</h6>
+                                <small class="text-muted cart-product-size">Size: {{ $cart->size ?? 'N/A' }}</small>
+                                <small class="text-muted cart-product-color">Color: {{ $cart->color ?? 'N/A' }}</small>
+                                <p class="text-muted">Stock: <span class="cart-stock">{{ $stock }}</span></p>
 
-                            <div class="form-check">
-                                <input class="form-check-input cart-checkbox" type="checkbox" value="{{ $cart->id }}"
-                                    id="cartItem{{ $cart->id }}" data-price="{{ $cart->product->price }}"
-                                    data-quantity="{{ $cart->quantity }}">
-                                <label class="form-check-label" for="cartItem{{ $cart->id }}"></label>
+                                <p class="fw-bold mb-0 text-success cart-product-price">
+                                    Rp{{ number_format($cart->product->price, 0, ',', '.') }}
+                                </p>
+                                <p class="fw-bold mb-0 text-success cart-product-total">
+                                    Total: Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}
+                                </p>
+
+                                <div class="form-check">
+                                    <input class="form-check-input cart-checkbox" type="checkbox"
+                                        value="{{ $cart->id }}" id="cartItem{{ $cart->id }}"
+                                        data-price="{{ $cart->product->price }}" data-quantity="{{ $cart->quantity }}"
+                                        name="selected_products[]">
+                                    <label class="form-check-label" for="cartItem{{ $cart->id }}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cart-actions d-flex align-items-center">
+                            <form action="{{ route('cart.remove', $cart->id) }}" method="POST" class="me-2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+
+                            <div class="input-group input-group-sm cart-quantity-controls" style="width: 120px;">
+                                <form action="{{ route('cart.decrease', $cart->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
+                                </form>
+
+                                <input type="text" class="form-control text-center cart-quantity"
+                                    value="{{ $cart->quantity }}" readonly
+                                    data-stock="{{ $stock }}">
+
+                                <form action="{{ route('cart.increase', $cart->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm increase-btn"
+                                        {{ $cart->quantity >= $stock ? 'disabled' : '' }}>+</button>
+                                </form>
                             </div>
                         </div>
                     </div>
-
-                    <div class="cart-actions d-flex align-items-center">
-                        <form action="{{ route('cart.remove', $cart->id) }}" method="POST" class="me-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-
-                        <div class="input-group input-group-sm cart-quantity-controls" style="width: 120px;">
-                            <form action="{{ route('cart.decrease', $cart->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
-                            </form>
-
-                            <input type="text" class="form-control text-center cart-quantity"
-                                value="{{ $cart->quantity }}" readonly>
-
-                            <form action="{{ route('cart.increase', $cart->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12 text-center py-5">
-                    <h4 class="text-muted">Your cart is empty!</h4>
-                    <a href="{{ route('products.index') }}" class="btn btn-primary mt-3">Continue Shopping</a>
-                </div>
-            @endforelse
-        </div>
-
-        <div class="cart-checkout-card mb-4">
-            <div class="cart-checkout-card-header">
-                <h5>Payment Summary</h5>
-            </div>
-            <div class="cart-checkout-card-body">
-                @foreach ($carts as $cart)
-                    <p class="cart-checkout-summary-item">Product: <span
-                            class="cart-checkout-summary-value">{{ $cart->product->name }}</span></p>
-                    <p class="cart-checkout-summary-item">Price: <span
-                            class="cart-checkout-summary-value">Rp{{ number_format($cart->product->price, 0, ',', '.') }}</span>
-                    </p>
-                    <p class="cart-checkout-summary-item">Quantity: <span
-                            class="cart-checkout-summary-value">{{ $cart->quantity }}</span></p>
-                    <p class="cart-checkout-summary-item">Total: <span
-                            class="cart-checkout-summary-value">Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}</span>
-                    </p>
-                    <hr>
                 @endforeach
             </div>
-        </div>
-
+        </form>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             function updateTotalPrice() {
                 let totalPrice = 0;
+                let selectedProducts = [];
 
                 document.querySelectorAll('.cart-checkbox').forEach(function(checkbox) {
                     if (checkbox.checked) {
                         let price = parseInt(checkbox.getAttribute('data-price'));
                         let quantity = parseInt(checkbox.getAttribute('data-quantity'));
                         totalPrice += price * quantity;
+                        selectedProducts.push(checkbox.value);
                     }
                 });
 
                 document.getElementById('cart-total-price').textContent = 'Rp' + totalPrice.toLocaleString();
+                document.getElementById('selected-products').value = selectedProducts.join(',');
+
+                document.getElementById('checkout-button').disabled = selectedProducts.length === 0;
+            }
+
+            function updateIncreaseButtons() {
+                document.querySelectorAll('.cart-quantity').forEach(function(input) {
+                    let stock = parseInt(input.getAttribute('data-stock'));
+                    let quantity = parseInt(input.value);
+                    let increaseBtn = input.closest('.cart-quantity-controls').querySelector('.increase-btn');
+
+                    if (quantity >= stock) {
+                        increaseBtn.disabled = true;
+                    } else {
+                        increaseBtn.disabled = false;
+                    }
+                });
             }
 
             document.querySelectorAll('.cart-checkbox').forEach(function(checkbox) {
                 checkbox.addEventListener('change', updateTotalPrice);
             });
 
+            document.querySelector('#checkout-form').addEventListener('submit', function(e) {
+                updateTotalPrice();
+                if (document.getElementById('selected-products').value === "") {
+                    e.preventDefault();
+                    alert("Please select at least one product before proceeding to checkout.");
+                }
+            });
+
             updateTotalPrice();
+            updateIncreaseButtons();
         });
     </script>
 @endsection

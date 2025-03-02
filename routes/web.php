@@ -66,10 +66,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
     Route::post('/claim/{voucher}', [VoucherController::class, 'claimVoucher'])->name('claim');
-    
+
     Route::get('cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('cart/add', [CartController::class, 'addToCart'])->name('cart.add');
-    Route::delete('cart/{id}/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/selected', [CartController::class, 'checkoutSelected'])->name('cart.selected');
+    Route::delete('cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
     Route::post('cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
 

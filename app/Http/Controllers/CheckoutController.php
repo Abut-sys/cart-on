@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\Cart;
 use App\Models\Checkout;
 use App\Models\Order;
 use App\Models\Product;
@@ -33,20 +34,6 @@ class CheckoutController extends Controller
     public function show($id, Request $request)
     {
         $user = auth()->user();
-        $product = Product::with(['subVariant'])->findOrFail($id);
-        $quantity = $request->input('quantity', 1);
-        $selectedColor = $request->input('color');
-        $selectedSize = $request->input('size');
-
-        $variant = SubVariant::where('product_id', $product->id)
-            ->where('color', $selectedColor)
-            ->where('size', $selectedSize)
-            ->first();
-
-        if (!$variant || $quantity > $variant->stock) {
-            return redirect()->back()->with('error', 'Selected variant not available or insufficient stock.');
-        }
-
         $addresses = Address::whereHas('profile', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->get();
@@ -56,16 +43,51 @@ class CheckoutController extends Controller
             ->join('vouchers', 'claim_voucher.voucher_id', '=', 'vouchers.id')
             ->select('vouchers.*')
             ->get();
-        
-        // $vouchers = Voucher::valid()->get();
 
-        $totalPrice = $product->price * $quantity;
+        if ($request->has('quantity')) {
+            $product = Product::with(['subVariant'])->findOrFail($id);
+            $quantity = $request->input('quantity', 1);
+            $selectedColor = $request->input('color');
+            $selectedSize = $request->input('size');
 
-        $orderId = 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
+            $variant = SubVariant::where('product_id', $product->id)
+                ->where('color', $selectedColor)
+                ->where('size', $selectedSize)
+                ->first();
 
-        $snapToken = $this->paymentService->generateSnapToken($product, $variant, $quantity, $user, $orderId, $totalPrice);
+            if (!$variant || $quantity > $variant->stock) {
+                return redirect()->back()->with('error', 'Selected variant not available or insufficient stock.');
+            }
 
-        return view('checkout.form', compact('product', 'variant', 'quantity', 'totalPrice', 'addresses', 'vouchers', 'snapToken'));
+            $totalPrice = $product->price * $quantity;
+            $orderId = 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
+            $snapToken = $this->paymentService->generateSnapToken($product, $variant, $quantity, $user, $orderId, $totalPrice);
+
+            return view('checkout.form', compact('product', 'variant', 'quantity', 'totalPrice', 'addresses', 'vouchers', 'snapToken'));
+        }
+
+        if ($request->has('selected-products')) {
+            $selectedCartIds = explode(',', $request->input('selected-products', ''));
+            if (empty($selectedCartIds)) {
+                return redirect()->route('cart.index')->with('error', 'No products selected.');
+            }
+
+            $carts = Cart::where('user_id', $user->id)
+                ->whereIn('id', $selectedCartIds)
+                ->with(['product', 'product.subVariant'])
+                ->get();
+
+            if ($carts->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Selected products not found.');
+            }
+
+            $totalPrice = $carts->sum(fn($cart) => $cart->product->price * $cart->quantity);
+            $snapToken = $this->paymentService->generateSnapTokenFromCart($carts, $user);
+
+            return view('checkout.form', compact('carts', 'totalPrice', 'addresses', 'vouchers', 'snapToken'));
+        }
+
+        return redirect()->route('cart.index')->with('error', 'Invalid request.');
     }
 
     public function processPayment(Request $request)
@@ -73,9 +95,10 @@ class CheckoutController extends Controller
         $user = auth()->user();
 
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'variant_id' => 'required|exists:sub_variants,id',
-            'quantity' => 'required|integer|min:1',
+            'selected-products' => 'nullable|string',
+            'product_id' => 'nullable|exists:products,id',
+            'variant_id' => 'nullable|exists:sub_variants,id',
+            'quantity' => 'nullable|integer|min:1',
             'total_price' => 'required|numeric|min:0',
             'voucher_code' => 'nullable|string',
             'address_id' => 'required|exists:addresses,id',
@@ -83,25 +106,101 @@ class CheckoutController extends Controller
         ]);
 
         $voucher = $this->handleVoucher($validated);
+        $checkoutItems = [];
+        $totalPrice = 0;
 
+        DB::beginTransaction();
+
+        if ($request->has('selected-products')) {
+            list($checkoutItems, $totalPrice) = $this->handleCartCheckout($validated, $voucher, $user);
+        } else {
+            list($checkoutItems, $totalPrice) = $this->handleSingleProductCheckout($validated, $voucher, $user);
+        }
+
+        $order = $this->createOrder($checkoutItems, $totalPrice);
+
+        DB::commit();
+
+        $snapToken = $this->generateSnapToken($checkoutItems, $user, $order->id, $totalPrice);
+
+        return view('checkout.form', compact('snapToken', 'order', 'checkoutItems', 'totalPrice'));
+    }
+
+    private function handleCartCheckout($validated, $voucher, $user)
+    {
+        $selectedCartIds = explode(',', $validated['selected-products']);
+        $carts = Cart::where('user_id', $user->id)
+            ->whereIn('id', $selectedCartIds)
+            ->with(['product', 'product.subVariant'])
+            ->get();
+
+        if ($carts->isEmpty()) {
+            throw new \Exception('Produk dalam keranjang tidak ditemukan.');
+        }
+
+        $checkoutItems = [];
+        $totalPrice = 0;
+
+        foreach ($carts as $cart) {
+            $this->validateStock($cart->product->subVariant, $cart->quantity);
+            $totalPrice += $cart->product->price * $cart->quantity;
+        }
+
+        if ($voucher) {
+            $totalPrice -= $voucher->discount_value;
+            $totalPrice = max(0, $totalPrice);
+        }
+        
+        foreach ($carts as $cart) {
+            $this->validateStock($cart->product->subVariant, $cart->quantity);
+            $itemTotal = $cart->product->price * $cart->quantity;
+            $checkout = $this->createCheckout([
+                'user_id' => $user->id,
+                'product_id' => $cart->product_id,
+                'address_id' => $validated['address_id'],
+                'voucher_code' => $validated['voucher_code'],
+                'quantity' => $cart->quantity,
+                'shipping_method' => $validated['shipping_method'],
+                'amount' => $itemTotal,
+            ], $voucher, $itemTotal);
+
+            $checkoutItems[] = $checkout;
+            $cart->product->subVariant->decrement('stock', $cart->quantity);
+        }
+
+        Cart::whereIn('id', $selectedCartIds)->delete();
+
+        return [$checkoutItems, $totalPrice];
+    }
+
+    private function handleSingleProductCheckout($validated, $voucher, $user)
+    {
         $product = Product::findOrFail($validated['product_id']);
-        $variant = SubVariant::findOrFail($validated['variant_id']);
+        $variant = SubVariant::where('id', $validated['variant_id'])
+            ->where('product_id', $product->id)
+            ->firstOrFail();
+
         $this->validateStock($variant, $validated['quantity']);
 
         $totalPrice = $this->calculateTotalPrice($product, $validated['quantity'], $voucher);
 
         $checkout = $this->createCheckout($validated, $voucher, $totalPrice);
+        $variant->decrement('stock', $validated['quantity']);
 
-        $order = $this->createOrder($checkout, $totalPrice);
+        return [[$checkout], $totalPrice];
+    }
 
-        $addresses = Address::whereHas('profile', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->get();
-        $snapToken = $this->paymentService->generateSnapToken($product, $variant, $validated['quantity'], auth()->user(), $order->unique_order_id, $totalPrice, $voucher);
+    private function generateSnapToken($checkoutItems, $user, $orderId, $totalPrice)
+    {
+        if (count($checkoutItems) > 1) {
+            return $this->paymentService->generateSnapTokenFromCart($checkoutItems, $user);
+        }
 
-        $quantity = $validated['quantity'];
+        $checkout = $checkoutItems[0];
+        $product = Product::find($checkout->product_id);
+        $variant = SubVariant::find($checkout->variant_id);
 
-        return view('checkout.form', compact('snapToken', 'order', 'product', 'variant', 'validated', 'totalPrice', 'checkout', 'voucher', 'quantity', 'addresses'));
+        return $this->paymentService->generateSnapToken($product, $variant, $checkout->quantity, $user, $orderId, $totalPrice);
     }
 
     private function handleVoucher($validated)
@@ -153,7 +252,7 @@ class CheckoutController extends Controller
             'user_id' => auth()->id(),
             'product_id' => $validated['product_id'],
             'address_id' => $validated['address_id'],
-            'voucher_code' => $validated['voucher_code'],
+            'voucher_code' => $validated['voucher_code'] ?? '',
             'quantity' => $validated['quantity'],
             'shipping_method' => $validated['shipping_method'],
             'amount' => $totalPrice,
@@ -163,10 +262,10 @@ class CheckoutController extends Controller
     private function createOrder($checkout, $totalPrice)
     {
         return Order::create([
-            'checkout_id' => $checkout->id,
+            'checkout_id' => implode(',', array_column($checkout, 'id')),
             'order_date' => now(),
             'unique_order_id' => 'ORDER-' . uniqid('', true) . '-' . Str::random(6),
-            'address' => $checkout->address->address_line1,
+            'address' => $checkout[0]->address->address_line1,
             'amount' => $totalPrice,
             'payment_status' => 'pending',
             'order_status' => 'pending',
