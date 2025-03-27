@@ -10,12 +10,10 @@
                 <span id="cart-total-price" class="fw-bold text-success me-3">
                     Rp{{ number_format($totalPrice, 0, ',', '.') }}
                 </span>
-                <form id="checkout-form" action="{{ route('cart.selected') }}" method="POST" class="d-inline">
-                    @csrf
-                    <input type="hidden" name="selected-products" id="selected-products" value="">
-                    <button type="submit" class="btn btn-success btn-sm" id="checkout-button" disabled>Proceed to
-                        Checkout</button>
-                </form>
+                <a href="{{ route('checkout.show', ['id' => 0, 'selected-products' => '']) }}" class="btn btn-success btn-sm"
+                    id="checkout-button" disabled>
+                    Proceed to Checkout
+                </a>
             </div>
         </div>
 
@@ -24,16 +22,18 @@
             <div class="row">
                 @foreach ($carts as $cart)
                     @php
-                        $variant = $cart->size || $cart->color
-                            ? \App\Models\SubVariant::where('product_id', $cart->product_id)
-                                ->where('size', $cart->size)
-                                ->where('color', $cart->color)
-                                ->first()
-                            : null;
+                        $variant =
+                            $cart->size || $cart->color
+                                ? \App\Models\SubVariant::where('product_id', $cart->product_id)
+                                    ->where('size', $cart->size)
+                                    ->where('color', $cart->color)
+                                    ->first()
+                                : null;
                         $stock = $variant ? $variant->stock : $cart->product->stock;
                     @endphp
 
-                    <div class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
+                    <div
+                        class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
                         <div class="cart-product-info d-flex align-items-center">
                             <img src="{{ asset('storage/' . ($cart->product->images->first()->image_path ?? 'default-image.jpg')) }}"
                                 alt="{{ $cart->product->name }}" class="img-thumbnail cart-product-image" />
@@ -77,8 +77,7 @@
                                 </form>
 
                                 <input type="text" class="form-control text-center cart-quantity"
-                                    value="{{ $cart->quantity }}" readonly
-                                    data-stock="{{ $stock }}">
+                                    value="{{ $cart->quantity }}" readonly data-stock="{{ $stock }}">
 
                                 <form action="{{ route('cart.increase', $cart->id) }}" method="POST">
                                     @csrf
@@ -109,7 +108,11 @@
                 });
 
                 document.getElementById('cart-total-price').textContent = 'Rp' + totalPrice.toLocaleString();
-                document.getElementById('selected-products').value = selectedProducts.join(',');
+
+                // Update the href attribute of the checkout link with the selected products
+                let checkoutLink = document.getElementById('checkout-button');
+                checkoutLink.href = "{{ route('checkout.show', ['id' => 0, 'selected-products' => '']) }}" +
+                    selectedProducts.join(',');
 
                 document.getElementById('checkout-button').disabled = selectedProducts.length === 0;
             }
@@ -118,7 +121,8 @@
                 document.querySelectorAll('.cart-quantity').forEach(function(input) {
                     let stock = parseInt(input.getAttribute('data-stock'));
                     let quantity = parseInt(input.value);
-                    let increaseBtn = input.closest('.cart-quantity-controls').querySelector('.increase-btn');
+                    let increaseBtn = input.closest('.cart-quantity-controls').querySelector(
+                        '.increase-btn');
 
                     if (quantity >= stock) {
                         increaseBtn.disabled = true;
@@ -130,14 +134,6 @@
 
             document.querySelectorAll('.cart-checkbox').forEach(function(checkbox) {
                 checkbox.addEventListener('change', updateTotalPrice);
-            });
-
-            document.querySelector('#checkout-form').addEventListener('submit', function(e) {
-                updateTotalPrice();
-                if (document.getElementById('selected-products').value === "") {
-                    e.preventDefault();
-                    alert("Please select at least one product before proceeding to checkout.");
-                }
             });
 
             updateTotalPrice();

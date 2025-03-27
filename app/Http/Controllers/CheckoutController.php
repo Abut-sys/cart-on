@@ -95,7 +95,8 @@ class CheckoutController extends Controller
         $user = auth()->user();
 
         $validated = $request->validate([
-            'selected-products' => 'nullable|string',
+            'selected-products' => 'nullable|array',
+            'selected-products.*' => 'exists:carts,id',
             'product_id' => 'nullable|exists:products,id',
             'variant_id' => 'nullable|exists:sub_variants,id',
             'quantity' => 'nullable|integer|min:1',
@@ -111,7 +112,7 @@ class CheckoutController extends Controller
 
         DB::beginTransaction();
 
-        if ($request->has('selected-products')) {
+        if ($request->has('selected-products') && is_array($validated['selected-products'])) {
             list($checkoutItems, $totalPrice) = $this->handleCartCheckout($validated, $voucher, $user);
         } else {
             list($checkoutItems, $totalPrice) = $this->handleSingleProductCheckout($validated, $voucher, $user);
@@ -128,7 +129,7 @@ class CheckoutController extends Controller
 
     private function handleCartCheckout($validated, $voucher, $user)
     {
-        $selectedCartIds = explode(',', $validated['selected-products']);
+        $selectedCartIds = $validated['selected-products'];
         $carts = Cart::where('user_id', $user->id)
             ->whereIn('id', $selectedCartIds)
             ->with(['product', 'product.subVariant'])
@@ -142,18 +143,27 @@ class CheckoutController extends Controller
         $totalPrice = 0;
 
         foreach ($carts as $cart) {
-            $this->validateStock($cart->product->subVariant, $cart->quantity);
+            $subVariant = $cart->product->subVariant
+                ->where('color', $cart->color)
+                ->where('size', $cart->size)
+                ->first();
+
+            $this->validateStock($subVariant, $cart->quantity);
             $totalPrice += $cart->product->price * $cart->quantity;
         }
 
-        if ($voucher) {
-            $totalPrice -= $voucher->discount_value;
-            $totalPrice = max(0, $totalPrice);
+        $discountPerItem = 0;
+        if ($voucher && $totalPrice > 0) {
+            $discountPerItem = $voucher->discount_value / count($carts);
         }
-        
+
         foreach ($carts as $cart) {
-            $this->validateStock($cart->product->subVariant, $cart->quantity);
+            $subVariant = $cart->product->subVariant
+                ->where('color', $cart->color)
+                ->where('size', $cart->size)
+                ->first();
             $itemTotal = $cart->product->price * $cart->quantity;
+            $discountedItemTotal = max(0, $itemTotal - $discountPerItem);
             $checkout = $this->createCheckout([
                 'user_id' => $user->id,
                 'product_id' => $cart->product_id,
@@ -161,11 +171,11 @@ class CheckoutController extends Controller
                 'voucher_code' => $validated['voucher_code'],
                 'quantity' => $cart->quantity,
                 'shipping_method' => $validated['shipping_method'],
-                'amount' => $itemTotal,
-            ], $voucher, $itemTotal);
+                'amount' => $discountedItemTotal,
+            ], $voucher, $discountedItemTotal);
 
             $checkoutItems[] = $checkout;
-            $cart->product->subVariant->decrement('stock', $cart->quantity);
+            $subVariant->decrement('stock', $cart->quantity);
         }
 
         Cart::whereIn('id', $selectedCartIds)->delete();
@@ -198,7 +208,9 @@ class CheckoutController extends Controller
 
         $checkout = $checkoutItems[0];
         $product = Product::find($checkout->product_id);
-        $variant = SubVariant::find($checkout->variant_id);
+
+        $cart = Cart::where('product_id', $product->id)->where('user_id', $user->id)->first();
+        $variant = SubVariant::where('product_id', $product->id)->where('color', $cart->color)->where('size', $cart->size)->first();
 
         return $this->paymentService->generateSnapToken($product, $variant, $checkout->quantity, $user, $orderId, $totalPrice);
     }
@@ -229,8 +241,11 @@ class CheckoutController extends Controller
 
     private function validateStock($variant, $quantity)
     {
-        if ($quantity > $variant->stock) {
+        if ($variant && $quantity > $variant->stock) {
             throw new \Exception('Insufficient stock for the selected variant.');
+        }
+        if (!$variant) {
+            throw new \Exception('Variant not found.');
         }
     }
 
@@ -261,8 +276,7 @@ class CheckoutController extends Controller
 
     private function createOrder($checkout, $totalPrice)
     {
-        return Order::create([
-            'checkout_id' => implode(',', array_column($checkout, 'id')),
+        $order = Order::create([
             'order_date' => now(),
             'unique_order_id' => 'ORDER-' . uniqid('', true) . '-' . Str::random(6),
             'address' => $checkout[0]->address->address_line1,
@@ -270,6 +284,17 @@ class CheckoutController extends Controller
             'payment_status' => 'pending',
             'order_status' => 'pending',
         ]);
+
+        foreach ($checkout as $checkoutItem) {
+            DB::table('order_checkouts')->insert([
+                'order_id' => $order->id,
+                'checkout_id' => $checkoutItem->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return $order;
     }
 
     public function checkVoucher(Request $request)

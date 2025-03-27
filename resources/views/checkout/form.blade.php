@@ -87,7 +87,7 @@
                     @csrf
                     @if (isset($carts) && count($carts) > 0)
                         @foreach ($carts as $cart)
-                            <input type="hidden" name="selected_products[]" value="{{ $cart->id }}">
+                            <input type="hidden" name="selected-products[]" value="{{ $cart->id }}">
                         @endforeach
                     @elseif(isset($product))
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
