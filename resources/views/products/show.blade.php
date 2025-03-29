@@ -7,7 +7,7 @@
         <div class="product-show-card shadow-lg">
             <div class="product-show-card-header d-flex justify-content-between align-items-center">
                 <h2 class="product-show-title mb-0">Product Details</h2>
-                <a href="{{ route('products.index') }}" class=" product-show-btn-return">
+                <a href="{{ route('products.index') }}" class="product-show-btn-return">
                     <i class="fas fa-arrow-left"></i> Return
                 </a>
             </div>
@@ -16,16 +16,17 @@
                     <div class="col-md-4">
                         <div id="product-images-gallery">
                             <div id="main-image">
-                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}" class="img-fluid product-show-image">
+                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                                    alt="{{ $product->name }}" class="img-fluid product-show-image"
+                                    style="max-width: 100%;">
                             </div>
-                            <div id="thumbnail-images" class="mt-3">
-                                <div class="row">
-                                    @foreach ($product->images as $image)
-                                        <div class="col-4">
-                                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="Thumbnail" class="img-fluid product-show-thumbnail" data-full-image="{{ asset('storage/' . $image->image_path) }}" style="cursor: pointer;">
-                                        </div>
-                                    @endforeach
-                                </div>
+                            <div id="thumbnail-images" class="mt-3" style="overflow-x: auto; white-space: nowrap;">
+                                @foreach ($product->images as $image)
+                                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="Thumbnail"
+                                        class="img-fluid product-show-thumbnail"
+                                        data-full-image="{{ asset('storage/' . $image->image_path) }}"
+                                        style="width: 150px; height: 150px; object-fit: cover; cursor: pointer; margin-right: 15px; display: inline-block;">
+                                @endforeach
                             </div>
                         </div>
                     </div>

@@ -75,14 +75,15 @@
                 </div>
 
                 <div class="product-user-show-action-buttons mt-4" style="margin-left: -10px;">
-                    {{-- <form action="{{ route('cart.add') }}" method="POST">
+                    <form action="{{ route('cart.add') }}" method="POST">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="quantity" value="1" id="quantityInput">
                         <input type="hidden" name="color" class="hidden-color-input">
                         <input type="hidden" name="size" class="hidden-size-input">
-                        <button type="submit" class="btn btn-secondary product-user-show-btn-add-to-cart">Add to Cart</button>
-                    </form> --}}
+                        <button type="submit" class="btn btn-secondary product-user-show-btn-add-to-cart">Add to
+                            Cart</button>
+                    </form>
                     <form action="{{ route('checkout.show', $product->id) }}" method="GET">
                         @csrf
                         <input type="hidden" name="quantity" value="1" id="quantityInput">
@@ -95,10 +96,6 @@
             </div>
         </div>
         @if (auth()->check())
-            {{-- <i class="fas fa-shopping-cart product-user-show-toggle-cart-btn
-    {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
-            data-product-id="{{ $product->id }}">
-        </i> --}}
             <i class="fas fa-heart product-user-show-toggle-wishlist-btn
         {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                 data-product-id="{{ $product->id }}">
@@ -273,6 +270,18 @@
             const sizeInput = document.querySelector('.hidden-size-input');
             const quantityHiddenInput = document.querySelector('#quantityInput');
 
+            function updateMainImage(imageUrl) {
+                const mainImage = document.getElementById('main-image');
+                mainImage.src = imageUrl;
+            }
+
+            document.querySelectorAll('.product-user-show-additional-image').forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    const imageUrl = this.getAttribute('data-full-image');
+                    updateMainImage(imageUrl);
+                });
+            });
+
             $('.product-user-show-toggle-cart-btn ').on('click', function(event) {
                 event.preventDefault();
 
@@ -418,28 +427,6 @@
             updateHiddenFields();
         });
 
-        document.getElementById('add-to-cart-btn').addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-
-            fetch('/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    },
-                    body: JSON.stringify({
-                        product_id: productId
-                    }),
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.message) {
-                        alert(data.message); // Notify the user
-                    }
-                })
-                .catch((error) => console.error('Error:', error));
-        });
-
         function toggleDescription() {
             const descText = $('#product-user-show-description-text');
             const btn = $('#product-user-show-btn-see-more');
@@ -455,13 +442,6 @@
 
         $('#product-user-show-btn-see-more').on('click', function() {
             toggleDescription();
-        });
-
-        document.querySelectorAll('.product-user-show-additional-image').forEach(thumbnail => {
-            thumbnail.addEventListener('click', function() {
-                const mainImage = document.getElementById('main-image');
-                mainImage.src = this.getAttribute('data-full-image');
-            });
         });
     </script>
 @endsection
