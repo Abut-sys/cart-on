@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->longText('description');
+            $table->bigInteger('sales')->default(0);
             $table->timestamps();
         });
     }

@@ -110,6 +110,9 @@
                                     <p class="product-user-view-card-price">
                                         Rp{{ number_format($product->price, 0, ',', '.') }}
                                     </p>
+                                    <p class="product-user-view-card-sales">
+                                        Sold | {{ $product->sales }}
+                                    </p>
                                     @if (auth()->check())
                                         {{-- <i class="fas fa-shopping-cart product-user-view-toggle-cart-btn {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
                                             data-product-id="{{ $product->id }}"></i> --}}
@@ -304,6 +307,14 @@
         color: #99bc85;
         margin-bottom: 8px;
         text-align: left;
+    }
+
+    .product-user-view-card-sales {
+        font-size: 11px;
+        font-weight: bold;
+        color: gray;
+        margin-bottom: 1px;
+        text-align: justify;
     }
 
     .product-user-view-filter-section h5 {

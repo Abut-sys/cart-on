@@ -55,6 +55,7 @@
                     <div class="home-product-newest-body text-center">
                         <h6 class="home-product-newest-title" style="color: black">{{ $product->name }}</h6>
                         <p class="home-product-newest-price">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
+                        <p class="home-product-sales" style="font-size: 11px; font-weight: bold; color: gray; margin-bottom: 1px; text-align: justify;">Sold | {{ $product->sales }}</p>
                         @if (auth()->check())
                             <i class="fas fa-heart home-product-newest-wishlist-icon {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                                 data-product-id="{{ $product->id }}"></i>

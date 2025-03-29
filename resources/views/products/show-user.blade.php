@@ -22,7 +22,7 @@
             <div class="col-lg-6 product-user-show-col" style="margin-left: -10px;">
                 <h2 class="product-user-show-title">{{ $product->name }}</h2>
                 <div class="product-user-show-meta d-flex align-items-center mb-3" style="margin-left: -10px;">
-                    <span class="text-muted ms-1 product-user-show-sold-count">Sold 7RB+</span>
+                    <span class="text-muted ms-1 product-user-show-sold-count">SOLD | {{ $product->sales }}</span>
                 </div>
                 <h3 class="product-user-show-price" style="margin-left: -10px;">
                     Rp{{ number_format($product->price, 0, ',', '.') }}
@@ -75,14 +75,14 @@
                 </div>
 
                 <div class="product-user-show-action-buttons mt-4" style="margin-left: -10px;">
-                    <form action="{{ route('cart.add') }}" method="POST">
+                    {{-- <form action="{{ route('cart.add') }}" method="POST">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="quantity" value="1" id="quantityInput">
                         <input type="hidden" name="color" class="hidden-color-input">
                         <input type="hidden" name="size" class="hidden-size-input">
                         <button type="submit" class="btn btn-secondary product-user-show-btn-add-to-cart">Add to Cart</button>
-                    </form>
+                    </form> --}}
                     <form action="{{ route('checkout.show', $product->id) }}" method="GET">
                         @csrf
                         <input type="hidden" name="quantity" value="1" id="quantityInput">

@@ -150,6 +150,12 @@ class CheckoutController extends Controller
 
             $this->validateStock($subVariant, $cart->quantity);
             $totalPrice += $cart->product->price * $cart->quantity;
+
+            $product = Product::find($cart->product_id);
+            if ($product) {
+                $product->sales += $cart->quantity;
+                $product->save();
+            }
         }
 
         $discountPerItem = 0;
@@ -196,6 +202,9 @@ class CheckoutController extends Controller
 
         $checkout = $this->createCheckout($validated, $voucher, $totalPrice);
         $variant->decrement('stock', $validated['quantity']);
+
+        $product->sales += $validated['quantity'];
+        $product->save();
 
         return [[$checkout], $totalPrice];
     }

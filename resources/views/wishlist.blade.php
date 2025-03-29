@@ -33,6 +33,7 @@
                                 <p class="wishlist-card-price">
                                     Rp{{ number_format($wishlist->product->price, 0, ',', '.') }}
                                 </p>
+                                <p class="wishlist-card-sales">Sold | {{ $wishlist->product->sales }}</p>
                             </div>
                             <i class="fas fa-heart wishlist-toggle-btn
                                 {{ in_array($wishlist->product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
@@ -128,6 +129,14 @@
         color: #99bc85;
         margin-bottom: 8px;
         text-align: left;
+    }
+
+    .wishlist-card-sales {
+        font-size: 11px;
+        font-weight: bold;
+        color: gray;
+        margin-bottom: 1px;
+        text-align: justify;
     }
 
     .wishlist-toggle-btn {
