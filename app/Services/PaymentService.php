@@ -42,4 +42,42 @@ class PaymentService
             'item_details' => $itemDetails,
         ]);
     }
+
+    public function generateSnapTokenFromCart($carts, $user, $voucher = null)
+    {
+        $orderId = 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
+        $totalPrice = 0;
+        $items = [];
+
+        foreach ($carts as $cart) {
+            $items[] = [
+                'id' => $cart->product->id,
+                'price' => $cart->product->price,
+                'quantity' => $cart->quantity,
+                'name' => $cart->product->name,
+            ];
+            $totalPrice += $cart->product->price * $cart->quantity;
+        }
+
+        if ($voucher) {
+            $totalPrice -= $voucher->discount_value;
+            $totalPrice = max(0, $totalPrice);
+        }
+
+        $transactionDetails = [
+            'order_id' => $orderId,
+            'gross_amount' => $totalPrice,
+        ];
+
+        $customerDetails = [
+            'first_name' => $user->name,
+            'email' => $user->email,
+        ];
+
+        return Snap::getSnapToken([
+            'transaction_details' => $transactionDetails,
+            'customer_details' => $customerDetails,
+            'item_details' => $items,
+        ]);
+    }
 }

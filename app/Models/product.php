@@ -13,9 +13,9 @@ class Product extends Model
         'sub_category_product_id',
         'brand_id',
         'name',
-        'image_path',
         'price',
         'description',
+        'sales'
     ];
 
     protected $casts = [
@@ -51,5 +51,10 @@ class Product extends Model
     public function checkouts()
     {
         return $this->hasMany(Checkout::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }

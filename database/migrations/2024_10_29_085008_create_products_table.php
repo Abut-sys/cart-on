@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('sub_category_product_id')->constrained('sub_category_products')->onDelete('cascade');
             $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
             $table->string('name');
-            $table->string('image_path');
             $table->decimal('price', 10, 2);
             $table->longText('description');
+            $table->bigInteger('sales')->default(0);
             $table->timestamps();
         });
     }

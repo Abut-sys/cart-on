@@ -103,12 +103,15 @@
                     @foreach ($products as $product)
                         <div class="col">
                             <a href="{{ route('products-all.show', $product->id) }}" class="card product-user-view-card">
-                                <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
-                                    class="product-user-view-card-img-top">
+                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                                    alt="{{ $product->name }}" class="product-user-view-card-img-top">
                                 <div class="product-user-view-card-body text-center">
                                     <h6 class="product-user-view-card-title">{{ $product->name }}</h6>
                                     <p class="product-user-view-card-price">
                                         Rp{{ number_format($product->price, 0, ',', '.') }}
+                                    </p>
+                                    <p class="product-user-view-card-sales">
+                                        Sold | {{ $product->sales }}
                                     </p>
                                     @if (auth()->check())
                                         {{-- <i class="fas fa-shopping-cart product-user-view-toggle-cart-btn {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
@@ -306,6 +309,14 @@
         text-align: left;
     }
 
+    .product-user-view-card-sales {
+        font-size: 11px;
+        font-weight: bold;
+        color: gray;
+        margin-bottom: 1px;
+        text-align: justify;
+    }
+
     .product-user-view-filter-section h5 {
         font-weight: 750;
         margin-bottom: 15px;
@@ -399,6 +410,4 @@
         z-index: 10;
         font-size: 20px;
     }
-
-
 </style>

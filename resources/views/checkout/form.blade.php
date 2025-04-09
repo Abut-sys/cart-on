@@ -10,22 +10,49 @@
                     <div class="checkout-card-header">
                         <h5>Product Details</h5>
                     </div>
-                    <div class="checkout-card-body d-flex align-items-start">
-                        <div class="checkout-product-image me-3">
-                            <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
-                                class="img-fluid rounded">
-                        </div>
-                        <div class="checkout-product-info">
-                            <h4 class="checkout-product-name">{{ $product->name }}</h4>
-                            <p class="checkout-product-color">Color: {{ $variant->color }}</p>
-                            <p class="checkout-product-size">Size: {{ $variant->size }}</p>
-                            <p class="checkout-product-quantity">Quantity: {{ $quantity }}</p>
-                            <h4 class="checkout-product-price">Rp{{ number_format($product->price, 2) }}</h4>
-                        </div>
+                    <div class="checkout-card-body">
+                        @if (isset($carts) && count($carts) > 0)
+                            @foreach ($carts as $cart)
+                                <div class="checkout-card-body d-flex align-items-start mb-3">
+                                    <div class="checkout-product-image me-3">
+                                        <img src="{{ asset('storage/' . ($cart->product->images->first()->image_path ?? 'default.jpg')) }}"
+                                            alt="{{ $cart->product->name }}" class="img-fluid rounded">
+                                    </div>
+                                    <div class="checkout-product-info">
+                                        <h4 class="checkout-product-name">{{ $cart->product->name }}</h4>
+                                        <p class="checkout-product-color">
+                                            Color:
+                                            {{ optional($cart->variant ?? $cart->product->subVariant->first())->color ?? 'N/A' }}
+                                        </p>
+                                        <p class="checkout-product-size">
+                                            Size:
+                                            {{ optional($cart->variant ?? $cart->product->subVariant->first())->size ?? 'N/A' }}
+                                        </p>
+                                        <p class="checkout-product-quantity">Quantity: {{ $cart->quantity }}</p>
+                                        <h4 class="checkout-product-price">Rp{{ number_format($cart->product->price, 2) }}
+                                        </h4>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @elseif(isset($product))
+                            <div class="checkout-card-body d-flex align-items-start">
+                                <div class="checkout-product-image me-3">
+                                    <img src="{{ asset('storage/' . ($product->images->first()->image_path ?? 'default.jpg')) }}"
+                                        alt="{{ $product->name }}" class="img-fluid rounded">
+                                </div>
+                                <div class="checkout-product-info">
+                                    <h4 class="checkout-product-name">{{ $product->name }}</h4>
+                                    <p class="checkout-product-color">Color: {{ $variant->color ?? 'N/A' }}</p>
+                                    <p class="checkout-product-size">Size: {{ $variant->size ?? 'N/A' }}</p>
+                                    <p class="checkout-product-quantity">Quantity: {{ $quantity }}</p>
+                                    <h4 class="checkout-product-price">Rp{{ number_format($product->price, 2) }}</h4>
+                                </div>
+                            </div>
+                        @else
+                            <p>No products found.</p>
+                        @endif
                     </div>
                 </div>
-
-
             </div>
 
             <div class="checkout-summary col-lg-4 col-md-12">
@@ -34,8 +61,7 @@
                         <h5>Payment Summary</h5>
                     </div>
                     <div class="checkout-card-body">
-                        <p>Product Price: <span class="float-end">Rp{{ number_format($product->price, 2) }}</span></p>
-                        <p>Quantity: <span class="float-end">{{ $quantity }}</span></p>
+                        <p>Product Price: <span class="float-end">Rp{{ number_format($totalPrice, 2) }}</span></p>
                         <h4>Total: <span id="total-price" class="float-end">Rp{{ number_format($totalPrice, 2) }}</span>
                         </h4>
                     </div>
@@ -59,9 +85,15 @@
 
                 <form id="checkout-form" action="{{ route('checkout.process') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <input type="hidden" name="variant_id" value="{{ $variant->id }}">
-                    <input type="hidden" name="quantity" value="{{ $quantity }}">
+                    @if (isset($carts) && count($carts) > 0)
+                        @foreach ($carts as $cart)
+                            <input type="hidden" name="selected-products[]" value="{{ $cart->id }}">
+                        @endforeach
+                    @elseif(isset($product))
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="variant_id" value="{{ $variant->id ?? '' }}">
+                        <input type="hidden" name="quantity" value="{{ $quantity }}">
+                    @endif
                     <input type="hidden" name="total_price" value="{{ $totalPrice }}">
                     <input type="hidden" name="voucher_code" id="voucher_code_hidden" value="{{ old('voucher_code') }}">
 
@@ -82,6 +114,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div>
                         @endif
                         <label for="shipping_method" class="form-label mt-3">Shipping Method:</label>
                         <select name="shipping_method" id="shipping_method" class="form-select">

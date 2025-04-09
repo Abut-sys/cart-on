@@ -9,11 +9,16 @@ class Order extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'checkout_id', 'order_date', 'unique_order_id', 'address', 'amount', 'payment_status', 'order_status'
+        'order_date',
+        'unique_order_id',
+        'address',
+        'amount',
+        'payment_status',
+        'order_status',
     ];
 
-    public function checkout()
+    public function checkouts()
     {
-        return $this->belongsTo(Checkout::class);
+        return $this->belongsToMany(Checkout::class, 'order_checkouts', 'order_id', 'checkout_id');
     }
 }

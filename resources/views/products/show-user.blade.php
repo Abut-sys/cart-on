@@ -5,25 +5,24 @@
         <div class="row product-user-show-row">
             <div class="col-lg-6 product-user-show-col">
                 <div class="text-center mb-4">
-                    <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}"
-                        class="img-fluid rounded product-user-show-main-image">
+                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}"
+                        class="img-fluid rounded product-user-show-main-image" id="main-image">
                 </div>
-                <div class="d-flex justify-content-center">
-                    @if (!empty($product->additionalImages) && is_array($product->additionalImages))
-                        @foreach ($product->additionalImages as $image)
-                            <img src="{{ asset('storage/' . $image) }}"
-                                class="img-thumbnail mx-2 product-user-show-additional-image" alt="Product image">
-                        @endforeach
-                    @else
-                        <p class="text-muted product-user-show-no-images">No additional images available.</p>
-                    @endif
+
+                <div class="d-flex justify-content-start overflow-x-auto" style="max-width: 100%; white-space: nowrap;">
+                    @foreach ($product->images as $image)
+                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                            class="img-thumbnail mx-2 product-user-show-additional-image" alt="Product image"
+                            data-full-image="{{ asset('storage/' . $image->image_path) }}"
+                            style="cursor: pointer; width: 80px; height: 80px; object-fit: cover;">
+                    @endforeach
                 </div>
             </div>
 
             <div class="col-lg-6 product-user-show-col" style="margin-left: -10px;">
                 <h2 class="product-user-show-title">{{ $product->name }}</h2>
                 <div class="product-user-show-meta d-flex align-items-center mb-3" style="margin-left: -10px;">
-                    <span class="text-muted ms-1 product-user-show-sold-count">Sold 7RB+</span>
+                    <span class="text-muted ms-1 product-user-show-sold-count">SOLD | {{ $product->sales }}</span>
                 </div>
                 <h3 class="product-user-show-price" style="margin-left: -10px;">
                     Rp{{ number_format($product->price, 0, ',', '.') }}
@@ -82,7 +81,8 @@
                         <input type="hidden" name="quantity" value="1" id="quantityInput">
                         <input type="hidden" name="color" class="hidden-color-input">
                         <input type="hidden" name="size" class="hidden-size-input">
-                        <button type="submit" class="btn btn-secondary product-user-show-btn-add-to-cart">Add to Cart</button>
+                        <button type="submit" class="btn btn-secondary product-user-show-btn-add-to-cart">Add to
+                            Cart</button>
                     </form>
                     <form action="{{ route('checkout.show', $product->id) }}" method="GET">
                         @csrf
@@ -96,15 +96,10 @@
             </div>
         </div>
         @if (auth()->check())
-        {{-- <i class="fas fa-shopping-cart product-user-show-toggle-cart-btn
-    {{ in_array($product->id, $userCartIds) ? 'text-success' : 'text-secondary' }}"
-            data-product-id="{{ $product->id }}">
-        </i> --}}
             <i class="fas fa-heart product-user-show-toggle-wishlist-btn
         {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                 data-product-id="{{ $product->id }}">
             </i>
-
         @endif
     </div>
 
@@ -275,6 +270,18 @@
             const sizeInput = document.querySelector('.hidden-size-input');
             const quantityHiddenInput = document.querySelector('#quantityInput');
 
+            function updateMainImage(imageUrl) {
+                const mainImage = document.getElementById('main-image');
+                mainImage.src = imageUrl;
+            }
+
+            document.querySelectorAll('.product-user-show-additional-image').forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    const imageUrl = this.getAttribute('data-full-image');
+                    updateMainImage(imageUrl);
+                });
+            });
+
             $('.product-user-show-toggle-cart-btn ').on('click', function(event) {
                 event.preventDefault();
 
@@ -418,28 +425,6 @@
 
             updateStock();
             updateHiddenFields();
-        });
-
-        document.getElementById('add-to-cart-btn').addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-
-            fetch('/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    },
-                    body: JSON.stringify({
-                        product_id: productId
-                    }),
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.message) {
-                        alert(data.message); // Notify the user
-                    }
-                })
-                .catch((error) => console.error('Error:', error));
         });
 
         function toggleDescription() {

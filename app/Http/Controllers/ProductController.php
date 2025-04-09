@@ -18,7 +18,7 @@ class ProductController extends Controller
         $sortName = $request->input('sort_name');
 
         // Query dasar dengan relasi
-        $query = Product::with(['subCategory', 'brand', 'subVariant']);
+        $query = Product::with(['subCategory', 'brand', 'subVariant', 'images']);
 
         // Filter pencarian berdasarkan ID atau nama produk
         if ($search) {
@@ -57,7 +57,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'sub_category_product_id' => 'required|exists:sub_category_products,id',
             'brand_id' => 'required|exists:brands,id',
             'variants' => 'required|array',
@@ -66,13 +66,10 @@ class ProductController extends Controller
             'variants.*.stock' => 'required|integer|min:0',
         ]);
 
-        $imagePath = $request->file('image_path')->store('product_images', 'public');
-
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
-            'image_path' => $imagePath,
             'sub_category_product_id' => $request->sub_category_product_id,
             'brand_id' => $request->brand_id,
         ]);
@@ -81,19 +78,28 @@ class ProductController extends Controller
             $product->subVariant()->create($variant);
         }
 
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imagePath = $image->store('product_images', 'public');
+                $product->images()->create([
+                    'image_path' => $imagePath,
+                ]);
+            }
+        }
+
         return redirect()->route('products.index')->with('msg', 'Produk berhasil disimpan.');
     }
 
     public function show($id)
     {
-        $product = Product::with(['subCategory', 'brand', 'subVariant'])->findOrFail($id);
+        $product = Product::with(['subCategory', 'brand', 'subVariant', 'images'])->findOrFail($id);
 
         return view('products.show', compact('product'));
     }
 
     public function edit($id)
     {
-        $product = Product::with('subVariant')->findOrFail($id);
+        $product = Product::with('subVariant', 'images')->findOrFail($id);
         $subcategories = SubCategoryProduct::all();
         $brands = Brand::all();
 
@@ -108,7 +114,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'sub_category_product_id' => 'required|exists:sub_category_products,id',
             'brand_id' => 'required|exists:brands,id',
             'variants' => 'required|array',
@@ -125,25 +131,35 @@ class ProductController extends Controller
             'brand_id' => $request->brand_id,
         ]);
 
-        if ($request->hasFile('image_path')) {
-            Storage::disk('public')->delete($product->image_path);
-            $imagePath = $request->file('image_path')->store('product_images', 'public');
-            $product->update(['image_path' => $imagePath]);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imagePath = $image->store('product_images', 'public');
+                $product->images()->create([
+                    'image_path' => $imagePath,
+                ]);
+            }
         }
 
-        $product->subVariant()->delete();
-        foreach ($request->variants as $variant) {
-            $product->subVariant()->create($variant);
+        if ($request->has('deleted_images')) {
+            $deletedImages = $request->deleted_images;
+            foreach ($deletedImages as $imageId) {
+                $image = $product->images()->findOrFail($imageId);
+                Storage::disk('public')->delete($image->image_path);
+                $image->delete();
+            }
         }
+        
 
-        return redirect()->route('products.index')->with('msg', 'Produk berhasil diupdate.');
+        return redirect()->route('products.index')->with('msg', 'Product updated successfully.');
     }
 
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
 
-        Storage::disk('public')->delete($product->image_path);
+        foreach ($product->images as $image) {
+            Storage::disk('public')->delete($image->image_path);
+        }
 
         $product->delete();
 
