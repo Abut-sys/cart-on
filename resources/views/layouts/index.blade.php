@@ -10,9 +10,10 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="{{ asset('/') }}assets/plugin/fontawasome/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="{{ asset('/') }}assets/plugin/fontawasome/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/navbar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/footer.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
@@ -42,13 +43,32 @@
 </head>
 
 <body>
-    @include('layouts.navbar')
+    {{-- Include Navbar --}}
+    @auth
+        @if (Auth::user()->role == 'admin')
+            @include('layouts.admin-navbar')
+        @else
+            @include('layouts.user-navbar')
+        @endif
+    @endauth
+
+    @guest
+        @include('layouts.user-navbar')
+    @endguest
+
     {{-- content --}}
     <div class="mt-2">
         <div class="container">
             @yield('content')
         </div>
     </div>
+
+    {{-- Include Sidebar --}}
+    @auth
+        @if (Auth::user()->role == 'admin')
+            @include('layouts.sidebar')
+        @endif
+    @endauth
 
     @auth
         @unless (auth()->user()->hasRole('admin'))

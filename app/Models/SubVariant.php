@@ -13,7 +13,7 @@ class SubVariant extends Model
         'product_id',
         'color',
         'size',
-        'stock'
+        'stock',
     ];
 
     public function product()

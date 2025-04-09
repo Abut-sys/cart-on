@@ -1,0 +1,331 @@
+/* --------------------------------------- Navbar --------------------------------------- */
+.navbar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Menyebarkan elemen navbar dengan jarak merata */
+    background-color: #ffffff;
+    color: #99bc85;
+    padding: 10px 20px;
+    position: relative;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.menu-icon {
+    cursor: pointer;
+    font-size: 24px;
+    margin-right: 20px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.menu-icon:hover {
+    color: #4a7c5b;
+    transform: scale(1.2) rotate(10deg);
+}
+
+.logo-user {
+    text-align: center;
+    display: block;
+    max-width: 110px;
+    pointer-events: none;
+    flex-shrink: 0; /* Pastikan logo tidak mengecil */
+}
+
+.logo-user img {
+    width: 30px;
+    height: auto;
+    margin-right: 15px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    margin-left: 10px;
+    flex-grow: 1; /* Agar search bar mengisi sisa ruang */
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex-grow: 1;
+}
+
+.search-input {
+    border: 1px solid #ccc;
+    outline: none;
+    padding: 10px 15px;
+    padding-left: 40px;
+    border-radius: 25px;
+    background-color: #f8f9fa;
+    width: 100%;
+    font-size: 16px;
+}
+
+.search-input:focus {
+    background-color: #fff;
+    border-color: #99bc85;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #99bc85;
+    font-size: 18px;
+}
+
+.link-section {
+    display: flex;
+    align-items: center;
+    margin: 0 15px;
+    font-size: 17px;
+}
+
+.link-icon {
+    color: #99bc85;
+    margin: 0 15px;
+    cursor: pointer;
+    font-size: 22px;
+    transition: color 0.3s;
+}
+
+.link-icon:hover {
+    color: #d9cab3;
+    transform: scale(1.2);
+    transition: all 0.3s ease;
+}
+
+.link-section a.active .link-icon,
+.link-section i.active {
+    color: #d9cab3;
+    font-weight: bold;
+    transform: scale(1.2);
+    transition: all 0.3s ease;
+}
+
+.link-section {
+    position: relative;
+}
+
+#for-badge-count-cart {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 50%;
+    background-color: #ff3b30;
+    color: white;
+}
+
+#for-badge-count-wishlist {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 50%;
+    background-color: #ff3b30;
+    color: white;
+}
+
+.notification-section {
+    display: inline-block;
+    align-items: center;
+    margin: 0 15px;
+    font-size: 17px;
+    position: relative;
+}
+
+.notification-icon {
+    position: relative;
+    margin: 0 15px;
+    cursor: pointer;
+    font-size: 22px;
+    transition: color 0.3s;
+}
+
+/* Animasi gerakan lonceng */
+.notification-icon:hover {
+    animation: bellhake 0.5s ease-in-out;
+    color: #d9cab3;
+}
+
+@keyframes bellShake {
+    0% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(10deg); /* Mengubah arah sedikit ke kanan */
+    }
+    50% {
+        transform: rotate(-10deg); /* Mengubah arah sedikit ke kiri */
+    }
+    75% {
+        transform: rotate(5deg); /* Mengubah arah ke kanan lagi */
+    }
+    100% {
+        transform: rotate(0deg); /* Kembali ke posisi semula */
+    }
+}
+
+.notification-icon .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff3b30;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 50%;
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 250px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-dropdown.active {
+    display: block;
+}
+
+.notification-item {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.notification-item:hover {
+    background-color: #f2f2f2;
+}
+
+.notification-item.read {
+    color: #999;
+    background-color: #e0e0e0;
+}
+
+.notification-item.unread {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.notification-item i {
+    margin-right: 10px;
+}
+
+#notificationCount {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 50%;
+    background-color: #ff3b30;
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.notification-dropdown .no-notifications {
+    text-align: center;
+    padding: 12px;
+    color: #999;
+    font-size: 14px;
+}
+
+#wishlistCount {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #ff0000;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.username {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4a7c5b;
+    margin-right: 15px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #e7e7e7;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.3s ease;
+}
+
+.username:hover {
+    background-color: #99bc85;
+    color: white;
+    transform: scale(1.1) translateY(-5px);
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 8px; /* Mengurangi padding untuk ukuran dropdown yang lebih kecil */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    width: 180px; /* Menyesuaikan lebar dropdown agar lebih kecil */
+}
+
+.user-dropdown .dropdown-item {
+    color: #4a7c5b;
+    padding: 8px 12px; /* Mengurangi padding agar item lebih ramping */
+    display: block;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px; /* Ukuran font lebih kecil agar lebih ramping */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.user-dropdown .dropdown-item:hover {
+    background-color: #99bc85;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
+.user-dropdown .dropdown-item i {
+    margin-right: 8px; /* Menyesuaikan jarak ikon */
+    font-size: 16px; /* Menyesuaikan ukuran ikon */
+}
+
+
+/* --------------------------------------- Main Content --------------------------------------- */
+
+/* Main Content */
+.main-content {
+    margin-left: 220px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
