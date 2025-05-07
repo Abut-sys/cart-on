@@ -14,7 +14,6 @@ class HomeController extends Controller
     {
         $importantCategories = ['Shoes', 'Clothes'];
 
-        // Ambil kategori penting beserta brand
         $categories = CategoryProduct::with('brands')->get();
 
             $userCartIds = CartHelper::getUserCartIds();
