@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/addresses', [ProfileController::class, 'editAddress'])->name('profile.address.edit');
     Route::post('/profile/addresses', [ProfileController::class, 'addAddress'])->name('profile.address.add');
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
+    Route::get('/autocomplete/address', [ProfileController::class, 'autocompleteAddress'])->name('autocomplete.address');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');

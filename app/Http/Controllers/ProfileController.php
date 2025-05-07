@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Profile;
 use App\Models\Address;
+use Illuminate\Support\Facades\Http;
 
 class ProfileController extends Controller
 {
@@ -134,6 +135,28 @@ class ProfileController extends Controller
         $profile->addresses()->create($request->only(['address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country']));
 
         return redirect()->route('profile.address.edit')->with('msg', 'Address added successfully!');
+    }
+
+    public function autocompleteAddress(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query) {
+            return response()->json([]);
+        }
+
+        $appUrl = config('app.url');
+        $userAgent = "LaravelAddressApp/1.0 ({$appUrl})";
+
+        $response = Http::withHeaders([
+            'User-Agent' => $userAgent
+        ])->get('https://nominatim.openstreetmap.org/search', [
+            'street' => $query,
+            'format' => 'json',
+            'addressdetails' => 1,
+            'limit' => 5,
+        ]);
+
+        return response()->json($response->json());
     }
 
     // Hapus alamat
