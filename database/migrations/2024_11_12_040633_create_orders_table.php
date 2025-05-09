@@ -15,7 +15,10 @@ return new class extends Migration {
             $table->dateTime('order_date');
             $table->string('unique_order_id')->unique();
             $table->string('address', 255);
-            $table->decimal('amount', 10, 2);
+            $table->string('courier');
+            $table->string('shipping_service');
+            $table->decimal('shipping_cost', 13, 0);
+            $table->decimal('amount', 13, 0);
             $table->enum('payment_status', ['pending', 'completed', 'failed']);
             $table->enum('order_status', ['pending', 'shipped', 'delivered', 'canceled']);
             $table->timestamps();

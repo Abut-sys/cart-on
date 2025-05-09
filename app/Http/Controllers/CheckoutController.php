@@ -13,16 +13,21 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use App\Services\PaymentService;
+use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Exception;
+use Illuminate\Support\Facades\Http;
 
 class CheckoutController extends Controller
 {
     protected $paymentService;
+    protected $rajaOngkirService;
 
-    public function __construct(PaymentService $paymentService)
+    public function __construct(PaymentService $paymentService, RajaOngkirService $rajaOngkirService)
     {
         $this->paymentService = $paymentService;
+        $this->rajaOngkirService = $rajaOngkirService;
 
         Config::$serverKey = config('midtrans.server_key');
         Config::$clientKey = config('midtrans.client_key');
@@ -44,6 +49,9 @@ class CheckoutController extends Controller
             ->select('vouchers.*')
             ->get();
 
+        $selectedAddressId = $request->input('address_id') ?? ($addresses->first()->id ?? null);
+        $shippingOptions = [];
+
         if ($request->has('quantity')) {
             $product = Product::with(['subVariant'])->findOrFail($id);
             $quantity = $request->input('quantity', 1);
@@ -63,7 +71,7 @@ class CheckoutController extends Controller
             $orderId = 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
             $snapToken = $this->paymentService->generateSnapToken($product, $variant, $quantity, $user, $orderId, $totalPrice);
 
-            return view('checkout.form', compact('product', 'variant', 'quantity', 'totalPrice', 'addresses', 'vouchers', 'snapToken'));
+            return view('checkout.form', compact('product', 'variant', 'quantity', 'totalPrice', 'addresses', 'vouchers', 'snapToken', 'shippingOptions'));
         }
 
         if ($request->has('selected-products')) {
@@ -84,7 +92,7 @@ class CheckoutController extends Controller
             $totalPrice = $carts->sum(fn($cart) => $cart->product->price * $cart->quantity);
             $snapToken = $this->paymentService->generateSnapTokenFromCart($carts, $user);
 
-            return view('checkout.form', compact('carts', 'totalPrice', 'addresses', 'vouchers', 'snapToken'));
+            return view('checkout.form', compact('carts', 'totalPrice', 'addresses', 'vouchers', 'snapToken', 'shippingOptions'));
         }
 
         return redirect()->route('cart.index')->with('error', 'Invalid request.');
@@ -103,12 +111,17 @@ class CheckoutController extends Controller
             'total_price' => 'required|numeric|min:0',
             'voucher_code' => 'nullable|string',
             'address_id' => 'required|exists:addresses,id',
-            'shipping_method' => 'required|string|in:standard,express'
+            'courier' => 'required|string',
+            'shipping_service' => 'required|string',
+            'shipping_cost' => 'required|numeric',
         ]);
 
         $voucher = $this->handleVoucher($validated);
         $checkoutItems = [];
-        $totalPrice = 0;
+        $totalPrice = $validated['total_price'];
+        $shippingCost = $validated['shipping_cost'];
+        $courier = $validated['courier'];
+        $shippingService = $validated['shipping_service'];
 
         DB::beginTransaction();
 
@@ -117,14 +130,15 @@ class CheckoutController extends Controller
         } else {
             list($checkoutItems, $totalPrice) = $this->handleSingleProductCheckout($validated, $voucher, $user);
         }
+        $totalPrice += $shippingCost;
 
-        $order = $this->createOrder($checkoutItems, $totalPrice);
+        $order = $this->createOrder($checkoutItems, $totalPrice, $courier, $shippingService, $shippingCost);
 
         DB::commit();
 
         $snapToken = $this->generateSnapToken($checkoutItems, $user, $order->id, $totalPrice);
 
-        return view('checkout.form', compact('snapToken', 'order', 'checkoutItems', 'totalPrice'));
+        return view('checkout.form', compact('snapToken', 'order', 'checkoutItems', 'totalPrice', 'shippingCost'));
     }
 
     private function handleCartCheckout($validated, $voucher, $user)
@@ -136,7 +150,7 @@ class CheckoutController extends Controller
             ->get();
 
         if ($carts->isEmpty()) {
-            throw new \Exception('Produk dalam keranjang tidak ditemukan.');
+            throw new Exception('Produk dalam keranjang tidak ditemukan.');
         }
 
         $checkoutItems = [];
@@ -176,10 +190,11 @@ class CheckoutController extends Controller
                 'address_id' => $validated['address_id'],
                 'voucher_code' => $validated['voucher_code'],
                 'quantity' => $cart->quantity,
-                'shipping_method' => $validated['shipping_method'],
                 'amount' => $discountedItemTotal,
+                'courier' => $validated['courier'],
+                'shipping_service' => $validated['shipping_service'],
+                'shipping_cost' => $validated['shipping_cost'] / count($carts),
             ], $voucher, $discountedItemTotal);
-
             $checkoutItems[] = $checkout;
             $subVariant->decrement('stock', $cart->quantity);
         }
@@ -200,7 +215,17 @@ class CheckoutController extends Controller
 
         $totalPrice = $this->calculateTotalPrice($product, $validated['quantity'], $voucher);
 
-        $checkout = $this->createCheckout($validated, $voucher, $totalPrice);
+        $checkout = $this->createCheckout([
+            'user_id' => $user->id,
+            'product_id' => $validated['product_id'],
+            'address_id' => $validated['address_id'],
+            'voucher_code' => $validated['voucher_code'],
+            'quantity' => $validated['quantity'],
+            'amount' => $totalPrice,
+            'courier' => $validated['courier'],
+            'shipping_service' => $validated['shipping_service'],
+            'shipping_cost' => $validated['shipping_cost'],
+        ], $voucher, $totalPrice);
         $variant->decrement('stock', $validated['quantity']);
 
         $product->sales += $validated['quantity'];
@@ -233,15 +258,15 @@ class CheckoutController extends Controller
             $voucher = Voucher::where('code', $voucherCode)->first();
 
             if (!$voucher) {
-                throw new \Exception('Voucher tidak ditemukan.');
+                throw new Exception('Voucher tidak ditemukan.');
             }
 
             if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
-                throw new \Exception('Voucher tidak aktif atau sudah kadaluarsa.');
+                throw new Exception('Voucher tidak aktif atau sudah kadaluarsa.');
             }
 
             if ($voucher->isUsedByUser(auth()->user())) {
-                throw new \Exception('Anda sudah menggunakan voucher ini.');
+                throw new Exception('Anda sudah menggunakan voucher ini.');
             }
         }
 
@@ -251,10 +276,10 @@ class CheckoutController extends Controller
     private function validateStock($variant, $quantity)
     {
         if ($variant && $quantity > $variant->stock) {
-            throw new \Exception('Insufficient stock for the selected variant.');
+            throw new Exception('Insufficient stock for the selected variant.');
         }
         if (!$variant) {
-            throw new \Exception('Variant not found.');
+            throw new Exception('Variant not found.');
         }
     }
 
@@ -278,17 +303,22 @@ class CheckoutController extends Controller
             'address_id' => $validated['address_id'],
             'voucher_code' => $validated['voucher_code'] ?? '',
             'quantity' => $validated['quantity'],
-            'shipping_method' => $validated['shipping_method'],
             'amount' => $totalPrice,
+            'courier' => $validated['courier'],
+            'shipping_service' => $validated['shipping_service'],
+            'shipping_cost' => $validated['shipping_cost'],
         ]);
     }
 
-    private function createOrder($checkout, $totalPrice)
+    private function createOrder($checkout, $totalPrice, $courier, $shippingService, $shippingCost)
     {
         $order = Order::create([
             'order_date' => now(),
             'unique_order_id' => 'ORDER-' . uniqid('', true) . '-' . Str::random(6),
             'address' => $checkout[0]->address->address_line1,
+            'courier' => $courier,
+            'shipping_service' => $shippingService,
+            'shipping_cost' => $shippingCost,
             'amount' => $totalPrice,
             'payment_status' => 'pending',
             'order_status' => 'pending',
@@ -368,5 +398,65 @@ class CheckoutController extends Controller
         $voucher->decrementUsage();
 
         return response()->json(['success' => true]);
+    }
+
+    public function getShippingCost(Request $request)
+    {
+        $request->validate([
+            'address_id' => 'required|exists:addresses,id',
+            'courier' => 'required|string',
+            'service' => 'nullable|string',
+        ]);
+
+        $address = Address::findOrFail($request->address_id);
+        $destinationCityId = $address->city_id;
+        $weight = 1000;
+        $apiKey = config('rajaongkir.api_key');
+        $originCity = config('rajaongkir.origin_city');
+
+        if (!$destinationCityId) {
+            return response()->json(['error' => 'ID kota tujuan tidak ditemukan untuk alamat ini.'], 400);
+        }
+
+        $costResponse = Http::withHeaders([
+            'key' => $apiKey,
+            'content-type' => 'application/x-www-form-urlencoded',
+        ])->asForm()->post('https://api.rajaongkir.com/starter/cost', [
+            'origin' => $originCity,
+            'destination' => $destinationCityId,
+            'weight' => $weight,
+            'courier' => $request->courier,
+        ]);
+
+        if ($costResponse->successful()) {
+            $results = $costResponse->json()['rajaongkir'];
+
+            if ($results['status']['code'] == 200 && !empty($results['results'])) {
+                if ($request->filled('service')) {
+                    $cost = collect($results['results'][0]['costs'])
+                        ->where('service', $request->service)
+                        ->first();
+
+                    if ($cost) {
+                        return response()->json(['cost' => $cost['cost'][0]['value']]);
+                    } else {
+                        return response()->json(['error' => 'Service tidak ditemukan untuk kurir ini'], 404);
+                    }
+                } else {
+                    $formattedCosts = collect($results['results'][0]['costs'])->map(function ($item) {
+                        return [
+                            'service' => $item['service'],
+                            'description' => $item['description'],
+                            'cost' => $item['cost'][0]['value'],
+                        ];
+                    });
+                    return response()->json($formattedCosts);
+                }
+            } else {
+                return response()->json(['error' => $results['status']['description']], $results['status']['code']);
+            }
+        } else {
+            return response()->json(['error' => 'Gagal mendapatkan biaya pengiriman dari API: ' . $costResponse->body()], $costResponse->status());
+        }
     }
 }

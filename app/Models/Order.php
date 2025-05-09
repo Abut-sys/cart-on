@@ -12,9 +12,14 @@ class Order extends Model
         'order_date',
         'unique_order_id',
         'address',
+        'courier',
+        'shipping_service',
+        'shipping_cost',
         'amount',
         'payment_status',
         'order_status',
+        'resi_number',
+        'estimated_delivery',
     ];
 
     public function checkouts()

@@ -79,6 +79,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
     Route::post('voucher/check', [CheckoutController::class, 'checkVoucher'])->name('voucher.check');
     Route::post('voucher/updateUsage', [CheckoutController::class, 'updateVoucherUsage'])->name('voucher.updateUsage');
+    Route::post('/get-shipping-cost', [CheckoutController::class, 'getShippingCost'])->name('get-shipping-cost');
 });
 
 // Route guest

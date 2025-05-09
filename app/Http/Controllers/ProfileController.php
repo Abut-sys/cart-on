@@ -106,6 +106,7 @@ class ProfileController extends Controller
             'address_line2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
             'state' => 'nullable|string|max:100',
+            'city_id' => 'nullable|regex:/^\d+$/',
             'postal_code' => 'required|string|max:20',
             'country' => 'required|string|max:100',
         ]);
