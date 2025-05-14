@@ -18,8 +18,6 @@ class Order extends Model
         'amount',
         'payment_status',
         'order_status',
-        'resi_number',
-        'estimated_delivery',
     ];
 
     public function checkouts()

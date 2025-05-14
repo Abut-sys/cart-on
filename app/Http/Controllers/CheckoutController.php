@@ -314,7 +314,7 @@ class CheckoutController extends Controller
     {
         $order = Order::create([
             'order_date' => now(),
-            'unique_order_id' => 'ORDER-' . uniqid('', true) . '-' . Str::random(6),
+            'unique_order_id' =>  'ORDER-' . Str::uuid() . '-' . Str::random(6),
             'address' => $checkout[0]->address->address_line1,
             'courier' => $courier,
             'shipping_service' => $shippingService,
@@ -434,8 +434,7 @@ class CheckoutController extends Controller
             if ($results['status']['code'] == 200 && !empty($results['results'])) {
                 if ($request->filled('service')) {
                     $cost = collect($results['results'][0]['costs'])
-                        ->where('service', $request->service)
-                        ->first();
+                        ->firstWhere('service', $request->service);
 
                     if ($cost) {
                         return response()->json(['cost' => $cost['cost'][0]['value']]);

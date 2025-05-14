@@ -98,26 +98,6 @@ class ProfileController extends Controller
         return view('profile.edit-address', compact('user', 'addresses'));
     }
 
-    // Proses update alamat
-    public function updateAddress(Request $request, $addressId)
-    {
-        $request->validate([
-            'address_line1' => 'required|string|max:255',
-            'address_line2' => 'nullable|string|max:255',
-            'city' => 'required|string|max:100',
-            'state' => 'nullable|string|max:100',
-            'city_id' => 'nullable|regex:/^\d+$/',
-            'postal_code' => 'required|string|max:20',
-            'country' => 'required|string|max:100',
-        ]);
-
-        $address = Address::findOrFail($addressId);
-        $address->update($request->only(['address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country']));
-
-        return redirect()->route('profile.address.edit')->with('msg', 'Address updated successfully!');
-    }
-
-    // Tambahkan alamat baru
     public function addAddress(Request $request)
     {
         $request->validate([
@@ -132,10 +112,45 @@ class ProfileController extends Controller
         $user = Auth::user();
         $profile = $user->profile;
 
-        // Membuat alamat baru dan menambahkannya ke profil
-        $profile->addresses()->create($request->only(['address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country']));
+        $existingAddressCount = $profile->addresses()->count();
+
+        $cityId = $existingAddressCount + 1;
+
+        $address = $request->address_line1 . ', ' . $request->city . ', ' . $request->state . ', ' . $request->postal_code . ', ' . $request->country;
+
+        list($latitude, $longitude) = $this->getCoordinatesFromAddress($address);
+
+        $profile->addresses()->create(array_merge(
+            $request->only(['address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country']),
+            [
+                'city_id' => $cityId,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+            ]
+        ));
 
         return redirect()->route('profile.address.edit')->with('msg', 'Address added successfully!');
+    }
+
+    private function getCoordinatesFromAddress($address)
+    {
+        $appUrl = config('app.url');
+        $userAgent = "LaravelAddressApp/1.0 ({$appUrl})";
+
+        $response = Http::withHeaders([
+            'User-Agent' => $userAgent
+        ])->get('https://nominatim.openstreetmap.org/search', [
+            'format' => 'json',
+            'q' => $address
+        ]);
+
+        $data = $response->json();
+
+        if (!empty($data)) {
+            return [$data[0]['lat'], $data[0]['lon']];
+        }
+
+        return [null, null];
     }
 
     public function autocompleteAddress(Request $request)
