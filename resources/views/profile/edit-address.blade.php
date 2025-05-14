@@ -20,6 +20,9 @@
                             </label>
                             <input type="text" id="address_line1" name="address_line1" value="{{ old('address_line1') }}"
                                 required>
+                            <ul id="autocomplete-results"
+                                style="border:1px solid #ccc; max-height:150px; overflow-y:auto; padding:0; margin-top:5px; list-style:none;">
+                            </ul>
                         </div>
 
                         <div class="profile-edit-field">
@@ -99,6 +102,72 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const input = document.getElementById('address_line1');
+        const resultBox = document.getElementById('autocomplete-results');
+
+        resultBox.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+        });
+
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        const fetchAutocomplete = debounce(function() {
+            const query = input.value;
+            if (query.length < 3) {
+                resultBox.innerHTML = '';
+                return;
+            }
+
+            fetch(`/autocomplete/address?query=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    resultBox.innerHTML = '';
+
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item.display_name;
+                        li.style.cursor = 'pointer';
+                        li.style.padding = '5px';
+                        li.style.borderBottom = '1px solid #eee';
+
+                        li.addEventListener('click', () => {
+                            input.value = item.address.road || item.display_name;
+
+                            document.getElementById('city').value = item.address.city || item
+                                .address.town || item.address.village || '';
+                            document.getElementById('state').value =
+                                item.address.state ||
+                                item.address.region ||
+                                item.address.county ||
+                                item.address.province ||
+                                '';
+                            document.getElementById('country').value = item.address.country ||
+                                '';
+                            document.getElementById('postal_code').value = item.address
+                                .postcode || '';
+
+                            resultBox.innerHTML = '';
+                        });
+
+                        resultBox.appendChild(li);
+                    });
+                })
+                .catch(err => {
+                    console.error('Autocomplete error:', err);
+                    resultBox.innerHTML = '';
+                });
+        }, 200);
+
+        input.addEventListener('input', fetchAutocomplete);
+    </script>
 @endsection
 
 <style>

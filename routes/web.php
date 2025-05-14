@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/addresses', [ProfileController::class, 'editAddress'])->name('profile.address.edit');
     Route::post('/profile/addresses', [ProfileController::class, 'addAddress'])->name('profile.address.add');
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
+    Route::get('/autocomplete/address', [ProfileController::class, 'autocompleteAddress'])->name('autocomplete.address');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
@@ -78,6 +79,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
     Route::post('voucher/check', [CheckoutController::class, 'checkVoucher'])->name('voucher.check');
     Route::post('voucher/updateUsage', [CheckoutController::class, 'updateVoucherUsage'])->name('voucher.updateUsage');
+    Route::post('/get-shipping-cost', [CheckoutController::class, 'getShippingCost'])->name('get-shipping-cost');
 });
 
 // Route guest

@@ -85,7 +85,6 @@
                             Cart</button>
                     </form>
                     <form action="{{ route('checkout.show', $product->id) }}" method="GET">
-                        @csrf
                         <input type="hidden" name="quantity" value="1" id="quantityInput">
                         <input type="hidden" name="color" class="hidden-color-input">
                         <input type="hidden" name="size" class="hidden-size-input">
@@ -279,38 +278,6 @@
                 thumbnail.addEventListener('click', function() {
                     const imageUrl = this.getAttribute('data-full-image');
                     updateMainImage(imageUrl);
-                });
-            });
-
-            $('.product-user-show-toggle-cart-btn ').on('click', function(event) {
-                event.preventDefault();
-
-                var productId = $(this).data('product-id');
-                var $this = $(this);
-
-                $.ajax({
-                    url: '{{ route('cart.add') }}',
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        _token: '{{ csrf_token() }}',
-                    },
-                    success: function(response) {
-                        if (response.status === 'added') {
-                            $this.removeClass('text-secondary').addClass(
-                                'text-success');
-                        } else if (response.status === 'removed') {
-                            $this.removeClass('text-success').addClass(
-                                'text-secondary');
-                        }
-
-                        $('#for-badge-count-cart').text(response
-                            .cartCount);
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Terjadi kesalahan saat memperbarui cart.');
-                        console.error("AJAX error: " + status + ": " + error);
-                    }
                 });
             });
 

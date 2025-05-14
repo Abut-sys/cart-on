@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Checkout extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'product_id', 'address_id', 'voucher_code', 'quantity', 'shipping_method', 'amount'];
+    protected $fillable = ['user_id', 'product_id', 'address_id', 'voucher_code', 'quantity', 'courier', 'shipping_service', 'shipping_cost', 'amount'];
 
     public function user()
     {
