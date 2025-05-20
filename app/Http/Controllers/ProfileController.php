@@ -12,13 +12,25 @@ use Illuminate\Support\Facades\Http;
 
 class ProfileController extends Controller
 {
-    // Tampilkan form edit profil
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (Auth::check()) {
+                // Ensure profile exists
+                Auth::user()->profile()->firstOrCreate([
+                    'user_id' => Auth::id()
+                ]);
+            }
+            return $next($request);
+        });
+    }
+
+    // Show edit profile form
     public function edit()
     {
-        $user = Auth::user();
+        $user = Auth::user()->load(['profile.addresses']);
         $profile = $user->profile;
-        // Using collect([]) to ensure $addresses is always a Collection
-        $addresses = $profile ? $profile->addresses : collect([]);
+        $addresses = $profile->addresses;
 
         if ($user->hasRole('admin')) {
             return view('profile.edit_admin', compact('user', 'profile', 'addresses'));
@@ -27,7 +39,7 @@ class ProfileController extends Controller
         return view('profile.edit', compact('user', 'profile', 'addresses'));
     }
 
-    // Proses update profil
+    // profile
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -40,10 +52,9 @@ class ProfileController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'nullable|string|max:10',
             'date_of_birth' => 'nullable|date',
-            'address_id' => 'nullable|exists:addresses,id', // Menambahkan validasi untuk address_id
+            'address_id' => 'nullable|exists:addresses,id',
         ]);
 
-        // Update data pengguna (user)
         $user->name = $request->name;
         $user->email = $request->email;
 
@@ -52,52 +63,48 @@ class ProfileController extends Controller
         }
 
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+        $user->password = Hash::make($request->password);
+        $user->save();
         }
 
         $user->save();
 
-        // Update profil atau buat profil baru jika belum ada
-        $profile = $user->profile ?: new Profile();
-        $profile->user_id = $user->id;
+        $profile = $user->profile;
 
         if ($request->hasFile('profile_picture')) {
-            if ($user->profile && $user->profile->profile_picture) {
-                Storage::delete('public/profile_pictures/' . $user->profile->profile_picture);
+            if ($profile->profile_picture) {
+                Storage::delete('public/profile_pictures/' . $profile->profile_picture);
             }
             $profilePicture = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $user->profile->profile_picture = basename($profilePicture); // Menyimpan nama file
+            $profile->profile_picture = basename($profilePicture);
         }
 
-        // Update gender dan date_of_birth
         $profile->gender = $request->input('gender', $profile->gender);
         $profile->date_of_birth = $request->input('date_of_birth', $profile->date_of_birth);
 
-        // Menambahkan alamat yang dipilih
         if ($request->filled('address_id')) {
             $profile->address_id = $request->input('address_id');
         }
 
-        // Simpan profil
         $profile->save();
 
         return redirect()->route('profile.edit')->with('msg', 'Profile updated successfully!');
     }
 
-    // Tampilkan halaman edit alamat
+    // Show address edit form
     public function editAddress()
     {
-        $user = Auth::user();
-        $profile = $user->profile;
-        $addresses = $profile ? $profile->addresses : []; // Ambil alamat jika ada
+        $user = Auth::user()->load(['profile.addresses']);
 
         if ($user->hasRole('admin')) {
             abort(403, 'Admin cannot edit addresses.');
         }
 
+        $addresses = $user->profile->addresses;
         return view('profile.edit-address', compact('user', 'addresses'));
     }
 
+    // Add new address
     public function addAddress(Request $request)
     {
         $request->validate([
@@ -109,62 +116,69 @@ class ProfileController extends Controller
             'country' => 'required|string|max:100',
         ]);
 
-        $user = Auth::user();
+        $user = Auth::user()->load('profile');
         $profile = $user->profile;
 
         $existingAddressCount = $profile->addresses()->count();
-
         $cityId = $existingAddressCount + 1;
 
-        $address = $request->address_line1 . ', ' . $request->city . ', ' . $request->state . ', ' . $request->postal_code . ', ' . $request->country;
+        $addressString = implode(', ', [
+            $request->address_line1,
+            $request->city,
+            $request->state,
+            $request->postal_code,
+            $request->country
+        ]);
 
-        list($latitude, $longitude) = $this->getCoordinatesFromAddress($address);
+        [$latitude, $longitude] = $this->getCoordinatesFromAddress($addressString);
 
-        $profile->addresses()->create(array_merge(
-            $request->only(['address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country']),
-            [
-                'city_id' => $cityId,
-                'latitude' => $latitude,
-                'longitude' => $longitude,
-            ]
-        ));
+        $newAddress = $profile->addresses()->create([
+            'address_line1' => $request->address_line1,
+            'address_line2' => $request->address_line2,
+            'city' => $request->city,
+            'state' => $request->state,
+            'postal_code' => $request->postal_code,
+            'country' => $request->country,
+            'city_id' => $cityId,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+        ]);
+
+        if ($existingAddressCount === 0) {
+            $profile->update(['address_id' => $newAddress->id]);
+        }
 
         return redirect()->route('profile.address.edit')->with('msg', 'Address added successfully!');
     }
 
+    // Get coordinates from address
     private function getCoordinatesFromAddress($address)
     {
-        $appUrl = config('app.url');
-        $userAgent = "LaravelAddressApp/1.0 ({$appUrl})";
-
         $response = Http::withHeaders([
-            'User-Agent' => $userAgent
+            'User-Agent' => config('app.name')
         ])->get('https://nominatim.openstreetmap.org/search', [
             'format' => 'json',
-            'q' => $address
+            'q' => $address,
         ]);
 
         $data = $response->json();
 
-        if (!empty($data)) {
-            return [$data[0]['lat'], $data[0]['lon']];
-        }
-
-        return [null, null];
+        return !empty($data)
+            ? [$data[0]['lat'], $data[0]['lon']]
+            : [null, null];
     }
 
+    // Address autocomplete
     public function autocompleteAddress(Request $request)
     {
         $query = $request->input('query');
+
         if (!$query) {
             return response()->json([]);
         }
 
-        $appUrl = config('app.url');
-        $userAgent = "LaravelAddressApp/1.0 ({$appUrl})";
-
         $response = Http::withHeaders([
-            'User-Agent' => $userAgent
+            'User-Agent' => config('app.name')
         ])->get('https://nominatim.openstreetmap.org/search', [
             'street' => $query,
             'format' => 'json',
@@ -175,7 +189,7 @@ class ProfileController extends Controller
         return response()->json($response->json());
     }
 
-    // Hapus alamat
+    // Delete address
     public function deleteAddress($id)
     {
         $address = Address::findOrFail($id);
