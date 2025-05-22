@@ -78,17 +78,18 @@
                     <form action="{{ route('cart.add') }}" method="POST">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <input type="hidden" name="quantity" value="1" id="quantityInput">
-                        <input type="hidden" name="color" class="hidden-color-input">
-                        <input type="hidden" name="size" class="hidden-size-input">
-                        <button type="submit" class="btn btn-secondary product-user-show-btn-add-to-cart">Add to
+                        <input type="hidden" name="quantity" class="quantity-input-hidden">
+                        <input type="hidden" name="color" class="color-input-hidden">
+                        <input type="hidden" name="size" class="size-input-hidden">
+                        <button type="submit" class="btn btn-outline-primary product-user-show-btn-add-to-cart">Add to
                             Cart</button>
                     </form>
-                    <form action="{{ route('checkout.show', $product->id) }}" method="GET">
-                        <input type="hidden" name="quantity" value="1" id="quantityInput">
-                        <input type="hidden" name="color" class="hidden-color-input">
-                        <input type="hidden" name="size" class="hidden-size-input">
-                        <button type="submit" class="btn btn-primary product-user-show-btn-buy-now ">Buy Now</button>
+
+                    <form method="GET" action="{{ route('checkout.show', $product->id) }}">
+                        <input type="hidden" name="quantity" class="quantity-input-hidden">
+                        <input type="hidden" name="color" class="color-input-hidden">
+                        <input type="hidden" name="size" class="size-input-hidden">
+                        <button type="submit" class="btn btn-primary product-user-show-btn-buy-now">Buy Now</button>
                     </form>
                 </div>
 
@@ -348,30 +349,55 @@
             });
 
             function updateStock() {
+                const addToCartBtn = document.querySelector('.product-user-show-btn-add-to-cart');
+                const buyNowBtn = document.querySelector('.product-user-show-btn-buy-now');
+
                 if (selectedColor && selectedSize) {
                     const variant = subVariant.find(variant =>
                         variant.color === selectedColor && variant.size === selectedSize);
 
                     if (variant) {
-                        stockDisplay.textContent = `Stock: ${variant.stock}`;
-                        quantityInput.max = variant.stock;
-                        if (parseInt(quantityInput.value) > variant.stock) {
-                            quantityInput.value = variant.stock;
+                        if (variant.stock > 0) {
+                            stockDisplay.textContent = `Stock: ${variant.stock}`;
+                            quantityInput.max = variant.stock;
+                            if (parseInt(quantityInput.value) > variant.stock) {
+                                quantityInput.value = variant.stock;
+                            }
+
+                            addToCartBtn.disabled = false;
+                            buyNowBtn.disabled = false;
+                        } else {
+                            stockDisplay.textContent = 'Out of Stock';
+                            quantityInput.value = 1;
+                            quantityInput.max = 1;
+
+                            addToCartBtn.disabled = true;
+                            buyNowBtn.disabled = true;
                         }
                     } else {
-                        stockDisplay.textContent = 'Stock: Out Of Stock';
+                        stockDisplay.textContent = 'Out of Stock';
+                        quantityInput.value = 1;
                         quantityInput.max = 1;
+
+                        addToCartBtn.disabled = true;
+                        buyNowBtn.disabled = true;
                     }
                 } else {
                     stockDisplay.textContent = 'Select Color And Size';
+                    quantityInput.value = 1;
                     quantityInput.max = 1;
+
+                    addToCartBtn.disabled = true;
+                    buyNowBtn.disabled = true;
                 }
             }
 
             function updateHiddenFields() {
-                colorInput.value = selectedColor || '';
-                sizeInput.value = selectedSize || '';
-                quantityHiddenInput.value = quantityInput.value;
+                document.querySelectorAll('.color-input-hidden').forEach(input => input.value = selectedColor ||
+                '');
+                document.querySelectorAll('.size-input-hidden').forEach(input => input.value = selectedSize || '');
+                document.querySelectorAll('.quantity-input-hidden').forEach(input => input.value = quantityInput
+                    .value);
             }
 
             btnIncrease.addEventListener('click', function() {

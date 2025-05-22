@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VoucherLimitNotification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,6 +52,12 @@ class Voucher extends Model
             if ($this->usage_limit === 0) {
                 $this->status = 'inactive';
                 $this->save();
+
+                $admins = User::where('role', 'admin')->get();
+
+                foreach ($admins as $admin) {
+                    $admin->notify(new VoucherLimitNotification($this));
+                }
             }
         }
     }

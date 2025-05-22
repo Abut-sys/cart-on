@@ -13,6 +13,7 @@ use App\Models\UserVoucher;
 use App\Models\Voucher;
 use App\Notifications\AdminOrderNotification;
 use App\Notifications\OrderPlacedNotification;
+use App\Notifications\OutOfStockNotification;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use App\Services\PaymentService;
@@ -201,6 +202,11 @@ class CheckoutController extends Controller
             ], $voucher, $discountedItemTotal);
             $checkoutItems[] = $checkout;
             $subVariant->decrement('stock', $cart->quantity);
+
+            if ($subVariant->stock - $cart->quantity <= 0) {
+                $admins = User::where('role', 'admin')->get();
+                Notification::send($admins, new OutOfStockNotification($subVariant));
+            }
         }
 
         Cart::whereIn('id', $selectedCartIds)->delete();
@@ -231,6 +237,11 @@ class CheckoutController extends Controller
             'shipping_cost' => $validated['shipping_cost'],
         ], $voucher, $totalPrice);
         $variant->decrement('stock', $validated['quantity']);
+
+        if ($variant->stock - $validated['quantity'] <= 0) {
+            $admins = User::where('role', 'admin')->get();
+            Notification::send($admins, new OutOfStockNotification($variant));
+        }
 
         $product->sales += $validated['quantity'];
         $product->save();
