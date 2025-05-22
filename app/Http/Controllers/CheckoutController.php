@@ -8,8 +8,11 @@ use App\Models\Checkout;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SubVariant;
+use App\Models\User;
 use App\Models\UserVoucher;
 use App\Models\Voucher;
+use App\Notifications\AdminOrderNotification;
+use App\Notifications\OrderPlacedNotification;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use App\Services\PaymentService;
@@ -18,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 
 class CheckoutController extends Controller
 {
@@ -332,6 +336,12 @@ class CheckoutController extends Controller
                 'updated_at' => now(),
             ]);
         }
+
+        auth()->user()->notify(new OrderPlacedNotification($order, $checkout));
+
+        $admins = User::where('role', 'admin')->get();
+
+        Notification::send($admins, new AdminOrderNotification($order, $checkout, auth()->user()));
 
         return $order;
     }

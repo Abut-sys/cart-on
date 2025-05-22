@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Events\VoucherStatusChanged;
+use App\Notifications\VoucherNotification;
 
 class VoucherController extends Controller
 {
@@ -101,43 +102,49 @@ class VoucherController extends Controller
 
     public function claimedVouchers()
     {
-        $claimedVouchers = ClaimVoucher::where('user_id', Auth::id())->with('voucher')->get();
+        $claimedVouchers = ClaimVoucher::where('user_id', Auth::id())
+            ->whereHas('voucher', function ($query) {
+                $query->where('status', 'active')
+                    ->where('start_date', '<=', Carbon::now())
+                    ->where('end_date', '>=', Carbon::now());
+            })
+            ->get();
 
         return view('vouchers.claimed', compact('claimedVouchers'));
     }
 
     public function claimVoucher(Request $request, $voucherId)
     {
-        $userId = Auth::id();
-
+        $user = auth()->user();
         $voucher = Voucher::findOrFail($voucherId);
 
         if ($voucher->status !== 'active') {
-            return redirect()
-                ->back()
-                ->withErrors(['msg' => 'Voucher is not active.']);
+            return back()->withErrors(['msg' => 'Voucher is not active.']);
         }
 
         if ($voucher->used_count >= $voucher->usage_limit) {
-            return redirect()
-                ->back()
-                ->withErrors(['msg' => 'Voucher usage limit reached.']);
+            return back()->withErrors(['msg' => 'Voucher usage limit reached.']);
         }
 
-        $alreadyClaimed = ClaimVoucher::where('user_id', $userId)->where('voucher_id', $voucherId)->exists();
+        $alreadyClaimed = ClaimVoucher::where('user_id', $user->id)
+            ->where('voucher_id', $voucherId)
+            ->exists();
 
         if ($alreadyClaimed) {
-            return redirect()
-                ->back()
-                ->withErrors(['msg' => 'You have already claimed this voucher.']);
+            return back()->withErrors(['msg' => 'You have already claimed this voucher.']);
         }
 
         ClaimVoucher::create([
-            'user_id' => $userId,
-            'voucher_id' => $voucherId,
+            'user_id' => $user->id,
+            'voucher_id' => $voucher->id,
         ]);
 
         $voucher->increment('used_count');
+
+        $user->notify(new VoucherNotification(
+            "You have successfully claimed a voucher {$voucher->code} 🎉",
+            route('your-vouchers')
+        ));
 
         return redirect()->route('voucher.claim')->with('msg', 'Voucher claimed successfully!');
     }

@@ -133,7 +133,7 @@
 }
 
 .notification-section {
-    display: inline-block;
+    display: inline-flex;
     align-items: center;
     margin: 0 15px;
     font-size: 17px;
@@ -150,7 +150,7 @@
 
 /* Animasi gerakan lonceng */
 .notification-icon:hover {
-    animation: bellhake 0.5s ease-in-out;
+    animation: bellShake 0.5s ease-in-out;
     color: #d9cab3;
 }
 
@@ -159,20 +159,20 @@
         transform: rotate(0deg);
     }
     25% {
-        transform: rotate(10deg); /* Mengubah arah sedikit ke kanan */
+        transform: rotate(10deg);
     }
     50% {
-        transform: rotate(-10deg); /* Mengubah arah sedikit ke kiri */
+        transform: rotate(-10deg);
     }
     75% {
-        transform: rotate(5deg); /* Mengubah arah ke kanan lagi */
+        transform: rotate(5deg);
     }
     100% {
-        transform: rotate(0deg); /* Kembali ke posisi semula */
+        transform: rotate(0deg);
     }
 }
 
-.notification-icon .badge {
+#notificationCount {
     position: absolute;
     top: -5px;
     right: -5px;
@@ -180,35 +180,48 @@
     color: white;
     font-size: 12px;
     font-weight: bold;
-    padding: 3px 8px;
+    padding: 3px 6px;
     border-radius: 50%;
+    pointer-events: none;
 }
 
 .notification-dropdown {
     display: none;
     position: absolute;
     right: 0;
+    top: 36px;
     background-color: #f9f9f9;
-    min-width: 250px;
+    min-width: 280px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+    z-index: 1000;
     border-radius: 5px;
-    padding: 10px;
+    padding: 10px 0;
     max-height: 300px;
     overflow-y: auto;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .notification-dropdown.active {
     display: block;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .notification-item {
-    padding: 12px;
+    padding: 12px 20px;
     border-bottom: 1px solid #ddd;
     font-size: 14px;
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
 }
 
 .notification-item:hover {
@@ -218,6 +231,7 @@
 .notification-item.read {
     color: #999;
     background-color: #e0e0e0;
+    font-weight: normal;
 }
 
 .notification-item.unread {
@@ -227,25 +241,7 @@
 
 .notification-item i {
     margin-right: 10px;
-}
-
-#notificationCount {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 12px;
-    padding: 3px 6px;
-    border-radius: 50%;
-    background-color: #ff3b30;
-    color: white;
-}
-
-.hidden {
-    display: none;
-}
-
-.show {
-    display: block;
+    color: #555;
 }
 
 .notification-dropdown .no-notifications {
