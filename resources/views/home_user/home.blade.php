@@ -96,12 +96,16 @@
                 bottom: 24px;
                 right: 24px;
                 z-index: 9999;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 12px;
             }
 
             .chatbox {
                 display: none;
                 width: 350px;
-                height: 500px;
+                height: 480px;
                 background: white;
                 border: 1px solid #e0e0e0;
                 border-radius: 8px;
@@ -115,7 +119,7 @@
             }
 
             .chat-header {
-                background-color: #6a64f1;
+                background-color: #99bc85;
                 color: white;
                 padding: 12px 16px;
                 display: flex;
@@ -142,7 +146,7 @@
             }
 
             .user-message {
-                background: #6a64f1;
+                background: #99bc85;
                 color: white;
                 align-self: flex-end;
             }
@@ -171,7 +175,7 @@
             }
 
             .chat-input button {
-                background: #6a64f1;
+                background: #99bc85;
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -181,13 +185,13 @@
             }
 
             .chat-input button:hover {
-                background: #5751d8;
+                background: #99bc85;
             }
 
             .chat-toggle-btn {
                 width: 60px;
                 height: 60px;
-                background-color: #6a64f1;
+                background-color: #99bc85;
                 color: white;
                 border-radius: 50%;
                 border: none;
@@ -269,8 +273,12 @@
 
                 <div class="chat-input">
                     <input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
-                    <button onclick="sendMessage()">Send</button>
+                    <button onclick="sendMessage()" aria-label="Send message">
+                        <!-- Ikon Kertas Terbang (Send) -->
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
                 </div>
+
             </div>
 
             <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
@@ -291,50 +299,50 @@
         </div>
 
         <script>
-    function toggleChat() {
-        const chatbox = document.getElementById('chatbox');
-        const toggleBtn = document.getElementById('chatToggleBtn');
-        chatbox.classList.toggle('active');
-        toggleBtn.classList.toggle('active');
-    }
+            function toggleChat() {
+                const chatbox = document.getElementById('chatbox');
+                const toggleBtn = document.getElementById('chatToggleBtn');
+                chatbox.classList.toggle('active');
+                toggleBtn.classList.toggle('active');
+            }
 
-    function handleKeyPress(e) {
-        if(e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    }
+            function handleKeyPress(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            }
 
-    function sendMessage() {
-        const input = document.getElementById('messageInput');
-        const message = input.value.trim();
-        const chatMessages = document.getElementById('chatMessages');
+            function sendMessage() {
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                const chatMessages = document.getElementById('chatMessages');
 
-        if(message) {
-            // Add user message
-            const userMessage = document.createElement('div');
-            userMessage.className = 'message user-message';
-            userMessage.textContent = message;
-            chatMessages.appendChild(userMessage);
+                if (message) {
+                    // Add user message
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'message user-message';
+                    userMessage.textContent = message;
+                    chatMessages.appendChild(userMessage);
 
-            input.value = '';
+                    input.value = '';
 
-            // Simulate bot response
-            setTimeout(() => {
-                const botResponse = document.createElement('div');
-                botResponse.className = 'message bot-message';
-                botResponse.textContent = 'Thanks for your message! Our team will respond shortly.';
-                chatMessages.appendChild(botResponse);
+                    // Simulate bot response
+                    setTimeout(() => {
+                        const botResponse = document.createElement('div');
+                        botResponse.className = 'message bot-message';
+                        botResponse.textContent = 'Thanks for your message! Our team will respond shortly.';
+                        chatMessages.appendChild(botResponse);
 
-                // Auto-scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1000);
+                        // Auto-scroll to bottom
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 1000);
 
-            // Auto-scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    }
-</script>
+                    // Auto-scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+        </script>
     @endauth
 @endsection
 
@@ -342,7 +350,7 @@
 
 @push('scripts')
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // ==================== BANNER SLIDER ====================
             const banner = document.querySelector('.home-user-banner');
             const banners = document.querySelectorAll('.home-user-banner-image');
@@ -369,7 +377,7 @@
             setInterval(slideBanner, 5000);
 
             // ==================== WISHLIST HANDLER ====================
-            $('.home-product-newest-wishlist-icon').on('click', function(event) {
+            $('.home-product-newest-wishlist-icon').on('click', function (event) {
                 event.preventDefault();
                 const productId = $(this).data('product-id');
                 const $this = $(this);
@@ -381,7 +389,7 @@
                         product_id: productId,
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status === 'added') {
                             $this.removeClass('text-secondary').addClass('text-danger');
                         } else if (response.status === 'removed') {
@@ -389,7 +397,7 @@
                         }
                         $('#for-badge-count-wishlist').text(response.wishlistCount);
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error("AJAX error:", error);
                     }
                 });

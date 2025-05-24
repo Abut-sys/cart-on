@@ -1,9 +1,10 @@
 .ps-container {
-    width: 280px;
+    width: auto;
     padding: 1.5rem;
-    background: #ffffff;
+    background: #ffffff;    
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
+    margin-right: 1.5rem;
 }
 
 .ps-profile-card {
