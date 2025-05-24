@@ -24,14 +24,14 @@
                                 <h5 class="voucher-claimed-code card-title text-center font-weight-bold mb-3">
                                     {{ $claimedVoucher->voucher->code }}
                                 </h5>
-                                
+
                                 <p class="voucher-claimed-validity card-text text-center">
-                                    <span class="text-muted">Claimed On:</span> 
+                                    <span class="text-muted">Claimed On:</span>
                                     <strong>{{ $claimedVoucher->created_at->format('M d, Y') }}</strong>
                                 </p>
 
                                 <p class="voucher-claimed-validity card-text text-center">
-                                    <span class="text-muted">Validity:</span> 
+                                    <span class="text-muted">Validity:</span>
                                     <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->start_date)->format('M d, Y') }}</strong>
                                     <span> to </span>
                                     <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->end_date)->format('M d, Y') }}</strong>

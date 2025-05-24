@@ -1,0 +1,123 @@
+.ps-container {
+    width: 280px;
+    padding: 1.5rem;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.ps-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.ps-avatar-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+.ps-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ps-initials-avatar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ps-profile-details {
+    flex: 1;
+}
+
+.ps-user-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    line-height: 1.4;
+}
+
+.ps-user-email {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #718096;
+    line-height: 1.4;
+}
+
+.ps-navigation-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ps-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: #4a5568;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.ps-nav-item:hover {
+    background: #f7fafc;
+    color: #2d3748;
+}
+
+.ps-nav-item.is-active {
+    background: #ebf4ff;
+    color: #4299e1;
+    font-weight: 500;
+}
+
+.ps-nav-icon {
+    width: 24px;
+    margin-right: 12px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.ps-nav-text {
+    flex-grow: 1;
+    font-size: 0.925rem;
+}
+
+.ps-badge {
+    background: #4299e1;
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 1rem;
+}
+
+@media (max-width: 768px) {
+    .ps-container {
+        width: 100%;
+        padding: 1rem;
+    }
+}

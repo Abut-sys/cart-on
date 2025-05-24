@@ -4,12 +4,10 @@
 
 @section('content')
     <div class="profile-edit-container">
+        <div>
+        @include('components.profile-sidebar')
+        </div>
         <div class="profile-edit-card">
-            <div class="profile-edit-header">
-                <h3>Update Your Profile</h3>
-                <p class="header-subtitle">Keep your information up to date</p>
-            </div>
-
             <div class="profile-edit-body">
                 <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -48,7 +46,7 @@
                                 <div class="input-with-icon">
                                     <i class="fas fa-user"></i>
                                     <input type="text" id="name" name="name"
-                                           value="{{ old('name', $user->name) }}" required>
+                                        value="{{ old('name', $user->name) }}" required>
                                 </div>
                             </div>
 
@@ -57,7 +55,8 @@
                                 <div class="input-with-icon">
                                     <i class="fas fa-envelope"></i>
                                     <input type="email" id="email" name="email"
-                                           value="{{ old('email', $user->email) }}" required>
+                                        value="{{ old('email', $user->email) }}" required readonly
+                                        style="background-color: #f8f9fa; cursor: not-allowed">
                                 </div>
                             </div>
 
@@ -66,33 +65,41 @@
                                 <div class="input-with-icon">
                                     <i class="fas fa-phone"></i>
                                     <input type="text" id="phone_number" name="phone_number"
-                                           value="{{ old('phone_number', $user->phone_number) }}">
+                                        value="{{ old('phone_number', $user->phone_number) }}">
                                 </div>
                             </div>
 
+                            <!-- Date of Birth Section -->
                             <div class="form-row">
                                 <div class="form-group half-width">
                                     <label for="date_of_birth">Date of Birth</label>
                                     <div class="input-with-icon">
                                         <i class="fas fa-calendar"></i>
                                         <input type="text" id="date_of_birth" name="date_of_birth" class="date-picker"
-                                            value="{{ old('date_of_birth', optional($user->profile)->date_of_birth) }}">
+                                            value="{{ old('date_of_birth', optional($user->profile)->date_of_birth) }}"
+                                            readonly="readonly" placeholder="Select date">
                                     </div>
                                 </div>
+                            </div>
 
+                            <!-- Gender Section -->
+                            <div class="form-row">
                                 <div class="form-group half-width">
                                     <label for="gender">Gender</label>
                                     <div class="input-with-icon">
                                         <i class="fas fa-venus-mars"></i>
                                         <select name="gender" id="gender">
                                             <option value="" disabled selected>Select Gender</option>
-                                            <option value="male" {{ old('gender', optional($user->profile)->gender) == 'male' ? 'selected' : '' }}>
+                                            <option value="male"
+                                                {{ old('gender', optional($user->profile)->gender) == 'male' ? 'selected' : '' }}>
                                                 Male
                                             </option>
-                                            <option value="female" {{ old('gender', optional($user->profile)->gender) == 'female' ? 'selected' : '' }}>
+                                            <option value="female"
+                                                {{ old('gender', optional($user->profile)->gender) == 'female' ? 'selected' : '' }}>
                                                 Female
                                             </option>
-                                            <option value="other" {{ old('gender', optional($user->profile)->gender) == 'other' ? 'selected' : '' }}>
+                                            <option value="other"
+                                                {{ old('gender', optional($user->profile)->gender) == 'other' ? 'selected' : '' }}>
                                                 Other
                                             </option>
                                         </select>
@@ -112,7 +119,7 @@
                                     <div class="input-with-icon">
                                         <i class="fas fa-key"></i>
                                         <input type="password" id="current_password" name="current_password"
-                                               placeholder="Enter your current password">
+                                            placeholder="Enter your current password">
                                     </div>
                                 </div>
 
@@ -121,7 +128,7 @@
                                     <div class="input-with-icon">
                                         <i class="fas fa-lock"></i>
                                         <input type="password" id="new_password" name="new_password"
-                                               placeholder="Enter new password">
+                                            placeholder="Enter new password">
                                         <div class="password-strength"></div>
                                     </div>
                                 </div>
@@ -131,8 +138,7 @@
                                     <div class="input-with-icon">
                                         <i class="fas fa-lock"></i>
                                         <input type="password" id="new_password_confirmation"
-                                               name="new_password_confirmation"
-                                               placeholder="Confirm your new password">
+                                            name="new_password_confirmation" placeholder="Confirm your new password">
                                     </div>
                                 </div>
                             </div>
@@ -189,7 +195,6 @@
                     if (preview.tagName === 'IMG') {
                         preview.src = reader.result;
                     } else {
-                        // If it's the default avatar div, replace with image
                         const newImg = document.createElement('img');
                         newImg.id = 'profile_picture_preview';
                         newImg.className = 'image-preview';
@@ -201,7 +206,6 @@
                         preview.parentNode.replaceChild(newImg, preview);
                     }
                 }
-
                 reader.readAsDataURL(file);
             }
         }
@@ -213,7 +217,7 @@
             let strength = 0;
 
             if (password.length >= 8) strength++;
-            if (password.match(/[a-z]/) strength++;
+            if (password.match(/[a-z]/)) strength++;
             if (password.match(/[A-Z]/)) strength++;
             if (password.match(/[0-9]/)) strength++;
             if (password.match(/[^a-zA-Z0-9]/)) strength++;
@@ -221,13 +225,21 @@
             strengthIndicator.className = 'password-strength strength-' + strength;
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            flatpickr('.date-picker', {
+        // Date Picker Configuration
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr('#date_of_birth', {
                 dateFormat: 'Y-m-d',
                 minDate: '1900-01-01',
                 maxDate: 'today',
                 disableMobile: true,
+                allowInput: false,
+                clickOpens: true,
+                onOpen: function() {
+                    this.set('defaultDate', this.input.value);
+                }
             });
+
+            document.querySelector('#date_of_birth').style.cursor = 'pointer';
         });
     </script>
 @endsection

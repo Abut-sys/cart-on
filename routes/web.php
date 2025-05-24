@@ -1,27 +1,28 @@
 <?php
 
-use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\CategoryProductController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\CostumersController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\InformationController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PasswordController;
-use App\Http\Controllers\ProductAllController;
-use App\Http\Controllers\SearchController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\CostumersController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductAllController;
+use App\Http\Controllers\InformationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\CategoryProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
     Route::get('/autocomplete/address', [ProfileController::class, 'autocompleteAddress'])->name('autocomplete.address');
 
+    Route::get('/chat', [ChatController::class, 'index']);
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
     Route::get('/notifications/all', [NotificationController::class, 'showAllNotifications'])->name('allNotifications');
@@ -60,6 +64,8 @@ Route::middleware('auth')->group(function () {
 // Route untuk user
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+    Route::get('/chat/messages/{userId}', [ChatController::class, 'fetchMessages']);
 
     Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
@@ -126,6 +132,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('orders', OrderController::class);
 
     Route::resource('costumers', CostumersController::class);
+    Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');
 
     Route::resource('informations', InformationController::class);
 });
