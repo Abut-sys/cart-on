@@ -18,6 +18,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\CostumersController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ListOrderController;
 use App\Http\Controllers\ProductAllController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\NotificationController;
@@ -69,6 +70,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+
+    Route::get('/orders/history', [ListOrderController::class, 'history'])->name('orders.history');
 
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');

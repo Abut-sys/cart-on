@@ -3,19 +3,19 @@
         <!-- Profile Card -->
         <div class="ps-profile-card">
             <div class="ps-avatar-wrapper hover-scale">
-                @if (optional($user->profile)->profile_picture)
-                    <img src="{{ Storage::url('profile_pictures/' . $user->profile->profile_picture) }}" alt="User Avatar"
-                        class="ps-avatar-img">
+                @if (optional(auth()->user()->profile)->profile_picture)
+                    <img src="{{ Storage::url('profile_pictures/' . auth()->user()->profile->profile_picture) }}"
+                        alt="User Avatar" class="ps-avatar-img">
                 @else
                     <div class="ps-initials-avatar ps-gradient-bg">
-                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                 @endif
             </div>
 
             <div class="ps-profile-details">
-                <h3 class="ps-user-name">{{ $user->name }}</h3>
-                <p class="ps-user-email">{{ $user->email }}</p>
+                <h3 class="ps-user-name">{{ auth()->user()->name }}</h3>
+                <p class="ps-user-email">{{ auth()->user()->email }}</p>
             </div>
         </div>
 
@@ -26,15 +26,15 @@
                 <span class="ps-nav-text">Edit Profile</span>
             </a>
 
-            <a href="#" class="ps-nav-item {{ request()->routeIs('orders.history') ? 'is-active' : '' }}">
+            <a href="{{ route('orders.history') }}"
+                class="ps-nav-item {{ request()->routeIs('orders.history') ? 'is-active' : '' }}">
                 <i class="fas fa-history ps-nav-icon"></i>
                 <span class="ps-nav-text">Transaction list</span>
             </a>
 
             <a href="#" class="ps-nav-item {{ request()->routeIs('orders.pending') ? 'is-active' : '' }}">
                 <i class="fas fa-clock ps-nav-icon"></i>
-                <span class="ps-n   av-text">Waiting for payment</span>
-                <span class="ps-badge">3</span>
+                <span class="ps-nav-text">Waiting for payment</span>
             </a>
 
             <a href="{{ route('voucher.claim') }}"
@@ -46,7 +46,6 @@
             <a href="#" class="ps-nav-item {{ request()->routeIs('notifications.*') ? 'is-active' : '' }}">
                 <i class="fas fa-bell ps-nav-icon"></i>
                 <span class="ps-nav-text">Notifikasi</span>
-                <span class="ps-badge">5</span>
             </a>
         </div>
     </div>

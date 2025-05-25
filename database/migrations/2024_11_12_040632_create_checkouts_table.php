@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade');
             $table->string('voucher_code')->nullable();
-            $table->integer('quantity')->default(1);;
+            $table->integer('quantity')->default(1);
             $table->string('courier');
             $table->string('shipping_service');
             $table->decimal('shipping_cost', 13, 0);

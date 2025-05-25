@@ -1,0 +1,246 @@
+/* Transaction History Container */
+.th-main-container {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    margin: 20px auto; /* Tambahkan margin atas bawah */
+    max-width: 98%;
+}
+
+.th-header {
+    border-bottom: 2px solid #f0f2f5;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+}
+
+.th-title {
+    font-weight: 700;
+    color: #2d3436;
+    font-size: 1.8rem;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.th-subtitle {
+    font-size: 0.95rem;
+    color: #636e72;
+}
+
+/* Transaction Card */
+.th-transaction-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+}
+
+.th-transaction-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+}
+
+.th-transaction-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.th-transaction-card:hover::after {
+    opacity: 1;
+}
+
+/* Status Badges */
+.th-status-badge, .th-order-status {
+    padding: 6px 16px;
+    border-radius: 24px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.badge-pending {
+    background: #f8f9fa;
+    color: #6c757d;
+    border-color: #e9ecef;
+}
+
+.badge-shipped {
+    background: #e9ecef;
+    color: #495057;
+    border-color: #dee2e6;
+}
+
+.badge-delivered {
+    background: #d3d9df;
+    color: #343a40;
+    border-color: #c4c9cf;
+}
+
+.badge-canceled {
+    background: #ced4da;
+    color: #212529;
+    border-color: #adb5bd;
+}
+
+/* Filter Buttons */
+.th-filter-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.th-filter-btn {
+    border: 2px solid #e9ecef;
+    border-radius: 24px;
+    padding: 8px 20px;
+    color: #6c757d;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    background: #f8f9fa;
+    position: relative;
+    overflow: hidden;
+}
+
+.th-filter-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+    transform: translateY(-2px);
+}
+
+.th-filter-btn.active {
+    background: #495057;
+    color: white;
+    border-color: #495057;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Empty State */
+.th-empty-state {
+    text-align: center;
+    padding: 40px 24px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    margin: 30px 0;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.th-empty-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f1f3f5 0%, #e9ecef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.th-empty-icon {
+    width: 50px;
+    height: 50px;
+    stroke: #adb5bd;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+    transition: all 0.3s ease;
+}
+
+.th-empty-title {
+    font-size: 1.8rem;
+    color: #2d3436;
+    margin-bottom: 15px;
+    letter-spacing: -0.5px;
+    font-weight: 700;
+}
+
+.th-empty-subtitle {
+    font-size: 1.1rem;
+    color: #636e72;
+    margin-bottom: 10px;
+}
+
+.th-empty-hint {
+    font-size: 0.95rem;
+    color: #74b9ff;
+    font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.th-transaction-card:nth-child(1) { animation-delay: 0.1s; }
+.th-transaction-card:nth-child(2) { animation-delay: 0.2s; }
+.th-transaction-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* Hover Effects */
+.th-empty-logo:hover {
+    transform: rotate(-5deg) scale(1.05);
+}
+
+.th-empty-logo:hover .th-empty-icon {
+    stroke: #74b9ff;
+    transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .th-main-container {
+        padding: 24px;
+        border-radius: 12px;
+    }
+
+    .th-title {
+        font-size: 1.6rem;
+    }
+
+    .th-filter-btn {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
+
+    .th-transaction-card {
+        padding: 20px;
+    }
+
+    .th-empty-title {
+        font-size: 1.4rem;
+    }
+
+    .th-empty-logo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .th-empty-icon {
+        width: 50px;
+        height: 50px;
+    }
+}
