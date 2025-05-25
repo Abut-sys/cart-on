@@ -1,13 +1,16 @@
 @extends('layouts.index')
 
+@section('title', 'Transaction History')
+
 @section('content')
 <div class="container">
-    <div class="row">
-        <div class="col-md-3 mb-4 mb-md-0">
-            @include('components.profile-sidebar')
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="profile-sidebar-wrapper sticky-top">
+                @include('components.profile-sidebar')
+            </div>
         </div>
-
-        <div class="@auth col-md-9 @else col-12 @endauth">
+        <div class="col-lg-9">
             <div class="th-main-container">
                 <div class="th-header mb-5">
                     <h2 class="th-title">Transaction History</h2>

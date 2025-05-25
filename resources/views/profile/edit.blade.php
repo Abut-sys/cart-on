@@ -41,7 +41,7 @@
                         <div class="form-section personal-info">
                             <h4 class="section-title"><i class="fas fa-user"></i> Personal Information</h4>
 
-                            <div class="form-gro    up">
+                            <div class="form-group">
                                 <label for="name">Full Name</label>
                                 <div class="input-with-icon">
                                     <i class="fas fa-user"></i>
