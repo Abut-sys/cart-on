@@ -383,3 +383,15 @@ input:focus, select:focus {
         padding: 1rem;
     }
 }
+.user-pp-initial {
+    width: 40px;
+    height: 40px;
+    background-color: #6c757d; /* abu-abu netral */
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
