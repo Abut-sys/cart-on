@@ -41,9 +41,19 @@
         <div class="user-wrapper" style="position: relative;">
             @auth
                 <a href="#" id="adminToggle">
-                <img src="{{ Storage::url('profile_pictures/' . Auth::user()->profile->profile_picture) }}"
-                    alt="User Avatar" class="user-pp">
-            </a>
+                    @php
+                        $profile = Auth::user()->profile;
+                        $profilePicture = $profile->profile_picture ?? null;
+                        $initial = strtoupper(substr(Auth::user()->name, 0, 1));
+                    @endphp
+
+                    @if ($profilePicture)
+                        <img src="{{ Storage::url('profile_pictures/' . $profilePicture) }}" alt="User Avatar"
+                            class="user-pp">
+                    @else
+                        <div class="user-pp-initial">{{ $initial }}</div>
+                    @endif
+                </a>
                 <div class="user-dropdown" id="userDropdown">
                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
                         <i class="fas fa-user-edit"></i> Profile
