@@ -13,7 +13,7 @@
     gap: 1rem;
     padding: 1rem;
     margin-bottom: 2rem;
-    background: #f8f9fa;
+    background: #f3f7f2;
     border-radius: 8px;
 }
 
@@ -85,15 +85,16 @@
 }
 
 .ps-nav-item:hover {
-    background: #f7fafc;
-    color: #2d3748;
+    background: #f0f5ef;
+    color: #5a7c4f;
 }
 
 .ps-nav-item.is-active {
-    background: #ebf4ff;
-    color: #4299e1;
-    font-weight: 500;
+    background: rgb(224, 236, 219);
+    color: #99bc85;
+    font-weight: 600;
 }
+
 
 .ps-nav-icon {
     width: 24px;

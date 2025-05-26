@@ -353,28 +353,111 @@
         document.addEventListener("DOMContentLoaded", function () {
             // ==================== BANNER SLIDER ====================
             const banner = document.querySelector('.home-user-banner');
-            const banners = document.querySelectorAll('.home-user-banner-image');
-            const prevButton = document.querySelector('.home-user-banner-prev');
-            const nextButton = document.querySelector('.home-user-banner-next');
+            const images = document.querySelectorAll('.home-user-banner-image');
+            const prevBtn = document.querySelector('.home-user-banner-prev');
+            const nextBtn = document.querySelector('.home-user-banner-next');
+
             let currentIndex = 0;
+            const totalImages = images.length;
 
-            function updateBannerPosition() {
-                banner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            // Create indicator dots
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'home-user-banner-dots';
+            banner.parentNode.appendChild(dotsContainer);
+
+            for (let i = 0; i < totalImages; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'home-user-banner-dot';
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
             }
 
-            function slideBanner() {
-                currentIndex = (currentIndex + 1) % banners.length;
-                updateBannerPosition();
+            const dots = document.querySelectorAll('.home-user-banner-dot');
+
+            // Set initial positions
+            function initializeSlider() {
+                images.forEach((img, index) => {
+                    img.style.transform = translateX(${ index * 100} %);
+                });
             }
 
-            function slideToPrev() {
-                currentIndex = (currentIndex - 1 + banners.length) % banners.length;
-                updateBannerPosition();
+            // Go to specific slide
+            function goToSlide(index) {
+                currentIndex = index;
+                updateSlider();
             }
 
-            prevButton.addEventListener('click', slideToPrev);
-            nextButton.addEventListener('click', slideBanner);
-            setInterval(slideBanner, 5000);
+            // Update slider position and active dot
+            function updateSlider() {
+                images.forEach((img, index) => {
+                    img.style.transform = translateX(${ 100 * (index - currentIndex) } %);
+                });
+
+                // Update active dot
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+            }
+
+            // Next slide
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % totalImages;
+                updateSlider();
+            }
+
+            // Previous slide
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+                updateSlider();
+            }
+
+            // Event listeners
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowRight') nextSlide();
+                if (e.key === 'ArrowLeft') prevSlide();
+            });
+
+            // Auto-advance (optional)
+            let autoplay = setInterval(nextSlide, 5000);
+
+            // Pause autoplay on hover
+            banner.parentNode.addEventListener('mouseenter', () => {
+                clearInterval(autoplay);
+            });
+
+            banner.parentNode.addEventListener('mouseleave', () => {
+                autoplay = setInterval(nextSlide, 5000);
+            });
+
+            // Touch swipe support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            banner.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            banner.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+
+            function handleSwipe() {
+                const threshold = 50;
+                if (touchEndX < touchStartX - threshold) {
+                    nextSlide();
+                } else if (touchEndX > touchStartX + threshold) {
+                    prevSlide();
+                }
+            }
+
+            // Initialize
+            initializeSlider();
 
             // ==================== WISHLIST HANDLER ====================
             $('.home-product-newest-wishlist-icon').on('click', function (event) {

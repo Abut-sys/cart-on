@@ -1,12 +1,20 @@
-/* Transaction History Container */
-.th-main-container {
-    background: #fff;
-    border-radius: 14px;
-    padding: 24px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-    margin: 20px auto; /* Tambahkan margin atas bawah */
-    max-width: 98%;
+.th-bg-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.th-bg-card {
+    width: 100%;
+    max-width: 900px;
+    background: rgb(255, 255, 255);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.th-bg-body {
+    padding: 2rem;
 }
 
 .th-header {
@@ -28,7 +36,6 @@
     color: #636e72;
 }
 
-/* Transaction Card */
 .th-transaction-card {
     background: #ffffff;
     border: 1px solid #e9ecef;
@@ -64,7 +71,6 @@
     opacity: 1;
 }
 
-/* Status Badges */
 .th-status-badge, .th-order-status {
     padding: 6px 16px;
     border-radius: 24px;
@@ -100,7 +106,6 @@
     border-color: #adb5bd;
 }
 
-/* Filter Buttons */
 .th-filter-group {
     display: flex;
     gap: 10px;
@@ -132,7 +137,6 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Empty State */
 .th-empty-state {
     text-align: center;
     padding: 40px 24px;
@@ -185,7 +189,6 @@
     font-weight: 500;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -200,7 +203,6 @@
 .th-transaction-card:nth-child(2) { animation-delay: 0.2s; }
 .th-transaction-card:nth-child(3) { animation-delay: 0.3s; }
 
-/* Hover Effects */
 .th-empty-logo:hover {
     transform: rotate(-5deg) scale(1.05);
 }
@@ -210,7 +212,6 @@
     transform: scale(1.1);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .th-main-container {
         padding: 24px;

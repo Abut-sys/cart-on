@@ -5,7 +5,7 @@
 @section('content')
     <div class="profile-edit-container">
         <div>
-        @include('components.profile-sidebar')
+            @include('components.profile-sidebar')
         </div>
         <div class="profile-edit-card">
             <div class="profile-edit-body">
