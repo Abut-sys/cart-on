@@ -56,17 +56,55 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     margin: 0 auto;
-    align-items: stretch;
     width: 100%;
+    padding: 8px;
+}
+
+.home-user-ad {
+    background: #ffffff;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e5e7eb;
+}
+
+.home-user-ad:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.home-user-ad:active {
+    transform: scale(0.98);
 }
 
 .home-user-ad img {
     width: 100%;
     height: 120px;
-    object-fit: fill;
+    object-fit: cover;
+    object-position: center;
     user-select: none;
+    transition: transform 0.3s ease;
+}
+
+.home-user-ad:hover img {
+    transform: scale(1.02);
+}
+
+.home-user-ad::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.home-user-ad {
+    cursor: pointer;
 }
 
 .home-user-shop-by-categories {

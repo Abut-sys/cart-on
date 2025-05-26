@@ -76,7 +76,10 @@
 
     <div class="user-wrapper">
         @auth
-            <a href="#" class="username" id="adminToggle">{{ Auth::user()->name }}</a>
+            <a href="#" id="adminToggle">
+                <img src="{{ Storage::url('profile_pictures/' . Auth::user()->profile->profile_picture) }}"
+                    alt="User Avatar" class="user-pp">
+            </a>
             <div class="user-dropdown" id="userDropdown">
                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Profile
@@ -94,8 +97,8 @@
                 @endif
             </div>
         @else
-            <a href="{{ route('login') }}" class="username">Login</a>
-            <a href="{{ route('register') }}" class="username">Register</a>
+            <a href="{{ route('login') }}" class="guest-enter">Login</a>
+            <a href="{{ route('register') }}" class="guest-enter">Register</a>
         @endauth
     </div>
 </nav>

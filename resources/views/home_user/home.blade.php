@@ -15,10 +15,10 @@
         </div>
         <div class="home-user-ads">
             <div class="home-user-ad">
-                <img src="image/iklan1.png" alt="Iklan 1">
+                <img src="image/iklan1.png" alt="Iklan 1" class="ad-image">
             </div>
             <div class="home-user-ad">
-                <img src="image/iklan2.png" alt="Iklan 2">
+                <img src="image/iklan2.png" alt="Iklan 2" class="ad-image">
             </div>
         </div>
     </div>
