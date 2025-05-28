@@ -1,145 +1,202 @@
 @extends('layouts.index')
 
 @section('content')
-    <h2 class="checkout-title mb-4">Checkout</h2>
+    <div class="container py-4">
+        <h2 class="checkout-title mb-4 text-center">Checkout</h2>
 
-    <div class="checkout-container">
-        <div class="checkout-content row">
-            <div class="checkout-details col-lg-8 col-md-12">
-                <div class="checkout-card mb-4">
-                    <div class="checkout-card-header">
-                        <h5>Product Details</h5>
-                    </div>
-                    <div class="checkout-card-body">
-                        @if (isset($carts) && count($carts) > 0)
-                            @foreach ($carts as $cart)
-                                <div class="checkout-card-body d-flex align-items-start mb-3">
-                                    <div class="checkout-product-image me-3">
-                                        <img src="{{ asset('storage/' . ($cart->product->images->first()->image_path ?? 'default.jpg')) }}"
-                                            alt="{{ $cart->product->name }}" class="img-fluid rounded">
+        <div class="checkout-container">
+            <div class="row g-4">
+                <div class="col-lg-8 col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Detail Produk</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (isset($carts) && $carts->count() > 0)
+                                @foreach ($carts as $cart)
+                                    <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                        <div class="checkout-product-image me-3 flex-shrink-0">
+                                            <img src="{{ asset('storage/' . ($cart->product->images->first()->image_path ?? 'images/default.jpg')) }}"
+                                                alt="{{ $cart->product->name }}" class="img-fluid rounded"
+                                                style="width: 100px; height: 100px; object-fit: cover;">
+                                        </div>
+                                        <div class="checkout-product-info flex-grow-1">
+                                            <h5 class="checkout-product-name mb-1">{{ $cart->product->name }}</h5>
+                                            @php
+                                                $subVariant = $cart->product->subVariant
+                                                    ->where('color', $cart->color)
+                                                    ->where('size', $cart->size)
+                                                    ->first();
+                                            @endphp
+                                            @if ($subVariant)
+                                                <p class="text-muted mb-1">Color: {{ $subVariant->color }}</p>
+                                                <p class="text-muted mb-1">Size: {{ $subVariant->size }}</p>
+                                            @endif
+                                            <p class="mb-1">Quantity: <strong
+                                                    class="text-dark">{{ $cart->quantity }}</strong></p>
+                                            <h6 class="checkout-product-price text-primary">
+                                                Rp{{ number_format($cart->product->price, 2) }}
+                                            </h6>
+                                        </div>
                                     </div>
-                                    <div class="checkout-product-info">
-                                        <h4 class="checkout-product-name">{{ $cart->product->name }}</h4>
-                                        <p class="checkout-product-color">
-                                            Color:
-                                            {{ optional($cart->variant ?? $cart->product->subVariant->first())->color ?? 'N/A' }}
+                                @endforeach
+                            @elseif(isset($product))
+                                <div class="d-flex align-items-start pb-3">
+                                    <div class="checkout-product-image me-3 flex-shrink-0">
+                                        <img src="{{ asset('storage/' . ($product->images->first()->image_path ?? 'images/default.jpg')) }}"
+                                            alt="{{ $product->name }}" class="img-fluid rounded"
+                                            style="width: 100px; height: 100px; object-fit: cover;">
+                                    </div>
+                                    <div class="checkout-product-info flex-grow-1">
+                                        <h5 class="checkout-product-name mb-1">{{ $product->name }}</h5>
+                                        @if (isset($variant))
+                                            <p class="text-muted mb-1">Color: {{ $variant->color ?? 'N/A' }}</p>
+                                            <p class="text-muted mb-1">Size: {{ $variant->size ?? 'N/A' }}</p>
+                                        @endif
+                                        <p class="mb-1">Quantity: <strong class="text-dark">{{ $quantity }}</strong>
                                         </p>
-                                        <p class="checkout-product-size">
-                                            Size:
-                                            {{ optional($cart->variant ?? $cart->product->subVariant->first())->size ?? 'N/A' }}
-                                        </p>
-                                        <p class="checkout-product-quantity">Quantity: {{ $cart->quantity }}</p>
-                                        <h4 class="checkout-product-price">Rp{{ number_format($cart->product->price, 2) }}
-                                        </h4>
+                                        <h6 class="checkout-product-price text-primary">
+                                            Rp{{ number_format($product->price, 2) }}
+                                        </h6>
                                     </div>
                                 </div>
+                            @else
+                                <p class="text-muted">Tidak ada produk yang dipilih.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Payment Summary & Address Section --}}
+                <div class="col-lg-4 col-md-12">
+                    <form id="checkout-form" action="{{ route('checkout.process') }}" method="POST">
+                        @csrf
+
+                        {{-- Hidden inputs untuk produk --}}
+                        @if (isset($carts) && $carts->count() > 0)
+                            @foreach ($carts as $cart)
+                                <input type="hidden" name="selected-products[]" value="{{ $cart->id }}">
                             @endforeach
                         @elseif(isset($product))
-                            <div class="checkout-card-body d-flex align-items-start">
-                                <div class="checkout-product-image me-3">
-                                    <img src="{{ asset('storage/' . ($product->images->first()->image_path ?? 'default.jpg')) }}"
-                                        alt="{{ $product->name }}" class="img-fluid rounded">
-                                </div>
-                                <div class="checkout-product-info">
-                                    <h4 class="checkout-product-name">{{ $product->name }}</h4>
-                                    <p class="checkout-product-color">Color: {{ $variant->color ?? 'N/A' }}</p>
-                                    <p class="checkout-product-size">Size: {{ $variant->size ?? 'N/A' }}</p>
-                                    <p class="checkout-product-quantity">Quantity: {{ $quantity }}</p>
-                                    <h4 class="checkout-product-price">Rp{{ number_format($product->price, 2) }}</h4>
-                                </div>
-                            </div>
-                        @else
-                            <p>No products found.</p>
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="variant_id" value="{{ $variant->id ?? '' }}">
+                            <input type="hidden" name="quantity" value="{{ $quantity }}">
                         @endif
-                    </div>
-                </div>
-            </div>
+                        <input type="hidden" name="raw_product_total" id="raw-product-total"
+                            value="{{ $rawProductTotal }}">
+                        <input type="hidden" name="voucher_code" id="voucher_code_hidden">
+                        <input type="hidden" name="shipping_cost" id="shipping_cost" value="0">
+                        <input type="hidden" name="courier" id="selected_courier">
+                        <input type="hidden" name="shipping_service" id="selected_shipping_service">
 
-            <div class="checkout-summary col-lg-4 col-md-12">
-                <div class="checkout-card mb-4">
-                    <div class="checkout-card-header">
-                        <h5>Payment Summary</h5>
-                    </div>
-                    <div class="checkout-card-body">
-                        <p>Product Price: <span class="float-end">Rp{{ number_format($totalPrice, 2) }}</span></p>
-                        <p>Shipping Price: <span id="shipping-cost-summary" class="float-end">Rp0.00</span></p>
-                        <h4>Total: <span id="total-price" class="float-end">Rp{{ number_format($totalPrice, 2) }}</span>
-                        </h4>
-                    </div>
-                </div>
+                        {{-- Shipping Address Section --}}
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Alamat Pengiriman</h5>
+                            </div>
+                            <div class="card-body">
+                                @if ($addresses->isEmpty())
+                                    <p class="text-danger">Belum ada alamat tersedia. Mohon tambahkan alamat di profil Anda.
+                                    </p>
+                                    <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-primary">Tambah
+                                        Alamat</a>
+                                @else
+                                    <div class="mb-3">
+                                        <label for="address_id" class="form-label fw-bold">Pilih Alamat:</label>
+                                        <select name="address_id" id="address_id"
+                                            class="form-select @error('address_id') is-invalid @enderror">
+                                            <option value="" disabled selected>Pilih Alamat Pengiriman</option>
+                                            @foreach ($addresses as $address)
+                                                <option value="{{ $address->id }}"
+                                                    {{ $selectedAddressId == $address->id || old('address_id') == $address->id ? 'selected' : '' }}>
+                                                    {{ $address->address_line1 }}, {{ $address->city }},
+                                                    {{ $address->province }}, {{ $address->postal_code }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('address_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
 
-                <div class="checkout-card mb-4">
-                    <div class="checkout-card-header">
-                        <h5>Voucher Code</h5>
-                    </div>
-                    <div class="checkout-card-body">
-                        <input type="text" name="voucher_code" id="voucher_code" class="form-control mb-2"
-                            placeholder="Masukkan kode voucher" value="{{ old('voucher_code') }}">
-                        <button type="button" id="apply-voucher-btn" class="btn btn-secondary w-100">Apply</button>
-                        <small id="voucher-error-message" class="text-danger d-block mt-2">
-                            @if (session('error'))
-                                {{ session('error') }}
-                            @endif
-                        </small>
-                        <small id="voucher-success-message" class="text-success d-block mt-2"></small>
-                    </div>
-                </div>
+                                    <div class="mb-3">
+                                        <label for="courier" class="form-label fw-bold">Pilih Kurir:</label>
+                                        <select name="courier" id="courier"
+                                            class="form-select @error('courier') is-invalid @enderror">
+                                            <option value="" disabled selected>Pilih Kurir</option>
+                                            <option value="jne" {{ old('courier') == 'jne' ? 'selected' : '' }}>JNE
+                                            </option>
+                                            <option value="tiki" {{ old('courier') == 'tiki' ? 'selected' : '' }}>TIKI
+                                            </option>
+                                            <option value="pos" {{ old('courier') == 'pos' ? 'selected' : '' }}>POS
+                                            </option>
+                                        </select>
+                                        @error('courier')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
 
-                <form id="checkout-form" action="{{ route('checkout.process') }}" method="POST">
-                    @csrf
-                    @if (isset($carts) && count($carts) > 0)
-                        @foreach ($carts as $cart)
-                            <input type="hidden" name="selected-products[]" value="{{ $cart->id }}">
-                        @endforeach
-                    @elseif(isset($product))
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <input type="hidden" name="variant_id" value="{{ $variant->id ?? '' }}">
-                        <input type="hidden" name="quantity" value="{{ $quantity }}">
-                    @endif
-                    <input type="hidden" name="total_price" id="final-total-price" value="{{ $totalPrice }}">
-                    <input type="hidden" name="voucher_code" id="voucher_code_hidden" value="{{ old('voucher_code') }}">
-                    <input type="hidden" name="shipping_cost" id="shipping_cost" value="0">
-                    <input type="hidden" name="courier" id="selected_courier">
-                    <input type="hidden" name="shipping_service" id="selected_shipping_service">
-
-                    <div class="checkout-card mb-4">
-                        <div class="checkout-card-header">
-                            <h5>Shipping Address</h5>
+                                    <div class="mb-3">
+                                        <label for="shipping_service" class="form-label fw-bold">Layanan Pengiriman:</label>
+                                        <select name="shipping_service" id="shipping_service"
+                                            class="form-select @error('shipping_service') is-invalid @enderror" disabled>
+                                            <option value="" disabled selected>Pilih Kurir Terlebih Dahulu</option>
+                                        </select>
+                                        @error('shipping_service')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                        @if ($addresses->isEmpty())
-                            <p>No addresses available.</p>
-                        @else
-                            <div class="checkout-card-body">
-                                <label for="address_id" class="form-label">Select Address:</label>
-                                <select name="address_id" id="address_id" class="form-select">
-                                    <option value="" disabled selected>Select Shipping Address</option>
-                                    @foreach ($addresses as $address)
-                                        <option value="{{ $address->id }}"
-                                            {{ old('address_id') == $address->id ? 'selected' : '' }}>
-                                            {{ $address->address_line1 }}, {{ $address->city }},
-                                            {{ $address->state }}, {{ $address->postal_code }}
-                                        </option>
-                                    @endforeach
-                                </select>
 
-                                <label for="courier" class="form-label mt-3">Courier:</label>
-                                <select name="courier" id="courier" class="form-select">
-                                    <option value="" disabled selected>Select Courier</option>
-                                    <option value="jne" {{ old('courier') == 'jne' ? 'selected' : '' }}>JNE</option>
-                                    <option value="tiki" {{ old('courier') == 'tiki' ? 'selected' : '' }}>TIKI</option>
-                                    <option value="pos" {{ old('courier') == 'pos' ? 'selected' : '' }}>POS</option>
-                                </select>
-
-                                <label for="shipping_service" class="form-label mt-3">Shipping Service:</label>
-                                <select name="shipping_service" id="shipping_service" class="form-select" disabled>
-                                    <option value="" disabled selected>Select Courier First</option>
-                                </select>
+                        {{-- Voucher Code Section --}}
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Kode Voucher</h5>
                             </div>
-                        @endif
-                    </div>
+                            <div class="card-body">
+                                <div class="input-group mb-2">
+                                    <input type="text" name="voucher_code_input" id="voucher_code_input"
+                                        class="form-control" placeholder="Masukkan kode voucher"
+                                        value="{{ old('voucher_code_input') }}">
+                                    <button type="button" id="apply-voucher-btn"
+                                        class="btn btn-outline-primary">Apply</button>
+                                </div>
+                                <small id="voucher-error-message" class="text-danger d-block mt-2"></small>
+                                <small id="voucher-success-message" class="text-success d-block mt-2"></small>
+                            </div>
+                        </div>
 
-                    <button id="pay-button" type="button" class="btn btn-primary w-100 mt-3">Buy Now</button>
-                </form>
+                        {{-- Payment Summary Section --}}
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Ringkasan Pembayaran</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="d-flex justify-content-between">Harga Produk:
+                                    <span class="fw-bold">Rp<span
+                                            id="product-price-summary">{{ number_format($rawProductTotal, 2) }}</span></span>
+                                </p>
+                                <p class="d-flex justify-content-between">Diskon Voucher:
+                                    <span class="fw-bold text-danger">- Rp<span
+                                            id="discount-amount-summary">0.00</span></span>
+                                </p>
+                                <p class="d-flex justify-content-between">Biaya Pengiriman:
+                                    <span class="fw-bold">Rp<span id="shipping-cost-summary">0.00</span></span>
+                                </p>
+                                <hr>
+                                <h4 class="d-flex justify-content-between text-primary">Total Pembayaran:
+                                    <span class="fw-bold">Rp<span
+                                            id="final-total-price-display">{{ number_format($rawProductTotal, 2) }}</span></span>
+                                </h4>
+                            </div>
+                        </div>
+
+                        <button id="pay-button" type="button" class="btn btn-success btn-lg w-100 mt-3">Bayar
+                            Sekarang</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -148,146 +205,65 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const applyVoucherBtn = document.getElementById('apply-voucher-btn');
-            const voucherCodeInput = document.getElementById('voucher_code');
+            const rawProductTotalInput = document.getElementById('raw-product-total');
+            const voucherCodeInput = document.getElementById('voucher_code_input');
             const voucherCodeHiddenInput = document.getElementById('voucher_code_hidden');
-            const totalPriceDisplay = document.getElementById('total-price');
-            const finalTotalPriceInput = document.getElementById('final-total-price');
+            const applyVoucherBtn = document.getElementById('apply-voucher-btn');
             const voucherError = document.getElementById('voucher-error-message');
             const voucherSuccess = document.getElementById('voucher-success-message');
-
-            applyVoucherBtn.addEventListener('click', function() {
-                const voucherCode = voucherCodeInput.value;
-                const currentTotalPrice = parseFloat(finalTotalPriceInput.value);
-
-                voucherError.textContent = '';
-                voucherSuccess.textContent = '';
-
-                if (voucherCode === "") {
-                    voucherError.textContent = 'Harap masukkan kode voucher.';
-                    return;
-                }
-
-                fetch('{{ route('voucher.check') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            voucher_code: voucherCode,
-                            total_price: currentTotalPrice
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            const newTotal = data.new_total;
-                            totalPriceDisplay.textContent = 'Rp' + newTotal.toLocaleString();
-                            finalTotalPriceInput.value = newTotal;
-                            voucherCodeHiddenInput.value = voucherCode;
-                            voucherSuccess.textContent = 'Voucher berhasil diterapkan!';
-                        } else {
-                            voucherError.textContent = data.message || 'Kode voucher tidak valid.';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        voucherError.textContent = 'Terjadi kesalahan saat memeriksa voucher.';
-                    });
-            });
-
-            const payButton = document.getElementById('pay-button');
-            payButton.addEventListener('click', function() {
-                const selectedAddress = document.getElementById('address_id').value;
-                const selectedCourier = document.getElementById('courier').value;
-                const selectedService = document.getElementById('shipping_service').value;
-                const shippingCost = document.getElementById('shipping_cost').value;
-
-
-                if (!selectedAddress) {
-                    alert('Harap pilih alamat pengiriman.');
-                    return;
-                }
-                if (!selectedCourier) {
-                    alert('Harap pilih kurir.');
-                    return;
-                }
-                if (!selectedService) {
-                    alert('Harap pilih jenis layanan pengiriman.');
-                    return;
-                }
-
-                document.getElementById('selected_courier').value = selectedCourier;
-                document.getElementById('selected_shipping_service').value = selectedService;
-
-                snap.pay('{{ $snapToken }}', {
-                    onSuccess: function(result) {
-                        document.getElementById('checkout-form').submit();
-                        setTimeout(function() {
-                            window.location.href = '{{ route('home.index') }}';
-                            setTimeout(function() {
-                                fetch('{{ route('voucher.updateUsage') }}', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        },
-                                        body: JSON.stringify({
-                                            voucher_code: voucherCodeHiddenInput
-                                                .value
-                                        })
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        console.log(
-                                            "Voucher usage updated successfully"
-                                            );
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                        alert(
-                                            'Ada kesalahan dalam memproses voucher.'
-                                            );
-                                    });
-                            }, 1000); // Delay
-                        }, 100); // Delay
-                    },
-                    onPending: function(result) {
-                        alert("Pembayaran sedang diproses.");
-                    },
-                    onError: function(result) {
-                        console.error(result);
-                        alert('Pembayaran gagal');
-                    }
-                });
-            });
 
             const addressSelect = document.getElementById('address_id');
             const courierSelect = document.getElementById('courier');
             const shippingServiceSelect = document.getElementById('shipping_service');
             const shippingCostInput = document.getElementById('shipping_cost');
-            const shippingCostSummary = document.getElementById('shipping-cost-summary');
-            const totalPriceDisplayElement = document.getElementById('total-price');
 
-            function updateShippingOptions() {
+            const productPriceSummary = document.getElementById('product-price-summary');
+            const discountAmountSummary = document.getElementById('discount-amount-summary');
+            const shippingCostSummary = document.getElementById('shipping-cost-summary');
+            const finalTotalPriceDisplay = document.getElementById('final-total-price-display');
+
+            const payButton = document.getElementById('pay-button');
+            const checkoutForm = document.getElementById('checkout-form');
+
+            const originalRawProductTotal = parseFloat(rawProductTotalInput.value);
+
+            let currentDiscountAmount = 0;
+            let currentShippingCost = 0;
+
+            function formatRupiah(amount) {
+                return parseFloat(amount).toLocaleString('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            function updateSummaryDisplay() {
+                const finalTotal = originalRawProductTotal - currentDiscountAmount + currentShippingCost;
+
+                productPriceSummary.textContent = formatRupiah(originalRawProductTotal);
+                discountAmountSummary.textContent = formatRupiah(currentDiscountAmount);
+                shippingCostSummary.textContent = formatRupiah(currentShippingCost);
+                finalTotalPriceDisplay.textContent = formatRupiah(finalTotal);
+            }
+
+            async function fetchShippingOptions() {
                 const selectedAddressId = addressSelect.value;
                 const selectedCourier = courierSelect.value;
 
+                shippingServiceSelect.innerHTML = '<option value="" disabled selected>Memuat...</option>';
+                shippingServiceSelect.disabled = true;
+                currentShippingCost = 0;
+                shippingCostInput.value = 0;
+                updateSummaryDisplay();
+
                 if (!selectedAddressId || !selectedCourier) {
                     shippingServiceSelect.innerHTML =
-                        '<option value="" disabled selected>Pilih kurir terlebih dahulu</option>';
-                    shippingServiceSelect.disabled = true;
-                    shippingCostInput.value = 0;
-                    shippingCostSummary.textContent = 'Rp0.00';
-                    updateFinalTotal();
+                        '<option value="" disabled selected>Pilih alamat dan kurir terlebih dahulu</option>';
                     return;
                 }
 
-                shippingServiceSelect.innerHTML = '<option value="" disabled selected>Memuat...</option>';
-                shippingServiceSelect.disabled = true;
-
-                fetch('{{ route('get-shipping-cost') }}', {
+                try {
+                    const response = await fetch('{{ route('get-shipping-cost') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -297,111 +273,177 @@
                             address_id: selectedAddressId,
                             courier: selectedCourier
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        shippingServiceSelect.innerHTML = '';
-                        if (data && data.length > 0) {
-                            const defaultOption = document.createElement('option');
-                            defaultOption.value = '';
-                            defaultOption.disabled = true;
-                            defaultOption.selected = true;
-                            defaultOption.textContent = 'Pilih Jenis Layanan';
-                            shippingServiceSelect.appendChild(defaultOption);
-                            data.forEach(service => {
-                                const option = document.createElement('option');
-                                option.value = service.service;
-                                option.textContent =
-                                    `${service.service} - ${service.description} - Rp${service.cost.toLocaleString()}`;
-                                shippingServiceSelect.appendChild(option);
-                            });
-                            shippingServiceSelect.disabled = false;
-                        } else if (data && data.error) {
-                            shippingServiceSelect.innerHTML =
-                                `<option value="" disabled selected>${data.error}</option>`;
-                            shippingServiceSelect.disabled = true;
-                            shippingCostInput.value = 0;
-                            shippingCostSummary.textContent = 'Rp0.00';
-                            updateFinalTotal();
-                        } else {
-                            shippingServiceSelect.innerHTML =
-                                '<option value="" disabled selected>Tidak ada layanan yang tersedia</option>';
-                            shippingServiceSelect.disabled = true;
-                            shippingCostInput.value = 0;
-                            shippingCostSummary.textContent = 'Rp0.00';
-                            updateFinalTotal();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching shipping options:', error);
-                        shippingServiceSelect.innerHTML =
-                            '<option value="" disabled selected>Gagal memuat layanan</option>';
-                        shippingServiceSelect.disabled = true;
-                        shippingCostInput.value = 0;
-                        shippingCostSummary.textContent = 'Rp0.00';
-                        updateFinalTotal();
                     });
+                    const data = await response.json();
+
+                    shippingServiceSelect.innerHTML = '';
+                    if (response.ok && data && data.length > 0) {
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.disabled = true;
+                        defaultOption.selected = true;
+                        defaultOption.textContent = 'Pilih Jenis Layanan';
+                        shippingServiceSelect.appendChild(defaultOption);
+
+                        data.forEach(service => {
+                            const option = document.createElement('option');
+                            option.value = service.service;
+                            option.textContent =
+                                `${service.service} - ${service.description} - Rp${formatRupiah(service.cost)}`;
+                            option.dataset.cost = service.cost;
+                            shippingServiceSelect.appendChild(option);
+                        });
+                        shippingServiceSelect.disabled = false;
+                    } else if (data && data.error) {
+                        shippingServiceSelect.innerHTML =
+                            `<option value="" disabled selected>${data.error}</option>`;
+                    } else {
+                        shippingServiceSelect.innerHTML =
+                            `<option value="" disabled selected>Tidak ada layanan yang tersedia</option>`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching shipping options:', error);
+                    shippingServiceSelect.innerHTML =
+                        `<option value="" disabled selected>Gagal memuat layanan</option>`;
+                } finally {
+                    updateSummaryDisplay();
+                }
             }
 
-            addressSelect.addEventListener('change', updateShippingOptions);
-            courierSelect.addEventListener('change', updateShippingOptions);
+            async function applyVoucher() {
+                const voucherCode = voucherCodeInput.value.trim();
+
+                voucherError.textContent = '';
+                voucherSuccess.textContent = '';
+                currentDiscountAmount = 0;
+                voucherCodeHiddenInput.value = '';
+                updateSummaryDisplay();
+
+                if (voucherCode === "") {
+                    voucherError.textContent = 'Harap masukkan kode voucher.';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{{ route('voucher.check') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            voucher_code: voucherCode,
+                            raw_product_total: originalRawProductTotal
+                        })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        currentDiscountAmount = data.discount_amount;
+                        voucherCodeHiddenInput.value = voucherCode;
+                        voucherSuccess.textContent = 'Voucher berhasil diterapkan! Diskon: Rp' + formatRupiah(
+                            data.discount_amount);
+                    } else {
+                        voucherError.textContent = data.message || 'Kode voucher tidak valid.';
+                        voucherCodeHiddenInput.value = '';
+                    }
+                } catch (error) {
+                    console.error('Error applying voucher:', error);
+                    voucherError.textContent = 'Terjadi kesalahan saat memeriksa voucher.';
+                    voucherCodeHiddenInput.value = '';
+                } finally {
+                    updateSummaryDisplay();
+                }
+            }
+
+            applyVoucherBtn.addEventListener('click', applyVoucher);
+
+            addressSelect.addEventListener('change', fetchShippingOptions);
+            courierSelect.addEventListener('change', fetchShippingOptions);
 
             shippingServiceSelect.addEventListener('change', function() {
-                const selectedService = this.value;
-                const selectedCourier = courierSelect.value;
-                const selectedAddressId = addressSelect.value;
-
-                if (selectedService && selectedCourier && selectedAddressId) {
-                    fetch('{{ route('get-shipping-cost') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                address_id: selectedAddressId,
-                                courier: selectedCourier,
-                                service: selectedService
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data && data.cost) {
-                                const cost = data.cost;
-                                shippingCostInput.value = cost;
-                                shippingCostSummary.textContent = 'Rp' + cost.toLocaleString();
-                                updateFinalTotal();
-                            } else {
-                                alert('Gagal mengambil biaya pengiriman.');
-                                shippingCostInput.value = 0;
-                                shippingCostSummary.textContent = 'Rp0.00';
-                                updateFinalTotal();
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching shipping cost:', error);
-                            alert('Terjadi kesalahan saat menghitung biaya pengiriman.');
-                            shippingCostInput.value = 0;
-                            shippingCostSummary.textContent = 'Rp0.00';
-                            updateFinalTotal();
-                        });
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption && selectedOption.dataset.cost) {
+                    currentShippingCost = parseFloat(selectedOption.dataset.cost);
+                    shippingCostInput.value = currentShippingCost;
+                    document.getElementById('selected_courier').value = courierSelect.value;
+                    document.getElementById('selected_shipping_service').value = shippingServiceSelect
+                        .value;
                 } else {
+                    currentShippingCost = 0;
                     shippingCostInput.value = 0;
-                    shippingCostSummary.textContent = 'Rp0.00';
-                    updateFinalTotal();
+                }
+                updateSummaryDisplay();
+            });
+
+            payButton.addEventListener('click', async function() {
+                if (!addressSelect.value) {
+                    alert('Harap pilih alamat pengiriman.');
+                    return;
+                }
+                if (!courierSelect.value) {
+                    alert('Harap pilih kurir.');
+                    return;
+                }
+                if (!shippingServiceSelect.value) {
+                    alert('Harap pilih jenis layanan pengiriman.');
+                    return;
+                }
+
+                document.getElementById('selected_courier').value = courierSelect.value;
+                document.getElementById('selected_shipping_service').value = shippingServiceSelect
+                    .value;
+
+                try {
+                    const formData = new FormData(checkoutForm);
+                    const response = await fetch(checkoutForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    });
+                    const data = await response.json();
+
+                    if (data.success && data.snapToken) {
+                        snap.pay(data.snapToken, {
+                            onSuccess: function(result) {
+                                window.location.href =
+                                    '{{ route('home.index') }}';
+                            },
+                            onPending: function(result) {
+                                window.location.href =
+                                    '{{ route('home.index') }}';
+                            },
+                            onError: function(result) {
+                                console.error(result);
+                                alert('Pembayaran Gagal: ' + result.status_message);
+                            },
+                            onClose: function() {
+                                alert('Anda menutup pop-up pembayaran.');
+                            }
+                        });
+                    } else {
+                        alert('Gagal memproses pesanan: ' + (data.message ||
+                            'Terjadi kesalahan tidak dikenal.'));
+                        if (data.errors) {
+                            let errorMessages = '';
+                            for (const key in data.errors) {
+                                errorMessages += data.errors[key].join('\n') + '\n';
+                            }
+                            alert('Detail Error:\n' + errorMessages);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error submitting checkout form:', error);
+                    alert('Terjadi kesalahan saat membuat transaksi. Silakan coba lagi.');
                 }
             });
 
-            function updateFinalTotal() {
-                const productTotal = parseFloat('{{ $totalPrice }}');
-                const shippingCost = parseFloat(shippingCostInput.value) || 0;
-                const finalTotal = productTotal + shippingCost;
-                totalPriceDisplayElement.textContent = 'Rp' + finalTotal.toLocaleString();
-                finalTotalPriceInput.value = finalTotal;
-            }
 
+            updateSummaryDisplay();
             if (addressSelect.value && courierSelect.value) {
-                updateShippingOptions();
+                fetchShippingOptions();
             }
         });
     </script>
