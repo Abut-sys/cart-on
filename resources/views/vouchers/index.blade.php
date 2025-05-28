@@ -13,18 +13,15 @@
 
         <form action="{{ route('vouchers.index') }}" method="GET" class="voucher-index-search-form mb-4">
             <div class="d-flex">
-                <!-- Input untuk Kode Voucher -->
                 <input type="text" name="code" class="voucher-index-form-control me-2" placeholder="Search by Code"
                     value="{{ request('code') }}">
 
-                <!-- Dropdown untuk Status -->
                 <select name="status" class="voucher-index-form-control me-2">
                     <option value="">Select Status</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
 
-                <!-- Tombol Pencarian -->
                 <button type="submit" class="voucher-index-btn voucher-index-btn-search">
                     <i class="fas fa-search"></i>
                 </button>
@@ -33,13 +30,22 @@
 
         <!-- Voucher List -->
         <div class="voucher-index-container">
-            @foreach ($vouchers as $voucher)
+            @forelse ($vouchers as $voucher)
                 <div class="voucher-index-row {{ $voucher->status == 'inactive' ? 'voucher-inactive-bg' : '' }}">
                     <div class="voucher-index-item">
                         <strong>Code:</strong> {{ $voucher->code }}
                     </div>
                     <div class="voucher-index-item">
-                        <strong>Discount:</strong> {{ $voucher->discount_value }}%
+                        <strong>Type:</strong>
+                        {{ $voucher->type === 'percentage' ? 'Percentage' : 'Fixed' }}
+                    </div>
+                    <div class="voucher-index-item">
+                        <strong>Discount:</strong>
+                        @if ($voucher->type === 'percentage')
+                            {{ $voucher->discount_value }}%
+                        @else
+                            Rp {{ number_format($voucher->discount_value, 0, ',', '.') }}
+                        @endif
                     </div>
                     <div class="voucher-index-item">
                         <strong>Terms and Conditions:</strong> {{ $voucher->terms_and_conditions }}
@@ -55,7 +61,7 @@
                     </div>
                     <div class="voucher-index-item">
                         <strong>Status:</strong>
-                        <span class="{{ $voucher->status == 'active' ? 'text-success' : 'text-danger' }}">
+                        <span class="{{ $voucher->status === 'active' ? 'text-success' : 'text-danger' }}">
                             {{ ucfirst($voucher->status) }}
                         </span>
                     </div>
@@ -72,7 +78,9 @@
                         </form>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <p class="text-center text-muted">No vouchers found.</p>
+            @endforelse
         </div>
     </div>
 @endsection

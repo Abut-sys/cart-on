@@ -42,7 +42,18 @@ class VoucherController extends Controller
     {
         $validatedData = $request->validate([
             'code' => 'required|string|max:255|unique:vouchers',
-            'discount_value' => 'required|numeric|min:0|max:100',
+            'type' => 'required|in:percentage,fixed',
+            'discount_value' => [
+                'required',
+                'numeric',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->type === 'percentage' && ($value < 0 || $value > 100)) {
+                        $fail('Percentage discount must be between 0 and 100.');
+                    } elseif ($request->type === 'fixed' && $value < 0) {
+                        $fail('Fixed discount must be at least 0.');
+                    }
+                }
+            ],
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'terms_and_conditions' => 'nullable|string',
@@ -66,7 +77,18 @@ class VoucherController extends Controller
     {
         $validatedData = $request->validate([
             'code' => 'required|string|max:255|unique:vouchers,code,' . $voucher->id,
-            'discount_value' => 'required|numeric|min:0|max:100',
+            'type' => 'required|in:percentage,fixed',
+            'discount_value' => [
+                'required',
+                'numeric',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->type === 'percentage' && ($value < 0 || $value > 100)) {
+                        $fail('Percentage discount must be between 0 and 100.');
+                    } elseif ($request->type === 'fixed' && $value < 0) {
+                        $fail('Fixed discount must be at least 0.');
+                    }
+                }
+            ],
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'terms_and_conditions' => 'nullable|string',

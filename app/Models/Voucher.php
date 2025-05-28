@@ -13,6 +13,7 @@ class Voucher extends Model
 
     protected $fillable = [
         'code',
+        'type',
         'discount_value',
         'start_date',
         'end_date',
@@ -38,28 +39,14 @@ class Voucher extends Model
         return $this->belongsToMany(User::class, 'user_voucher');
     }
 
-    public function isUsedByUser(User $user)
+    public function checkouts()
     {
-        return $this->users()->where('user_id', $user->id)->exists();
+        return $this->hasMany(Checkout::class, 'voucher_code', 'code');
     }
 
-    public function decrementUsage()
+    public function claimVoucher()
     {
-        if ($this->usage_limit > 0) {
-            $this->usage_limit--;
-            $this->save();
-
-            if ($this->usage_limit === 0) {
-                $this->status = 'inactive';
-                $this->save();
-
-                $admins = User::where('role', 'admin')->get();
-
-                foreach ($admins as $admin) {
-                    $admin->notify(new VoucherLimitNotification($this));
-                }
-            }
-        }
+        return $this->hasMany(ClaimVoucher::class);
     }
 
     public function scopeActive($query)
@@ -78,40 +65,67 @@ class Voucher extends Model
 
     public function scopeValid($query)
     {
-        return $query->where('start_date', '<=', now())
-            ->where('end_date', '>=', now());
+        return $query->active();
     }
 
-    public function getStatusAttribute()
+    public function isUsedByUser(User $user)
     {
-        return $this->isActive() ? 'active' : 'inactive';
+        return UserVoucher::where('user_id', $user->id)
+            ->where('voucher_id', $this->id)
+            ->exists();
     }
 
     public function isActive()
     {
-        $today = Carbon::today();
-        return $today->between($this->start_date, $this->end_date) && $this->usage_limit > 0;
+        return $this->status === 'active'
+            && Carbon::today()->between($this->start_date, $this->end_date) && $this->usage_limit > 0;
     }
 
     public function updateStatus()
     {
-        $today = Carbon::today();
         $newStatus = $this->isActive() ? 'active' : 'inactive';
-
         if ($this->status !== $newStatus) {
             $this->status = $newStatus;
             $this->save();
         }
     }
 
-    public function checkouts()
+    public function incrementUsage()
     {
-        return $this->hasMany(Checkout::class, 'voucher_code', 'code');
+        if ($this->used_count < $this->usage_limit) {
+            $this->increment('used_count');
+        }
     }
 
-    public function claimVoucher()
+    public function decrementUsage()
     {
-        return $this->hasMany(ClaimVoucher::class);
+        if ($this->usage_limit > 0) {
+            $this->decrement('usage_limit');
+
+            if ($this->usage_limit === 0) {
+                $this->status = 'inactive';
+                $this->save();
+
+                $admins = User::where('role', 'admin')->get();
+
+                foreach ($admins as $admin) {
+                    $admin->notify(new VoucherLimitNotification($this));
+                }
+            }
+        }
+    }
+
+    public function calculateDiscount($subtotal)
+    {
+        if ($this->type === 'percentage') {
+            return round(max(0, $subtotal * ($this->discount_value / 100)), 2);
+        }
+
+        if ($this->type === 'fixed') {
+            return max(0, min($this->discount_value, $subtotal));
+        }
+
+        return 0;
     }
 
     // scopeActive: Mengambil semua voucher yang aktif berdasarkan tanggal.

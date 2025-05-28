@@ -3,81 +3,59 @@
 namespace App\Services;
 
 use Midtrans\Snap;
-use App\Models\Product;
-use App\Models\SubVariant;
-use App\Models\Voucher;
+use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Midtrans\Config;
 
 class PaymentService
 {
-    public function generateSnapToken(Product $product, SubVariant $variant, $quantity, $user, $orderId = null, $grossAmount = null)
+    public function __construct()
     {
-        $orderId = $orderId ?: 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
-        
-        $grossAmount = $grossAmount ?: $product->price * $quantity;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$clientKey = config('midtrans.client_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.sanitization');
+        Config::$is3ds = config('midtrans.validation');
+    }
 
+    public function generateSnapTokenForOrder(string $orderId, int $finalPrice, User $user, array $midtransItems): string
+    {
         $transactionDetails = [
-            'order_id' => $orderId,
-            'gross_amount' => $grossAmount,
+            'order_id' => 'ORDER-' . uniqid() . '-' . Str::random(10),
+            'gross_amount' => (int) $finalPrice,
         ];
 
+        $billingAddress = $user->profile->addresses->first();
         $customerDetails = [
             'first_name' => $user->name,
             'email' => $user->email,
-        ];
-
-        $itemDetails = [
-            [
-                'id' => $product->id,
-                'price' => $product->price,
-                'quantity' => $quantity,
-                'name' => $product->name,
+            'phone' => $user->phone_number ?? '',
+            'billing_address' => [
+                'first_name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone_number ?? '',
+                'address' => $billingAddress->address_line1 ?? '',
+                'city' => $billingAddress->city ?? '',
+                'postal_code' => $billingAddress->postal_code ?? '',
+                'country_code' => 'IDN',
             ],
         ];
 
-        return Snap::getSnapToken([
+        $params = [
             'transaction_details' => $transactionDetails,
             'customer_details' => $customerDetails,
-            'item_details' => $itemDetails,
-        ]);
-    }
-
-    public function generateSnapTokenFromCart($carts, $user, $voucher = null)
-    {
-        $orderId = 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
-        $totalPrice = 0;
-        $items = [];
-
-        foreach ($carts as $cart) {
-            $items[] = [
-                'id' => $cart->product->id,
-                'price' => $cart->product->price,
-                'quantity' => $cart->quantity,
-                'name' => $cart->product->name,
-            ];
-            $totalPrice += $cart->product->price * $cart->quantity;
-        }
-
-        if ($voucher) {
-            $totalPrice -= $voucher->discount_value;
-            $totalPrice = max(0, $totalPrice);
-        }
-
-        $transactionDetails = [
-            'order_id' => $orderId,
-            'gross_amount' => $totalPrice,
+            'item_details' => $midtransItems,
         ];
 
-        $customerDetails = [
-            'first_name' => $user->name,
-            'email' => $user->email,
-        ];
-
-        return Snap::getSnapToken([
-            'transaction_details' => $transactionDetails,
-            'customer_details' => $customerDetails,
-            'item_details' => $items,
-        ]);
+        try {
+            $snapToken = Snap::getSnapToken($params);
+            Log::info("midtrans items: " . json_encode($midtransItems));
+            return $snapToken;
+        } catch (Exception $e) {
+            Log::error("Gagal membuat Snap Token Midtrans untuk Order ID {$orderId}: " . $e->getMessage());
+            throw new Exception("Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi nanti.");
+        }
     }
 }

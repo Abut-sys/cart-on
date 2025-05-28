@@ -23,11 +23,27 @@
                         @enderror
                     </div>
 
+                    {{-- New field: Type --}}
                     <div class="voucher-create-form-group mb-4">
-                        <label for="discount_value" class="voucher-create-form-label">Discount Value (%)</label>
+                        <label for="type" class="voucher-create-form-label">Discount Type</label>
+                        <select name="type" id="type" class="voucher-create-form-control" required>
+                            <option value="percentage" selected>Percentage (%)</option>
+                            <option value="fixed">Fixed Amount (Rp)</option>
+                        </select>
+                        @error('type')
+                            <div class="voucher-create-alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="voucher-create-form-group mb-4">
+                        <label for="discount_value" class="voucher-create-form-label" id="discount_value_label">
+                            Discount Value (%)
+                        </label>
                         <input type="number" name="discount_value" id="discount_value" class="voucher-create-form-control"
                             min="0" max="100" required>
-                        <small class="voucher-create-form-text">Enter a value between 0 and 100.</small>
+                        <small class="voucher-create-form-text" id="discount_value_hint">
+                            Enter a value between 0 and 100.
+                        </small>
                         @error('discount_value')
                             <div class="voucher-create-alert-danger">{{ $message }}</div>
                         @enderror
@@ -68,8 +84,9 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="voucher-create-btn voucher-create-btn-success w-100">Create
-                        Voucher</button>
+                    <button type="submit" class="voucher-create-btn voucher-create-btn-success w-100">
+                        Create Voucher
+                    </button>
                 </form>
             </div>
         </div>
@@ -79,10 +96,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Inisialisasi Flatpickr pada elemen dengan kelas .date-picker
             flatpickr('.date-picker', {
-                dateFormat: 'Y-m-d', // Format tanggal (tahun-bulan-hari)
-                minDate: 'today', // Menghindari tanggal masa depan
-                disableMobile: true, // Menghindari penggunaan Flatpickr di perangkat mobile
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                disableMobile: true,
             });
+
+            const typeSelect = document.getElementById('type');
+            const discountLabel = document.getElementById('discount_value_label');
+            const discountHint = document.getElementById('discount_value_hint');
+            const discountInput = document.getElementById('discount_value');
+
+            function updateDiscountLabel() {
+                if (typeSelect.value === 'percentage') {
+                    discountLabel.innerText = 'Discount Value (%)';
+                    discountHint.innerText = 'Enter a value between 0 and 100.';
+                    discountInput.min = 0;
+                    discountInput.max = 100;
+                } else {
+                    discountLabel.innerText = 'Discount Value (Rp)';
+                    discountHint.innerText = 'Enter a fixed amount in Rupiah.';
+                    discountInput.removeAttribute('max');
+                    discountInput.min = 0;
+                }
+            }
+
+            typeSelect.addEventListener('change', updateDiscountLabel);
+            updateDiscountLabel();
         });
     </script>
 @endsection

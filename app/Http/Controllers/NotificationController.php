@@ -15,7 +15,7 @@ class NotificationController extends Controller
     {
         $user = auth()->user();
 
-        $notifications = $user->notifications()->orderBy('created_at', 'desc')->take(10)->get();
+        $notifications = $user->notifications()->orderBy('created_at', 'desc')->take(99)->get();
 
         return response()->json($notifications);
     }

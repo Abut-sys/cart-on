@@ -12,7 +12,7 @@
                 </a>
             </div>
             <div class="voucher-edit-card-body">
-                <form action="{{ route('vouchers.update', $voucher) }}" method="POST">
+                <form action="{{ route('vouchers.update', $voucher) }}" method="POST" novalidate>
                     @csrf
                     @method('PUT')
 
@@ -26,17 +26,29 @@
                     </div>
 
                     <div class="voucher-edit-form-group mb-4">
-                        <label for="discount_value" class="voucher-edit-form-label">Discount Value (%)</label>
+                        <label for="type" class="voucher-edit-form-label">Discount Type</label>
+                        <select name="type" id="type" class="voucher-edit-form-control" required>
+                            <option value="percentage" {{ old('type', $voucher->type) == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                            <option value="fixed" {{ old('type', $voucher->type) == 'fixed' ? 'selected' : '' }}>Fixed Amount (Rp)</option>
+                        </select>
+                        @error('type')
+                            <div class="voucher-edit-alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="voucher-edit-form-group mb-4">
+                        <label for="discount_value" class="voucher-edit-form-label">Discount Value</label>
                         <input type="number" name="discount_value" id="discount_value" class="voucher-edit-form-control"
                             min="0" max="100" value="{{ old('discount_value', $voucher->discount_value) }}"
                             required>
-                        <small class="voucher-edit-form-text">Enter a value between 0 and 100.</small>
+                        <small id="discountHelp" class="voucher-edit-form-text">
+                            Enter a discount value.
+                        </small>
                         @error('discount_value')
                             <div class="voucher-edit-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <!-- Start Date with Flatpickr -->
                     <div class="voucher-edit-form-group mb-4">
                         <label for="start_date" class="voucher-edit-form-label">Start Date</label>
                         <input type="text" name="start_date" id="start_date"
@@ -48,7 +60,6 @@
                         @enderror
                     </div>
 
-                    <!-- End Date with Flatpickr -->
                     <div class="voucher-edit-form-group mb-4">
                         <label for="end_date" class="voucher-edit-form-label">End Date</label>
                         <input type="text" name="end_date" id="end_date" class="voucher-edit-form-control date-picker"
@@ -70,7 +81,7 @@
                     <div class="voucher-edit-form-group mb-4">
                         <label for="usage_limit" class="voucher-edit-form-label">Usage Limit</label>
                         <input type="number" name="usage_limit" id="usage_limit" class="voucher-edit-form-control"
-                            value="{{ old('usage_limit', $voucher->usage_limit) }}" required>
+                            value="{{ old('usage_limit', $voucher->usage_limit) }}" min="1" required>
                         @error('usage_limit')
                             <div class="voucher-edit-alert-danger">{{ $message }}</div>
                         @enderror
@@ -82,14 +93,33 @@
         </div>
     </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Inisialisasi Flatpickr pada elemen dengan kelas .date-picker
-                flatpickr('.date-picker', {
-                    dateFormat: 'Y-m-d', // Format tanggal (tahun-bulan-hari)
-                    minDate: 'today', // Menghindari tanggal masa depan
-                    disableMobile: true, // Menghindari penggunaan Flatpickr di perangkat mobile
-                });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr('.date-picker', {
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                disableMobile: true,
             });
-        </script>
+
+            const typeSelect = document.getElementById('type');
+            const discountInput = document.getElementById('discount_value');
+            const discountHelp = document.getElementById('discountHelp');
+
+            function updateDiscountHelp() {
+                if(typeSelect.value === 'percentage') {
+                    discountInput.min = 0;
+                    discountInput.max = 100;
+                    discountHelp.textContent = 'Enter a value between 0 and 100.';
+                } else {
+                    discountInput.min = 0;
+                    discountInput.removeAttribute('max');
+                    discountHelp.textContent = 'Enter the discount amount in Rupiah.';
+                }
+            }
+
+            typeSelect.addEventListener('change', updateDiscountHelp);
+
+            updateDiscountHelp();
+        });
+    </script>
 @endsection

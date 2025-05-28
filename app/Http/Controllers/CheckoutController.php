@@ -15,13 +15,13 @@ use App\Notifications\AdminOrderNotification;
 use App\Notifications\OrderPlacedNotification;
 use App\Notifications\OutOfStockNotification;
 use Illuminate\Http\Request;
-use Midtrans\Config;
 use App\Services\PaymentService;
 use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class CheckoutController extends Controller
@@ -33,15 +33,9 @@ class CheckoutController extends Controller
     {
         $this->paymentService = $paymentService;
         $this->rajaOngkirService = $rajaOngkirService;
-
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$clientKey = config('midtrans.client_key');
-        Config::$isProduction = config('midtrans.is_production');
-        Config::$isSanitized = config('midtrans.sanitization');
-        Config::$is3ds = config('midtrans.validation');
     }
 
-    public function show($id, Request $request)
+    public function show($id = null, Request $request)
     {
         $user = auth()->user();
         $addresses = Address::whereHas('profile', function ($query) use ($user) {
@@ -56,8 +50,9 @@ class CheckoutController extends Controller
 
         $selectedAddressId = $request->input('address_id') ?? ($addresses->first()->id ?? null);
         $shippingOptions = [];
+        $rawProductTotal = 0;
 
-        if ($request->has('quantity')) {
+        if ($request->has('quantity') && $id) {
             $product = Product::with(['subVariant'])->findOrFail($id);
             $quantity = $request->input('quantity', 1);
             $selectedColor = $request->input('color');
@@ -72,16 +67,14 @@ class CheckoutController extends Controller
                 return redirect()->back()->with('error', 'Selected variant not available or insufficient stock.');
             }
 
-            $totalPrice = $product->price * $quantity;
-            $orderId = 'ORDER-' . uniqid('', true) . '-' . Str::random(6);
-            $snapToken = $this->paymentService->generateSnapToken($product, $variant, $quantity, $user, $orderId, $totalPrice);
+            $rawProductTotal = round($product->price * $quantity);
 
-            return view('checkout.form', compact('product', 'variant', 'quantity', 'totalPrice', 'addresses', 'vouchers', 'snapToken', 'shippingOptions'));
+            return view('checkout.form', compact('product', 'variant', 'quantity', 'rawProductTotal', 'addresses', 'vouchers', 'shippingOptions', 'selectedAddressId'));
         }
 
         if ($request->has('selected-products')) {
             $selectedCartIds = explode(',', $request->input('selected-products', ''));
-            if (empty($selectedCartIds)) {
+            if (empty($selectedCartIds) || count($selectedCartIds) === 1 && $selectedCartIds[0] === '') {
                 return redirect()->route('cart.index')->with('error', 'No products selected.');
             }
 
@@ -94,10 +87,19 @@ class CheckoutController extends Controller
                 return redirect()->route('cart.index')->with('error', 'Selected products not found.');
             }
 
-            $totalPrice = $carts->sum(fn($cart) => $cart->product->price * $cart->quantity);
-            $snapToken = $this->paymentService->generateSnapTokenFromCart($carts, $user);
+            foreach ($carts as $cartItem) {
+                $subVariant = $cartItem->product->subVariant
+                    ->where('color', $cartItem->color)
+                    ->where('size', $cartItem->size)
+                    ->first();
+                if (!$subVariant || $cartItem->quantity > $subVariant->stock) {
+                    return redirect()->route('cart.index')->with('error', 'Stok tidak mencukupi untuk beberapa produk di keranjang.');
+                }
+            }
 
-            return view('checkout.form', compact('carts', 'totalPrice', 'addresses', 'vouchers', 'snapToken', 'shippingOptions'));
+            $rawProductTotal = round($carts->sum(fn($cart) => $cart->product->price * $cart->quantity));
+
+            return view('checkout.form', compact('carts', 'rawProductTotal', 'addresses', 'vouchers', 'shippingOptions', 'selectedAddressId'));
         }
 
         return redirect()->route('cart.index')->with('error', 'Invalid request.');
@@ -113,265 +115,282 @@ class CheckoutController extends Controller
             'product_id' => 'nullable|exists:products,id',
             'variant_id' => 'nullable|exists:sub_variants,id',
             'quantity' => 'nullable|integer|min:1',
-            'total_price' => 'required|numeric|min:0',
             'voucher_code' => 'nullable|string',
             'address_id' => 'required|exists:addresses,id',
             'courier' => 'required|string',
             'shipping_service' => 'required|string',
-            'shipping_cost' => 'required|numeric',
+            'shipping_cost' => 'required|numeric|min:0',
         ]);
-
-        $voucher = $this->handleVoucher($validated);
-        $checkoutItems = [];
-        $totalPrice = $validated['total_price'];
-        $shippingCost = $validated['shipping_cost'];
-        $courier = $validated['courier'];
-        $shippingService = $validated['shipping_service'];
 
         DB::beginTransaction();
 
-        if ($request->has('selected-products') && is_array($validated['selected-products'])) {
-            list($checkoutItems, $totalPrice) = $this->handleCartCheckout($validated, $voucher, $user);
-        } else {
-            list($checkoutItems, $totalPrice) = $this->handleSingleProductCheckout($validated, $voucher, $user);
-        }
-        $totalPrice += $shippingCost;
+        try {
+            $voucher = $this->getAndValidateVoucher($validated['voucher_code'] ?? null);
 
-        $order = $this->createOrder($checkoutItems, $totalPrice, $courier, $shippingService, $shippingCost);
+            $rawProductTotal = 0;
+            $checkoutSourceItems = collect();
+            $totalQuantity = 0;
+            $isFromCart = false;
 
-        DB::commit();
+            // --- untuk checkoutSourceItems dan menghitung total awal ---
+            if (isset($validated['selected-products']) && is_array($validated['selected-products'])) {
+                $isFromCart = true;
+                $selectedCartIds = $validated['selected-products'];
+                $carts = Cart::where('user_id', $user->id)
+                    ->whereIn('id', $selectedCartIds)
+                    ->with(['product.subVariant'])
+                    ->get();
 
-        $snapToken = $this->generateSnapToken($checkoutItems, $user, $order->id, $totalPrice);
+                if ($carts->isEmpty()) {
+                    DB::rollBack();
+                    throw new Exception('Produk dalam keranjang tidak ditemukan.');
+                }
+                $checkoutSourceItems = $carts;
+                $rawProductTotal = round($carts->sum(fn($cart) => $cart->product->price * $cart->quantity));
+                $totalQuantity = $carts->sum('quantity');
+            } else if (isset($validated['product_id']) && isset($validated['quantity'])) {
+                $product = Product::findOrFail($validated['product_id']);
+                $variant = SubVariant::where('id', $validated['variant_id'])
+                    ->where('product_id', $product->id)
+                    ->firstOrFail();
 
-        return view('checkout.form', compact('snapToken', 'order', 'checkoutItems', 'totalPrice', 'shippingCost'));
-    }
-
-    private function handleCartCheckout($validated, $voucher, $user)
-    {
-        $selectedCartIds = $validated['selected-products'];
-        $carts = Cart::where('user_id', $user->id)
-            ->whereIn('id', $selectedCartIds)
-            ->with(['product', 'product.subVariant'])
-            ->get();
-
-        if ($carts->isEmpty()) {
-            throw new Exception('Produk dalam keranjang tidak ditemukan.');
-        }
-
-        $checkoutItems = [];
-        $totalPrice = 0;
-
-        foreach ($carts as $cart) {
-            $subVariant = $cart->product->subVariant
-                ->where('color', $cart->color)
-                ->where('size', $cart->size)
-                ->first();
-
-            $this->validateStock($subVariant, $cart->quantity);
-            $totalPrice += $cart->product->price * $cart->quantity;
-
-            $product = Product::find($cart->product_id);
-            if ($product) {
-                $product->sales += $cart->quantity;
-                $product->save();
-            }
-        }
-
-        $discountPerItem = 0;
-        if ($voucher && $totalPrice > 0) {
-            $discountPerItem = $voucher->discount_value / count($carts);
-        }
-
-        foreach ($carts as $cart) {
-            $subVariant = $cart->product->subVariant
-                ->where('color', $cart->color)
-                ->where('size', $cart->size)
-                ->first();
-            $itemTotal = $cart->product->price * $cart->quantity;
-            $discountedItemTotal = max(0, $itemTotal - $discountPerItem);
-            $checkout = $this->createCheckout([
-                'user_id' => $user->id,
-                'product_id' => $cart->product_id,
-                'address_id' => $validated['address_id'],
-                'voucher_code' => $validated['voucher_code'],
-                'quantity' => $cart->quantity,
-                'amount' => $discountedItemTotal,
-                'courier' => $validated['courier'],
-                'shipping_service' => $validated['shipping_service'],
-                'shipping_cost' => $validated['shipping_cost'] / count($carts),
-            ], $voucher, $discountedItemTotal);
-            $checkoutItems[] = $checkout;
-            $subVariant->decrement('stock', $cart->quantity);
-
-            if ($subVariant->stock - $cart->quantity <= 0) {
-                $admins = User::where('role', 'admin')->get();
-                Notification::send($admins, new OutOfStockNotification($subVariant));
-            }
-        }
-
-        Cart::whereIn('id', $selectedCartIds)->delete();
-
-        return [$checkoutItems, $totalPrice];
-    }
-
-    private function handleSingleProductCheckout($validated, $voucher, $user)
-    {
-        $product = Product::findOrFail($validated['product_id']);
-        $variant = SubVariant::where('id', $validated['variant_id'])
-            ->where('product_id', $product->id)
-            ->firstOrFail();
-
-        $this->validateStock($variant, $validated['quantity']);
-
-        $totalPrice = $this->calculateTotalPrice($product, $validated['quantity'], $voucher);
-
-        $checkout = $this->createCheckout([
-            'user_id' => $user->id,
-            'product_id' => $validated['product_id'],
-            'address_id' => $validated['address_id'],
-            'voucher_code' => $validated['voucher_code'],
-            'quantity' => $validated['quantity'],
-            'amount' => $totalPrice,
-            'courier' => $validated['courier'],
-            'shipping_service' => $validated['shipping_service'],
-            'shipping_cost' => $validated['shipping_cost'],
-        ], $voucher, $totalPrice);
-        $variant->decrement('stock', $validated['quantity']);
-
-        if ($variant->stock - $validated['quantity'] <= 0) {
-            $admins = User::where('role', 'admin')->get();
-            Notification::send($admins, new OutOfStockNotification($variant));
-        }
-
-        $product->sales += $validated['quantity'];
-        $product->save();
-
-        return [[$checkout], $totalPrice];
-    }
-
-    private function generateSnapToken($checkoutItems, $user, $orderId, $totalPrice)
-    {
-        if (count($checkoutItems) > 1) {
-            return $this->paymentService->generateSnapTokenFromCart($checkoutItems, $user);
-        }
-
-        $checkout = $checkoutItems[0];
-        $product = Product::find($checkout->product_id);
-
-        $cart = Cart::where('product_id', $product->id)->where('user_id', $user->id)->first();
-        $variant = SubVariant::where('product_id', $product->id)->where('color', $cart->color)->where('size', $cart->size)->first();
-
-        return $this->paymentService->generateSnapToken($product, $variant, $checkout->quantity, $user, $orderId, $totalPrice);
-    }
-
-    private function handleVoucher($validated)
-    {
-        $voucherCode = $validated['voucher_code'];
-        $voucher = null;
-
-        if ($voucherCode) {
-            $voucher = Voucher::where('code', $voucherCode)->first();
-
-            if (!$voucher) {
-                throw new Exception('Voucher tidak ditemukan.');
+                $tempCartItem = (object) [
+                    'product_id' => $product->id,
+                    'quantity' => $validated['quantity'],
+                    'product' => $product,
+                    'color' => $variant->color,
+                    'size' => $variant->size,
+                ];
+                $checkoutSourceItems->push($tempCartItem);
+                $rawProductTotal = round($product->price * $validated['quantity']);
+                $totalQuantity = $validated['quantity'];
+            } else {
+                DB::rollBack();
+                return response()->json(['error' => 'Tidak ada produk yang dipilih untuk checkout.'], 400);
             }
 
-            if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
-                throw new Exception('Voucher tidak aktif atau sudah kadaluarsa.');
+            // --- Validasi stok untuk SEMUA item di checkoutSourceItems ---
+            foreach ($checkoutSourceItems as $sourceItem) {
+                $product = $sourceItem->product;
+                $subVariant = null;
+                if (isset($sourceItem->color) && isset($sourceItem->size)) {
+                    $subVariant = $product->subVariant
+                        ->where('color', $sourceItem->color)
+                        ->where('size', $sourceItem->size)
+                        ->first();
+                } else if (isset($validated['variant_id'])) {
+                    $subVariant = SubVariant::where('id', $validated['variant_id'])
+                        ->where('product_id', $product->id)
+                        ->first();
+                }
+
+                if (!$subVariant) {
+                    DB::rollBack();
+                    throw new Exception('Varian produk tidak ditemukan untuk item: ' . ($sourceItem->product->name ?? 'N/A'));
+                }
+                $this->validateStock($subVariant, $sourceItem->quantity);
             }
 
-            if ($voucher->isUsedByUser(auth()->user())) {
-                throw new Exception('Anda sudah menggunakan voucher ini.');
+            $shippingCost = round((float) $validated['shipping_cost']);
+
+            $discountAmount = 0;
+            if ($voucher) {
+                if ($voucher->type === 'percentage') {
+                    $discountAmount = ($rawProductTotal * $voucher->discount_value) / 100;
+                } elseif ($voucher->type === 'fixed') {
+                    $discountAmount = $voucher->discount_value;
+                }
+                $discountAmount = round(min($discountAmount, $rawProductTotal));
             }
-        }
 
-        return $voucher;
-    }
+            $finalPrice = max(0, $rawProductTotal - $discountAmount + $shippingCost);
+            $finalPrice = round($finalPrice);
 
-    private function validateStock($variant, $quantity)
-    {
-        if ($variant && $quantity > $variant->stock) {
-            throw new Exception('Insufficient stock for the selected variant.');
-        }
-        if (!$variant) {
-            throw new Exception('Variant not found.');
-        }
-    }
+            $checkoutRecords = [];
 
-    private function calculateTotalPrice($product, $quantity, $voucher = null)
-    {
-        $totalPrice = $product->price * $quantity;
+            // --- untuk membuat record Checkout ---
+            if ($isFromCart) {
+                foreach ($checkoutSourceItems as $cart) {
+                    $subVariant = $cart->product->subVariant
+                        ->where('color', $cart->color)
+                        ->where('size', $cart->size)
+                        ->first();
 
-        if ($voucher) {
-            $totalPrice -= $voucher->discount_value;
-            $totalPrice = max(0, $totalPrice);
-        }
+                    $itemBasePrice = round($cart->product->price * $cart->quantity);
 
-        return $totalPrice;
-    }
+                    $itemDiscountAllocation = 0;
+                    if ($rawProductTotal > 0) {
+                        $itemDiscountAllocation = ($discountAmount * ($itemBasePrice / $rawProductTotal));
+                    }
+                    $itemDiscountAllocation = round($itemDiscountAllocation);
 
-    private function createCheckout($validated, $voucher, $totalPrice)
-    {
-        return Checkout::create([
-            'user_id' => auth()->id(),
-            'product_id' => $validated['product_id'],
-            'address_id' => $validated['address_id'],
-            'voucher_code' => $validated['voucher_code'] ?? '',
-            'quantity' => $validated['quantity'],
-            'amount' => $totalPrice,
-            'courier' => $validated['courier'],
-            'shipping_service' => $validated['shipping_service'],
-            'shipping_cost' => $validated['shipping_cost'],
-        ]);
-    }
+                    $itemShippingAllocation = 0;
+                    if ($totalQuantity > 0) {
+                        $itemShippingAllocation = ($shippingCost * ($cart->quantity / $totalQuantity));
+                    }
+                    $itemShippingAllocation = round($itemShippingAllocation);
 
-    private function createOrder($checkout, $totalPrice, $courier, $shippingService, $shippingCost)
-    {
-        $order = Order::create([
-            'order_date' => now(),
-            'unique_order_id' =>  'ORDER-' . Str::uuid() . '-' . Str::random(6),
-            'address' => $checkout[0]->address->address_line1,
-            'courier' => $courier,
-            'shipping_service' => $shippingService,
-            'shipping_cost' => $shippingCost,
-            'amount' => $totalPrice,
-            'payment_status' => 'pending',
-            'order_status' => 'pending',
-        ]);
+                    $itemAmountForCheckout = max(0, $itemBasePrice - $itemDiscountAllocation);
+                    $itemAmountForCheckout = round($itemAmountForCheckout);
 
-        foreach ($checkout as $checkoutItem) {
-            DB::table('order_checkouts')->insert([
-                'order_id' => $order->id,
-                'checkout_id' => $checkoutItem->id,
-                'created_at' => now(),
-                'updated_at' => now(),
+                    $checkout = Checkout::create([
+                        'user_id' => $user->id,
+                        'product_id' => $cart->product_id,
+                        'address_id' => $validated['address_id'],
+                        'voucher_code' => $validated['voucher_code'] ?? null,
+                        'quantity' => $cart->quantity,
+                        'courier' => $validated['courier'],
+                        'shipping_service' => $validated['shipping_service'],
+                        'shipping_cost' => $itemShippingAllocation,
+                        'amount' => $itemAmountForCheckout,
+                    ]);
+                    $checkout->load('product');
+                    $checkoutRecords[] = $checkout;
+
+                    $subVariant->decrement('stock', $cart->quantity);
+                    if ($subVariant->stock <= 0) {
+                        Notification::send(User::where('role', 'admin')->get(), new OutOfStockNotification($subVariant));
+                    }
+
+                    $product = Product::find($cart->product_id);
+                    if ($product) {
+                        $product->increment('sales', $cart->quantity);
+                    }
+                }
+                Cart::whereIn('id', $validated['selected-products'])->delete();
+            }
+            // --- untuk checkout single product ---
+            else {
+                $sourceItem = $checkoutSourceItems->first();
+                $product = $sourceItem->product;
+                $variant = SubVariant::where('id', $validated['variant_id'])
+                    ->where('product_id', $product->id)
+                    ->firstOrFail();
+
+                $itemBasePrice = round($product->price * $sourceItem->quantity);
+
+                $itemAmountForCheckout = max(0, $itemBasePrice - $discountAmount);
+                $itemAmountForCheckout = round($itemAmountForCheckout);
+
+                $checkout = Checkout::create([
+                    'user_id' => $user->id,
+                    'product_id' => $validated['product_id'],
+                    'address_id' => $validated['address_id'],
+                    'voucher_code' => $validated['voucher_code'] ?? null,
+                    'quantity' => $validated['quantity'],
+                    'courier' => $validated['courier'],
+                    'shipping_service' => $validated['shipping_service'],
+                    'shipping_cost' => $shippingCost,
+                    'amount' => $itemAmountForCheckout,
+                ]);
+                $checkout->load('product');
+                $checkoutRecords[] = $checkout;
+
+                $variant->decrement('stock', $validated['quantity']);
+                if ($variant->stock <= 0) {
+                    Notification::send(User::where('role', 'admin')->get(), new OutOfStockNotification($variant));
+                }
+
+                $product->increment('sales', $validated['quantity']);
+            }
+
+            $order = $this->createOrder($checkoutRecords, $finalPrice, $validated['courier'], $validated['shipping_service'], $shippingCost, $user);
+
+            if ($voucher) {
+                $this->updateVoucherUsage($user, $voucher);
+            }
+
+            DB::commit();
+
+            // --- Midtrans ---
+            $midtransItems = [];
+            foreach ($checkoutRecords as $item) {
+                 $unitPrice = $item->product->price;
+                $midtransItems[] = [
+                    'id' => $item->product_id,
+                    'price' => (int) $unitPrice,
+                    'quantity' => (int) $item->quantity,
+                    'name' => $item->product->name ?? 'Produk Tidak Dikenal',
+                ];
+            }
+
+            // shipping_cost
+            if ($shippingCost > 0) {
+                $midtransItems[] = [
+                    'id' => 'SHIPPING-' . $order->unique_order_id,
+                    'price' => (int) $shippingCost,
+                    'quantity' => 1,
+                    'name' => 'Biaya Pengiriman (' . $validated['courier'] . ' ' . $validated['shipping_service'] . ')',
+                ];
+            }
+
+            // discount
+            if ($discountAmount > 0) {
+                $midtransItems[] = [
+                    'id' => 'DISCOUNT-' . $order->unique_order_id,
+                    'price' => (int) -$discountAmount,
+                    'quantity' => 1,
+                    'name' => 'Diskon Voucher (' . ($voucher->code ?? 'N/A') . ')',
+                ];
+            }
+
+            // Log::info('--- Checkout Process Payment Log ---');
+            // Log::info('Calculated rawProductTotal: ' . $rawProductTotal);
+            // Log::info('Voucher: ' . ($voucher->code ?? 'N/A') . ', Type: ' . ($voucher->type ?? 'N/A') . ', Value: ' . ($voucher->discount_value ?? 'N/A'));
+            // Log::info('Calculated discountAmount: ' . $discountAmount);
+            // Log::info('Validated shippingCost: ' . $shippingCost);
+            // Log::info('Calculated finalPrice (Total sent to Midtrans): ' . $finalPrice);
+            // Log::info('Midtrans items array: ' . json_encode($midtransItems));
+
+            $midtransCalculatedTotal = 0;
+            foreach ($midtransItems as $mi) {
+                $midtransCalculatedTotal += $mi['price'] * $mi['quantity'];
+            }
+
+            $snapToken = $this->paymentService->generateSnapTokenForOrder(
+                $order->unique_order_id,
+                (int) $finalPrice,
+                $user,
+                $midtransItems
+            );
+
+            // Log::info('Snap Token berhasil dibuat: ' . $snapToken);
+
+            return response()->json([
+                'success' => true,
+                'snapToken' => $snapToken,
+                'orderId' => $order->unique_order_id,
+                'message' => 'Transaksi berhasil dibuat.',
             ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error during checkout process: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
         }
-
-        auth()->user()->notify(new OrderPlacedNotification($order, $checkout));
-
-        $admins = User::where('role', 'admin')->get();
-
-        Notification::send($admins, new AdminOrderNotification($order, $checkout, auth()->user()));
-
-        return $order;
     }
 
-    public function checkVoucher(Request $request)
+    private function getAndValidateVoucher(?string $voucherCode): ?Voucher
     {
-        $request->validate([
-            'voucher_code' => 'required|string',
-            'total_price' => 'required|numeric',
-        ]);
+        if (!$voucherCode) {
+            return null;
+        }
 
-        $voucher = Voucher::where('code', $request->voucher_code)->first();
+        $voucher = Voucher::where('code', $voucherCode)->first();
 
         if (!$voucher) {
-            return response()->json(['success' => false, 'message' => 'Voucher not found.']);
+            throw new Exception('Voucher tidak ditemukan.');
         }
 
-        if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
-            return response()->json(['success' => false, 'message' => 'This voucher is inactive, expired, or has no more usage left.']);
+        if ($voucher->status === 'inactive') {
+            throw new Exception('Voucher tidak aktif.');
+        }
+
+        if ($voucher->usage_limit <= 0) {
+            throw new Exception('Voucher sudah habis.');
+        }
+
+        if ($voucher->end_date && now()->greaterThan($voucher->end_date)) {
+            throw new Exception('Voucher sudah kadaluarsa.');
         }
 
         $isClaimed = DB::table('claim_voucher')
@@ -380,45 +399,99 @@ class CheckoutController extends Controller
             ->exists();
 
         if (!$isClaimed) {
-            return response()->json(['success' => false, 'message' => 'Voucher belum diklaim']);
+            throw new Exception('Voucher belum diklaim oleh Anda.');
         }
 
-        $userVoucher = UserVoucher::where('user_id', auth()->id())
+        $userUsedVoucher = UserVoucher::where('user_id', auth()->id())
             ->where('voucher_id', $voucher->id)
-            ->first();
+            ->exists();
 
-        if ($userVoucher) {
-            return response()->json(['success' => false, 'message' => 'You have already used this voucher.']);
+        if ($userUsedVoucher) {
+            throw new Exception('Anda sudah menggunakan voucher ini.');
         }
 
-        $newTotal = max(0, $request->total_price - $voucher->discount_value);
+        return $voucher;
+    }
+
+    private function validateStock(?SubVariant $variant, int $quantity): void
+    {
+        if (!$variant) {
+            throw new Exception('Varian tidak ditemukan.');
+        }
+        if ($quantity > $variant->stock) {
+            throw new Exception('Stok tidak mencukupi untuk varian yang dipilih.');
+        }
+    }
+
+    private function createOrder(array $checkoutItems, float $finalPrice, string $courier, string $shippingService, float $shippingCost, User $user)
+    {
+        $address = Address::findOrFail($checkoutItems[0]->address_id);
+        $order = Order::create([
+            'order_date' => now(),
+            'unique_order_id' => 'ORDER-' . Str::uuid(),
+            'address' => $address->address_line1 . ', ' . $address->city . ', ' . $address->postal_code,
+            'courier' => $courier,
+            'shipping_service' => $shippingService,
+            'shipping_cost' => round($shippingCost),
+            'amount' => round($finalPrice),
+            'payment_status' => 'pending',
+            'order_status' => 'pending',
+        ]);
+
+        foreach ($checkoutItems as $checkoutItem) {
+            DB::table('order_checkouts')->insert([
+                'order_id' => $order->id,
+                'checkout_id' => $checkoutItem->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $user->notify(new OrderPlacedNotification($order, collect($checkoutItems)));
+        Notification::send(User::where('role', 'admin')->get(), new AdminOrderNotification($order, collect($checkoutItems), $user));
+
+        return $order;
+    }
+
+    public function updateVoucherUsage(User $user, Voucher $voucher)
+    {
+        UserVoucher::create([
+            'user_id' => $user->id,
+            'voucher_id' => $voucher->id,
+        ]);
+        $voucher->decrementUsage();
+    }
+
+    public function checkVoucher(Request $request)
+    {
+        $request->validate([
+            'voucher_code' => 'required|string',
+            'raw_product_total' => 'required|numeric|min:0',
+        ]);
+
+        $voucher = $this->getAndValidateVoucher($request->voucher_code);
+
+        $rawProductTotal = round((float) $request->raw_product_total);
+
+        $discountAmount = 0;
+        if ($voucher->type === 'percentage') {
+            $discountAmount = ($request->raw_product_total * $voucher->discount_value) / 100;
+        } elseif ($voucher->type === 'fixed') {
+            $discountAmount = $voucher->discount_value;
+        }
+
+        $discountAmount = round(min($discountAmount, $rawProductTotal));
+
+        $newTotalAfterVoucher = max(0, $rawProductTotal - $discountAmount);
+        $newTotalAfterVoucher = round($newTotalAfterVoucher);
 
         return response()->json([
             'success' => true,
-            'new_total' => $newTotal,
+            'discount_amount' => $discountAmount,
+            'new_total_after_voucher' => $newTotalAfterVoucher,
+            'voucher_type' => $voucher->type,
+            'voucher_value' => $voucher->discount_value,
         ]);
-    }
-
-    public function updateVoucherUsage(Request $request)
-    {
-        $voucher = Voucher::where('code', $request->voucher_code)->first();
-
-        if (!$voucher) {
-            return response()->json(['success' => false, 'message' => 'Voucher tidak ditemukan.']);
-        }
-
-        if ($voucher->status === 'inactive' || $voucher->usage_limit <= 0) {
-            return response()->json(['success' => false, 'message' => 'Voucher tidak aktif atau sudah kadaluarsa.']);
-        }
-
-        $voucherCode = UserVoucher::create([
-            'user_id' => auth()->id(),
-            'voucher_id' => $voucher->id,
-        ]);
-
-        $voucher->decrementUsage();
-
-        return response()->json(['success' => true]);
     }
 
     public function getShippingCost(Request $request)
@@ -431,7 +504,7 @@ class CheckoutController extends Controller
 
         $address = Address::findOrFail($request->address_id);
         $destinationCityId = $address->city_id;
-        $weight = 1000;
+        $weight = 100;
         $apiKey = config('rajaongkir.api_key');
         $originCity = config('rajaongkir.origin_city');
 

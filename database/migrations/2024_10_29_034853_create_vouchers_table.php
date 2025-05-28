@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->decimal('discount_value', 5, 2);
+             $table->enum('type', ['percentage', 'fixed']); 
+            $table->decimal('discount_value', 13, 0);
             $table->date('start_date');
             $table->date('end_date');
             $table->text('terms_and_conditions')->nullable();

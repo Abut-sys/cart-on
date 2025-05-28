@@ -4,9 +4,9 @@
     <div class="container mt-5 voucher-claimed-container">
         <h1 class="text-center mb-4 voucher-claimed-title">Your Claimed Vouchers</h1>
 
-        <!-- Link to navigate back to Claim Vouchers page -->
         <div class="text-center mb-4 voucher-claimed-link">
-            <a href="{{ route('voucher.claim') }}" class="voucher-claimed-btn voucher-claimed-btn-info voucher-claimed-btn-lg voucher-claimed-shadow-sm">
+            <a href="{{ route('voucher.claim') }}"
+                class="voucher-claimed-btn voucher-claimed-btn-info voucher-claimed-btn-lg voucher-claimed-shadow-sm">
                 <i class="fas fa-ticket-alt"></i> Go to Claim Vouchers
             </a>
         </div>
@@ -18,28 +18,35 @@
         @else
             <div class="voucher-claimed-row row">
                 @foreach ($claimedVouchers as $claimedVoucher)
+                    @php
+                        $voucher = $claimedVoucher->voucher;
+                        $isExpired = \Carbon\Carbon::now()->gt($voucher->end_date);
+                        $discountLabel = $voucher->type === 'percentage'
+                            ? $voucher->discount_value . '% OFF'
+                            : 'Discount Rp ' . number_format($voucher->discount_value, 0, ',', '.');
+                    @endphp
+
                     <div class="voucher-claimed-col col-md-4 mb-4">
-                        <div class="voucher-claimed-card card shadow-lg border-0 rounded-lg">
+                        <div class="voucher-claimed-card card shadow-lg border-0 rounded-lg position-relative">
                             <div class="voucher-claimed-card-body card-body">
                                 <h5 class="voucher-claimed-code card-title text-center font-weight-bold mb-3">
-                                    {{ $claimedVoucher->voucher->code }}
+                                    {{ $voucher->code }}
                                 </h5>
-                                
-                                <p class="voucher-claimed-validity card-text text-center">
-                                    <span class="text-muted">Claimed On:</span> 
+
+                                <p class="voucher-claimed-validity card-text text-center mb-2">
+                                    <span class="text-muted">Claimed On:</span>
                                     <strong>{{ $claimedVoucher->created_at->format('M d, Y') }}</strong>
                                 </p>
 
-                                <p class="voucher-claimed-validity card-text text-center">
-                                    <span class="text-muted">Validity:</span> 
-                                    <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->start_date)->format('M d, Y') }}</strong>
+                                <p class="voucher-claimed-validity card-text text-center mb-2">
+                                    <span class="text-muted">Validity:</span>
+                                    <strong>{{ $voucher->start_date->format('M d, Y') }}</strong>
                                     <span> to </span>
-                                    <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->end_date)->format('M d, Y') }}</strong>
+                                    <strong>{{ $voucher->end_date->format('M d, Y') }}</strong>
                                 </p>
 
-                                <!-- Label Diskon -->
-                                <div class="voucher-claimed-discount">
-                                    {{ $claimedVoucher->voucher->discount_value }}% OFF
+                                <div class="voucher-claimed-discount position-absolute top-0 end-0 bg-danger text-white px-3 py-2 rounded-bottom-start">
+                                    {{ $discountLabel }}
                                 </div>
                             </div>
                         </div>
