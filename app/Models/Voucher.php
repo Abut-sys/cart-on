@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VoucherLimitNotification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,6 +52,12 @@ class Voucher extends Model
             if ($this->usage_limit === 0) {
                 $this->status = 'inactive';
                 $this->save();
+
+                $admins = User::where('role', 'admin')->get();
+
+                foreach ($admins as $admin) {
+                    $admin->notify(new VoucherLimitNotification($this));
+                }
             }
         }
     }
@@ -106,10 +113,4 @@ class Voucher extends Model
     {
         return $this->hasMany(ClaimVoucher::class);
     }
-
-    // scopeActive: Mengambil semua voucher yang aktif berdasarkan tanggal.
-    // scopeInactive: Mengambil semua voucher yang tidak aktif berdasarkan tanggal.
-    // getStatusAttribute: Menentukan status berdasarkan tanggal.
-    // isActive: Cek apakah voucher aktif berdasarkan tanggal hari ini.
-    // updateStatus: Method untuk memperbarui status voucher berdasarkan tanggal.
 }

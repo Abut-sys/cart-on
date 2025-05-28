@@ -3,29 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Checkout;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ListOrderController extends Controller
 {
     public function history(Request $request)
     {
-        $validStatuses = ['pending', 'shipped', 'delivered', 'canceled', null];
-        $selectedStatus = $request->validate(['status' => 'nullable|in:' . implode(',', $validStatuses)])['status'] ?? null;
+        $validated = $request->validate([
+            'payment_status' => 'nullable|in:pending,completed,failed',
+            'order_status' => 'nullable|in:pending,shipped,delivered,canceled',
+        ]);
 
         $user = auth()->user();
 
         $checkouts = Checkout::with([
-            'orders' => function ($query) use ($selectedStatus) {
+            'orders' => function ($query) use ($validated) {
                 $query
-                    ->when($selectedStatus, function ($q) use ($selectedStatus) {
-                        $q->where('order_status', $selectedStatus);
+                    ->when(isset($validated['order_status']), function ($q) use ($validated) {
+                        $q->where('order_status', $validated['order_status']);
+                    })
+                    ->when(isset($validated['payment_status']), function ($q) use ($validated) {
+                        $q->where('payment_status', $validated['payment_status']);
                     })
                     ->with([
                         'product' => function ($query) {
-                            $query->select('id', 'name', 'image');
+                            $query->with([
+                                'images' => function ($q) {
+                                    $q->select('id', 'product_id', 'image_path');
+                                },
+                                'brand:id,name',
+                                'subCategory:id,name',
+                            ]);
+
+                            // Jika Product menggunakan soft delete
+                            if (method_exists(Product::class, 'bootSoftDeletes')) {
+                                $query->withTrashed();
+                            }
                         },
-                    ])
-                    ->select('id', 'checkout_id', 'product_id', 'quantity', 'price', 'order_status');
+                    ]);
             },
         ])
             ->where('user_id', $user->id)

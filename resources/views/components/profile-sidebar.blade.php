@@ -29,7 +29,7 @@
             <a href="{{ route('orders.history') }}"
                 class="ps-nav-item {{ request()->routeIs('orders.history') ? 'is-active' : '' }}">
                 <i class="fas fa-history ps-nav-icon"></i>
-                <span class="ps-nav-text">Transaction list</span>
+                <span class="ps-nav-text">Order list</span>
             </a>
 
             <a href="#" class="ps-nav-item {{ request()->routeIs('orders.pending') ? 'is-active' : '' }}">
@@ -43,10 +43,13 @@
                 <span class="ps-nav-text">Voucher</span>
             </a>
 
-            <a href="#" class="ps-nav-item {{ request()->routeIs('notifications.*') ? 'is-active' : '' }}">
-                <i class="fas fa-bell ps-nav-icon"></i>
-                <span class="ps-nav-text">Notifikasi</span>
-            </a>
+            <form method="POST" action="{{ route('logout') }}" class="ps-nav-item logout">
+                @csrf
+                <button type="submit" class="ps-nav-button">
+                    <i class="fas fa-sign-out-alt ps-nav-icon"></i>
+                    <span class="ps-nav-text">Logout</span>
+                </button>
+            </form>
         </div>
     </div>
 </div>

@@ -146,7 +146,7 @@
 }
 
 .notification-section {
-    display: inline-block;
+    display: inline-flex;
     align-items: center;
     margin: 0 15px;
     font-size: 17px;
@@ -163,6 +163,7 @@
 
 .notification-icon:hover {
     animation: bellShake 0.5s ease-in-out;
+    animation: bellShake 0.5s ease-in-out;
     color: #d9cab3;
 }
 
@@ -172,19 +173,23 @@
     }
     25% {
         transform: rotate(10deg);
+        transform: rotate(10deg);
     }
     50% {
+        transform: rotate(-10deg);
         transform: rotate(-10deg);
     }
     75% {
         transform: rotate(5deg);
+        transform: rotate(5deg);
     }
     100% {
+        transform: rotate(0deg);
         transform: rotate(0deg);
     }
 }
 
-.notification-icon .badge {
+#notificationCount {
     position: absolute;
     top: -5px;
     right: -5px;
@@ -192,8 +197,9 @@
     color: white;
     font-size: 12px;
     font-weight: bold;
-    padding: 3px 8px;
+    padding: 3px 6px;
     border-radius: 50%;
+    pointer-events: none;
 }
 
 .notification-dropdown {
@@ -223,12 +229,18 @@
 }
 
 .notification-item {
-    padding: 12px;
+    padding: 12px 20px;
     border-bottom: 1px solid #ddd;
     font-size: 14px;
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
 }
 
 .notification-item:hover {
@@ -238,6 +250,7 @@
 .notification-item.read {
     color: #999;
     background-color: #e0e0e0;
+    font-weight: normal;
 }
 
 .notification-item.unread {
@@ -247,25 +260,7 @@
 
 .notification-item i {
     margin-right: 10px;
-}
-
-#notificationCount {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 12px;
-    padding: 3px 6px;
-    border-radius: 50%;
-    background-color: #ff3b30;
-    color: white;
-}
-
-.hidden {
-    display: none;
-}
-
-.show {
-    display: block;
+    color: #555;
 }
 
 .notification-dropdown .no-notifications {

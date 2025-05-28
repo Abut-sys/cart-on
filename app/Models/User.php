@@ -74,20 +74,18 @@ class User extends Authenticatable
 
         $cleaned = preg_replace('/[^0-9]/', '', $value);
 
-        // Konversi 0 di awal ke 62
         if (str_starts_with($cleaned, '0')) {
             $cleaned = '62' . substr($cleaned, 1);
         }
 
-        // Pastikan diawali 62
         if (!str_starts_with($cleaned, '62')) {
             $cleaned = '62' . $cleaned;
         }
 
-        // Validasi panjang digit setelah 62 (10-11 digit)
         $digitCount = strlen($cleaned) - 2;
         if ($digitCount < 10 || $digitCount > 11) {
-            throw new \InvalidArgumentException('Nomor telepon harus +62 diikuti 10 atau 11 digit');
+            $this->attributes['phone_number'] = null;
+            return;
         }
 
         $this->attributes['phone_number'] = '+' . $cleaned;

@@ -103,122 +103,93 @@
     @vite('resources/js/bootstrap.js')
     {{-- notif --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // loadNotifications();
+        document.addEventListener('DOMContentLoaded', () => {
+            const icon = document.getElementById('notificationIcon');
+            const dropdown = document.getElementById('notificationDropdown');
+            const countBadge = document.getElementById('notificationCount');
 
-            const notificationIcon = document.getElementById('notificationIcon');
-            const notificationCount = document.getElementById('notificationCount');
-            const notificationDropdown = document.getElementById('notificationDropdown');
+            if (!icon || !dropdown || !countBadge) return;
 
-            // Laravel Echo Configuration (untuk real-time notifikasi)
-            // window.Echo = new Echo({
-            //     broadcaster: 'pusher',
-            //     key: '{{ env('PUSHER_APP_KEY') }}',
-            //     cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
-            //     encrypted: true
-            // });
+            icon.addEventListener('click', () => {
+                dropdown.classList.toggle('active');
+                if (dropdown.classList.contains('active')) {
+                    fetchNotifications();
+                }
+            });
 
-            // Menampilkan atau menyembunyikan dropdown notifikasi
-            function toggleNotificationDropdown() {
-                notificationDropdown.classList.toggle('active');
+            async function fetchNotifications() {
+                try {
+                    const res = await fetch("{{ route('getNotifications') }}");
+                    if (!res.ok) throw new Error('failed to fetch notifications');
+                    const data = await res.json();
+                    updateNotificationUI(data);
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
-            if (notificationIcon) {
-                notificationIcon.addEventListener('click', toggleNotificationDropdown);
+            // Update UI dropdown dan badge
+            function updateNotificationUI(notifications) {
+                const unreadNotifications = notifications.filter(n => !n.read_at);
+                countBadge.textContent = unreadNotifications.length;
+
+                dropdown.innerHTML = '';
+
+                if (notifications.length === 0) {
+                    dropdown.innerHTML =
+                        '<div class="notification-item no-notifications">No notifications.</div>';
+                    return;
+                }
+
+                notifications.forEach(n => {
+                    const div = document.createElement('div');
+                    div.classList.add('notification-item');
+                    if (!n.read_at) div.classList.add('unread');
+                    else div.classList.add('read');
+
+                    div.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                ${n.data.message}
+            `;
+
+                    if (!n.read_at) {
+                        div.style.cursor = 'pointer';
+                        div.addEventListener('click', async () => {
+                            await markAsRead([n.id]);
+                            if (n.data.url) {
+                                window.location.href = n.data.url;
+                            } else {
+                                fetchNotifications();
+                            }
+                        });
+                    }
+
+                    dropdown.appendChild(div);
+                });
             }
 
-            // Fungsi untuk menandai notifikasi sebagai dibaca
-            function markAsRead(notificationIds) {
-                fetch("{{ route('markAsRead') }}", {
+            async function markAsRead(notificationIds) {
+                try {
+                    const res = await fetch("{{ route('markAsRead') }}", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
                         body: JSON.stringify({
                             notification_ids: notificationIds
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            loadNotifications(); // Reload notifications after marking as read
-                        }
                     });
-            }
-
-            // Fungsi untuk memuat notifikasi terbaru
-            function loadNotifications() {
-                fetch("{{ route('getNotifications') }}")
-                    .then(response => response.json())
-                    .then(notifications => {
-                        const unreadCount = notifications.filter(notification => !notification.read_at).length;
-                        console.log('Unread notifications count:', unreadCount);
-
-                        // Update count notifikasi di elemen HTML
-                        notificationCount.textContent = unreadCount;
-                        renderNotifications(notifications);
-                    });
-            }
-
-            // Fungsi untuk merender notifikasi di dropdown
-            function renderNotifications(notifications) {
-                notificationDropdown.innerHTML = ''; // Menghapus notifikasi yang ada
-
-                notifications.forEach(notification => {
-                    const notificationItem = document.createElement('div');
-                    notificationItem.classList.add('notification-item');
-
-                    // Jika notifikasi belum dibaca, beri kelas 'unread'
-                    if (!notification.read_at) {
-                        notificationItem.classList.add('unread');
-                    } else {
-                        notificationItem.classList.add('read');
-                    }
-
-                    notificationItem.innerHTML = `
-            <i class="fas fa-info-circle"></i> ${notification.data.message}
-        `;
-
-                    // Ketika notifikasi diklik, tandai sebagai dibaca
-                    notificationItem.onclick = function() {
-                        markAsRead([notification.id]);
-                    };
-
-                    notificationDropdown.appendChild(notificationItem);
-                });
-
-                if (notifications.length === 0) {
-                    notificationDropdown.innerHTML =
-                        '<div class="notification-item no-notifications">Tidak ada notifikasi baru</div>';
+                    if (!res.ok) throw new Error('Failed to mark notification read');
+                    return await res.json();
+                } catch (error) {
+                    console.error(error);
                 }
-
-                const seeAllLink = document.createElement('div');
-                seeAllLink.classList.add('notification-item', 'see-all-item');
-                seeAllLink.innerHTML =
-                    `<a href="{{ route('allNotifications') }}" class="see-all-link">See All</a>`;
-                notificationDropdown.appendChild(seeAllLink);
             }
 
-            // Mendengarkan event WebSocket di channel 'admin-notifications'
-            Echo.channel('admin-notifications')
-                .listen('VoucherStatusChanged', (event) => {
-                    console.log('Voucher status changed:', event);
-                    const newNotification = document.createElement('div');
-                    newNotification.classList.add('notification-item');
-                    newNotification.innerHTML = `
-                <i class="fas fa-info-circle"></i> Status voucher ${event.voucher.code} has changed to ${event.voucher.status}.
-            `;
-                    newNotification.onclick = function() {
-                        markAsRead([event.voucher.id]);
-                        window.location.href = `/notifications/${event.voucher.id}`;
-                    };
-                    notificationDropdown.prepend(newNotification);
-                    notificationCount.textContent = parseInt(notificationCount.textContent) + 1;
-                });
+            setInterval(fetchNotifications, 60000);
 
-            // Load notifications when the page loads
-            loadNotifications();
+            fetchNotifications();
         });
     </script>
 
