@@ -32,7 +32,7 @@ class Checkout extends Model
 
     public function orders()
     {
-        return $this->hasOne(Order::class);
+        return $this->belongsToMany(Order::class, 'order_checkouts')->withPivot('checkout_id', 'order_id')->withTimestamps();
     }
 
     public function claimVoucher()

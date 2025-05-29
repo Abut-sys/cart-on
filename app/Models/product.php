@@ -4,19 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'sub_category_product_id',
-        'brand_id',
-        'name',
-        'price',
-        'description',
-        'sales'
-    ];
+    protected $fillable = ['sub_category_product_id', 'brand_id', 'name', 'price', 'description', 'sales'];
 
     protected $casts = [
         'color' => 'array',
@@ -56,5 +50,10 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function firstImage()
+    {
+        return $this->hasOne(ProductImage::class)->orderBy('id');
     }
 }

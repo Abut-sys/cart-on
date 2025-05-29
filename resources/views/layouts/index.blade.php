@@ -38,7 +38,11 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/orders/index.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/home_user/home.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/sidebar.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/history.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/pending.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
 </head>
 
@@ -46,14 +50,14 @@
     {{-- Include Navbar --}}
     @auth
         @if (Auth::user()->role == 'admin')
-            @include('layouts.admin-navbar')
+            @include('components.admin-navbar')
         @else
-            @include('layouts.user-navbar')
+            @include('components.user-navbar')
         @endif
     @endauth
 
     @guest
-        @include('layouts.user-navbar')
+        @include('components.user-navbar')
     @endguest
 
     {{-- content --}}
@@ -63,24 +67,28 @@
         </div>
     </div>
 
+    @yield('chat')
+
     {{-- Include Sidebar --}}
     @auth
         @if (Auth::user()->role == 'admin')
-            @include('layouts.sidebar')
+            @include('components.sidebar')
         @endif
     @endauth
 
     @auth
         @unless (auth()->user()->hasRole('admin'))
             <!-- Konten hanya untuk user yang login dan bukan admin -->
-            @include('layouts.footer')
+            @include('components.footer')
         @endunless
     @endauth
 
     @guest
         <!-- Konten untuk guest -->
-        @include('layouts.footer')
+        @include('components.footer')
     @endguest
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     {{-- Jquery --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -26,14 +26,23 @@
                                     {{ $voucher->code }}
                                 </h5>
 
+<<<<<<< HEAD
                                 <p class="voucher-claim-validity card-text text-center mb-2">
+=======
+
+                                <p class="voucher-claim-validity card-text text-center">
+>>>>>>> pp2025
                                     <span class="text-muted">Valid From:</span>
                                     <strong>{{ \Carbon\Carbon::parse($voucher->start_date)->format('M d, Y') }}</strong>
                                     <span> to </span>
                                     <strong>{{ \Carbon\Carbon::parse($voucher->end_date)->format('M d, Y') }}</strong>
                                 </p>
 
+<<<<<<< HEAD
                                 <p class="voucher-claim-terms card-text text-center mb-2">
+=======
+                                <p class="voucher-claim-terms card-text text-center">
+>>>>>>> pp2025
                                     <span class="text-muted">Terms:</span>
                                     <em>{{ $voucher->terms_and_conditions ?? 'No specific terms apply. Enjoy your savings!' }}</em>
                                 </p>
@@ -41,11 +50,16 @@
                                 <form action="{{ route('claim', $voucher->id) }}" method="POST">
                                     @csrf
                                     <button type="submit"
+<<<<<<< HEAD
                                         class="voucher-claim-btn voucher-claim-btn-success w-100 py-3 font-weight-bold mt-3 voucher-claim-shadow-sm">
+=======
+                                        class="voucher-claim-btn voucher-claim-btn-success w-100 py-3 font-weight-bold mt-4 voucher-claim-shadow-sm">
+>>>>>>> pp2025
                                         Claim This Voucher
                                     </button>
                                 </form>
 
+<<<<<<< HEAD
                                 <div
                                     class="voucher-claim-discount position-absolute top-0 end-0 bg-danger text-white px-3 py-2 rounded-bottom-start">
                                     @if ($voucher->type === 'percentage')
@@ -55,6 +69,14 @@
                                     @endif
                                 </div>
                             </div>
+=======
+                                <!-- Label Diskon -->
+                                <div class="voucher-claim-discount">
+                                    {{ $voucher->discount_value }}% OFF
+                                </div>
+                            </div>
+
+>>>>>>> pp2025
                         </div>
                     </div>
                 @endforeach

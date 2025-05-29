@@ -1,0 +1,181 @@
+.ps-container {
+    width: auto;
+    padding: 1.5rem;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-right: 1.5rem;
+}
+
+.ps-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    background: #f3f7f2;
+    border-radius: 8px;
+}
+
+.ps-avatar-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+.ps-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ps-initials-avatar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ps-profile-details {
+    flex: 1;
+}
+
+.ps-user-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    line-height: 1.4;
+}
+
+.ps-user-email {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #718096;
+    line-height: 1.4;
+}
+
+.ps-navigation-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ps-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: #4a5568;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.ps-nav-item:hover {
+    background: #f0f5ef;
+    color: #5a7c4f;
+}
+
+.ps-nav-item.is-active {
+    background: rgb(224, 236, 219);
+    color: #99bc85;
+    font-weight: 600;
+}
+
+/* Styling khusus untuk tombol logout */
+.ps-nav-item.logout {
+    color: #dc2626;
+    margin-top: 1rem;
+}
+
+.ps-nav-item.logout:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.ps-nav-item.logout .ps-nav-icon {
+    color: inherit;
+}
+
+.ps-nav-icon {
+    width: 24px;
+    margin-right: 12px;
+    font-size: 1rem;
+    text-align: center;
+    color: inherit; /* Ikon mewarisi warna dari parent */
+}
+
+.ps-nav-text {
+    flex-grow: 1;
+    font-size: 0.925rem;
+}
+
+.ps-nav-item.logout {
+    --color-red-500: #ef4444;
+    --color-red-100: #fee2e2;
+    --color-gray-200: #e5e7eb;
+
+    color: var(--color-red-500);
+    margin: 1.5rem 0 0;
+    padding: 1rem 0 0;
+    border-top: 1px solid var(--color-gray-200);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ps-nav-item.logout:hover {
+    background: var(--color-red-100);
+    color: #dc2626;
+    transform: translateX(4px);
+}
+
+.ps-nav-item.logout .ps-nav-icon {
+    transition: transform 0.2s ease;
+}
+
+.ps-nav-item.logout:hover .ps-nav-icon {
+    transform: translateX(3px);
+}
+
+.ps-nav-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    color: inherit;
+    font: inherit;
+    gap: 0.75rem;
+}
+
+.ps-nav-button:focus-visible {
+    outline: 2px solid var(--color-red-100);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .ps-nav-item.logout {
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+    }
+
+    .ps-nav-button {
+        padding: 0.5rem 1rem;
+    }
+}

@@ -127,10 +127,4 @@ class Voucher extends Model
 
         return 0;
     }
-
-    // scopeActive: Mengambil semua voucher yang aktif berdasarkan tanggal.
-    // scopeInactive: Mengambil semua voucher yang tidak aktif berdasarkan tanggal.
-    // getStatusAttribute: Menentukan status berdasarkan tanggal.
-    // isActive: Cek apakah voucher aktif berdasarkan tanggal hari ini.
-    // updateStatus: Method untuk memperbarui status voucher berdasarkan tanggal.
 }

@@ -6,6 +6,7 @@ use App\Helpers\CartHelper;
 use App\Helpers\WishlistHelper;
 use App\Models\CategoryProduct;
 use App\Models\Product;
+use App\Models\Chat; // Add this import
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -16,14 +17,23 @@ class HomeController extends Controller
 
         $categories = CategoryProduct::with('brands')->get();
 
-            $userCartIds = CartHelper::getUserCartIds();
-            $userWishlistIds = WishlistHelper::getUserWishlistIds();
+        $userCartIds = CartHelper::getUserCartIds();
+        $userWishlistIds = WishlistHelper::getUserWishlistIds();
 
+        // Fetch chat messages for authenticated users
+        $messages = auth()->check()
+            ? Chat::where('user_id', auth()->id())->get()
+            : collect(); // Empty collection for guests
 
-        // Ambil semua produk dari database
+        // Get all products
         $products = Product::all();
 
-        // Kirim data ke view
-        return view('home_user.home', compact('categories','products', 'userCartIds', 'userWishlistIds'));
+        return view('home_user.home', compact(
+            'categories',
+            'products',
+            'userCartIds',
+            'userWishlistIds',
+            'messages' // Include messages in the view data
+        ));
     }
 }

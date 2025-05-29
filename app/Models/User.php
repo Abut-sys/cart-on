@@ -11,16 +11,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'phone_number',
-        'email_verified_at',
-        'password',
-        'image_url',
-        'role',
-        'google_id',
-    ];
+    protected $fillable = ['name', 'email', 'phone_number', 'email_verified_at', 'password', 'image_url', 'role', 'google_id'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -48,7 +39,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Wishlist::class);
     }
-    
+
     public function carts()
     {
         return $this->hasMany(Cart::class);
@@ -72,5 +63,31 @@ class User extends Authenticatable
     public function checkouts()
     {
         return $this->hasMany(Checkout::class);
+    }
+
+    public function setPhoneNumberAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['phone_number'] = null;
+            return;
+        }
+
+        $cleaned = preg_replace('/[^0-9]/', '', $value);
+
+        if (str_starts_with($cleaned, '0')) {
+            $cleaned = '62' . substr($cleaned, 1);
+        }
+
+        if (!str_starts_with($cleaned, '62')) {
+            $cleaned = '62' . $cleaned;
+        }
+
+        $digitCount = strlen($cleaned) - 2;
+        if ($digitCount < 10 || $digitCount > 11) {
+            $this->attributes['phone_number'] = null;
+            return;
+        }
+
+        $this->attributes['phone_number'] = '+' . $cleaned;
     }
 }

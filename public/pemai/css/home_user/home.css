@@ -19,15 +19,16 @@
 .home-user-banner {
     display: flex;
     width: fit-content;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .home-user-banner-image {
     flex-shrink: 0;
     width: 100%;
-    height: 250px;
-    object-fit: contain;
+    height: 280px;
+    object-fit: cover;
     user-select: none;
+    border-radius: 16px;
 }
 
 .home-user-banner-prev,
@@ -35,38 +36,126 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
     border: none;
-    padding: 10px 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     cursor: pointer;
     z-index: 10;
-    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.home-user-banner-prev:hover,
+.home-user-banner-next:hover {
+    background-color: #fff;
+    transform: translateY(-50%) scale(1.1);
+    opacity: 1;
 }
 
 .home-user-banner-prev {
-    left: 10px;
+    left: 20px;
 }
 
 .home-user-banner-next {
-    right: 10px;
+    right: 20px;
+}
+
+.home-user-banner-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.home-user-banner-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.home-user-banner-dot.active {
+    background-color: #fff;
+    transform: scale(1.2);
+}
+
+.home-user-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    border-radius: 16px;
+    pointer-events: none;
 }
 
 .home-user-ads {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     margin: 0 auto;
-    align-items: stretch;
     width: 100%;
+    padding: 8px;
+}
+
+.home-user-ad {
+    background: #ffffff;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e5e7eb;
+}
+
+.home-user-ad:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.home-user-ad:active {
+    transform: scale(0.98);
 }
 
 .home-user-ad img {
     width: 100%;
     height: 120px;
-    object-fit: fill;
+    object-fit: cover;
+    object-position: center;
     user-select: none;
+    transition: transform 0.3s ease;
+}
+
+.home-user-ad:hover img {
+    transform: scale(1.02);
+}
+
+.home-user-ad::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.home-user-ad {
+    cursor: pointer;
 }
 
 .home-user-shop-by-categories {
@@ -89,11 +178,15 @@
     margin: 0 auto;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap; /* agar responsif di layar kecil */
+    padding: 20px 0;
 }
 
 .home-user-category {
     text-align: center;
     flex: 1;
+    max-width: 210px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .home-user-category img {
@@ -102,13 +195,15 @@
     object-fit: fill;
     border-radius: 8px;
     user-select: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.home-user-category p {
-    font-size: 18px;
-    color: #333;
-    margin-top: 10px;
+.home-user-category:hover img {
+    transform: scale(1.03);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
+
 
 .home-product-newest-header {
     display: flex;

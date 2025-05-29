@@ -33,14 +33,24 @@
                                     {{ $voucher->code }}
                                 </h5>
 
+<<<<<<< HEAD
                                 <p class="voucher-claimed-validity card-text text-center mb-2">
+=======
+                                <p class="voucher-claimed-validity card-text text-center">
+>>>>>>> pp2025
                                     <span class="text-muted">Claimed On:</span>
                                     <strong>{{ $claimedVoucher->created_at->format('M d, Y') }}</strong>
                                 </p>
 
+<<<<<<< HEAD
                                 <p class="voucher-claimed-validity card-text text-center mb-2">
                                     <span class="text-muted">Validity:</span>
                                     <strong>{{ $voucher->start_date->format('M d, Y') }}</strong>
+=======
+                                <p class="voucher-claimed-validity card-text text-center">
+                                    <span class="text-muted">Validity:</span>
+                                    <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->start_date)->format('M d, Y') }}</strong>
+>>>>>>> pp2025
                                     <span> to </span>
                                     <strong>{{ $voucher->end_date->format('M d, Y') }}</strong>
                                 </p>
