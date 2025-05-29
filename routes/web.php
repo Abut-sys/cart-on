@@ -24,6 +24,7 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\WaitingPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
 
     Route::get('/orders/history', [ListOrderController::class, 'history'])->name('orders.history');
+    Route::get('/orders/pending', [WaitingPaymentController::class, 'pending'])->name('orders.pending');
 
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');

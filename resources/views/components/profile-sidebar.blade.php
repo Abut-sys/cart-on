@@ -32,9 +32,14 @@
                 <span class="ps-nav-text">Order list</span>
             </a>
 
-            <a href="#" class="ps-nav-item {{ request()->routeIs('orders.pending') ? 'is-active' : '' }}">
+            <a href="{{ route('orders.pending') }}" class="ps-nav-item {{ request()->routeIs('orders.pending') ? 'is-active' : '' }}">
                 <i class="fas fa-clock ps-nav-icon"></i>
                 <span class="ps-nav-text">Waiting for payment</span>
+                @if (\App\Models\Order::where('payment_status', 'pending')->count() > 0)
+                    <span class="badge bg-danger">
+                        {{ \App\Models\Order::where('payment_status', 'pending')->count() }}
+                    </span>
+                @endif
             </a>
 
             <a href="{{ route('voucher.claim') }}"
