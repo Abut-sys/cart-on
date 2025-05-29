@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Checkout;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,38 +19,24 @@ class ListOrderController extends Controller
 
         $user = auth()->user();
 
-        $checkouts = Checkout::with([
-            'orders' => function ($query) use ($validated) {
-                $query
-                    ->when(isset($validated['order_status']), function ($q) use ($validated) {
-                        $q->where('order_status', $validated['order_status']);
-                    })
-                    ->when(isset($validated['payment_status']), function ($q) use ($validated) {
-                        $q->where('payment_status', $validated['payment_status']);
-                    })
-                    ->with([
-                        'product' => function ($query) {
-                            $query->with([
-                                'images' => function ($q) {
-                                    $q->select('id', 'product_id', 'image_path');
-                                },
-                                'brand:id,name',
-                                'subCategory:id,name',
-                            ]);
-
-                            // Jika Product menggunakan soft delete
-                            if (method_exists(Product::class, 'bootSoftDeletes')) {
-                                $query->withTrashed();
-                            }
-                        },
-                    ]);
-            },
-        ])
-            ->where('user_id', $user->id)
-            ->orderByDesc('created_at')
+        $orders = Order::whereHas('checkouts', function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })
+            ->when($validated['payment_status'] ?? null, function ($q) use ($validated) {
+                $q->where('payment_status', $validated['payment_status']);
+            })
+            ->when($validated['order_status'] ?? null, function ($q) use ($validated) {
+                $q->where('order_status', $validated['order_status']);
+            })
+            ->with([
+                'checkouts' => function ($q) {
+                    $q->with(['product.images', 'product.subCategory', 'product.brand', 'voucher']);
+                }
+            ])
+            ->orderByDesc('order_date')
             ->paginate(10)
             ->appends($request->query());
 
-        return view('orders_history', compact('checkouts'));
+        return view('orders_history', compact('orders'));
     }
 }

@@ -32,12 +32,21 @@
                 <span class="ps-nav-text">Order list</span>
             </a>
 
-            <a href="{{ route('orders.pending') }}" class="ps-nav-item {{ request()->routeIs('orders.pending') ? 'is-active' : '' }}">
+            @php
+                $pendingCount = \App\Models\Order::where('payment_status', 'pending')
+                    ->whereHas('checkouts', function ($query) {
+                        $query->where('user_id', auth()->id());
+                    })
+                    ->count();
+            @endphp
+
+            <a href="{{ route('orders.pending') }}"
+                class="ps-nav-item {{ request()->routeIs('orders.pending') ? 'is-active' : '' }}">
                 <i class="fas fa-clock ps-nav-icon"></i>
                 <span class="ps-nav-text">Waiting for payment</span>
-                @if (\App\Models\Order::where('payment_status', 'pending')->count() > 0)
+                @if ($pendingCount > 0)
                     <span class="badge bg-danger">
-                        {{ \App\Models\Order::where('payment_status', 'pending')->count() }}
+                        {{ $pendingCount }}
                     </span>
                 @endif
             </a>

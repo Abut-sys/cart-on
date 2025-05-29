@@ -1,4 +1,3 @@
-{{-- orders_history.blade.php --}}
 @extends('layouts.index')
 
 @section('title', 'Transaction History')
@@ -28,54 +27,64 @@
                 </div>
 
                 <div class="th-content-wrapper">
-                    @forelse($checkouts as $checkout)
-                        <div class="th-transaction-card"
-                            data-order-status="{{ $checkout->orders->first()->order_status ?? 'pending' }}"
-                            data-payment-status="{{ $checkout->orders->first()->payment_status ?? 'pending' }}">
+                    @forelse ($orders as $order)
+                        <div class="th-transaction-card" data-order-status="{{ $order->order_status }}"
+                            data-payment-status="{{ $order->payment_status }}">
                             <div class="th-transaction-header">
                                 <div class="th-meta-group">
-                                    <h3 class="th-transaction-id">TRX-{{ strtoupper(substr($checkout->id, 0, 8)) }}</h3>
+                                    <h3 class="th-transaction-id">
+                                        ORDER-{{ strtoupper(substr($order->unique_order_id, 0, 8)) }}
+                                    </h3>
                                     <p class="th-transaction-date">
                                         <i class="fas fa-calendar-alt mr-2"></i>
-                                        {{ $checkout->created_at->format('d F Y, H:i') }}
+                                        {{ $order->order_date->format('d F Y, H:i') }}
                                     </p>
                                 </div>
 
                                 <div class="th-status-group">
                                     <div class="th-status-badges">
-                                        <span class="th-status-badge badge-payment-{{ $checkout->orders->first()->payment_status ?? 'pending' }}">
+                                        <span class="th-status-badge badge-payment-{{ $order->payment_status }}">
                                             <i class="fas fa-credit-card mr-1"></i>
-                                            {{ strtoupper($checkout->orders->first()->payment_status ?? 'pending') }}
+                                            {{ strtoupper($order->payment_status) }}
                                         </span>
-                                        <span class="th-status-badge badge-order-{{ $checkout->orders->first()->order_status ?? 'pending' }}">
+                                        <span class="th-status-badge badge-order-{{ $order->order_status }}">
                                             <i class="fas fa-truck mr-1"></i>
-                                            {{ strtoupper($checkout->orders->first()->order_status ?? 'pending') }}
+                                            {{ strtoupper($order->order_status) }}
                                         </span>
                                     </div>
                                     <p class="th-total-amount">
-                                        Total: Rp {{ number_format($checkout->amount, 0, ',', '.') }}
+                                        Total: Rp {{ number_format($order->amount, 0, ',', '.') }}
+                                    </p>
+                                    <p class="th-shipping-cost text-muted">
+                                        Shipping: Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}
+                                    </p>
+                                    <p class="th-voucher-cost text-muted">
+                                        Voucher Used: {{ $order->checkouts->first()->voucher_code ?? '-' }}
                                     </p>
                                 </div>
                             </div>
 
                             <div class="th-items-container">
-                                @foreach ($checkout->orders as $order)
+                                @foreach ($order->checkouts as $checkout)
                                     @php
-                                        $product = $order->product;
-                                        $mainImage = $product
-                                            ? optional($product->images->first())->image_path ?? 'default.png'
-                                            : 'default.png';
+                                        $product = $checkout->product;
+                                        $mainImage =
+                                            $product && $product->images->count()
+                                                ? $product->images->first()->image_path
+                                                : 'product_images/default.png';
                                         $productName = $product->name ?? 'Produk Tidak Tersedia';
                                         $productPrice = $product->price ?? 0;
                                         $brandName = $product ? optional($product->brand)->name : 'No Brand';
-                                        $categoryName = $product ? optional($product->subCategory)->name : 'No Category';
+                                        $categoryName = $product
+                                            ? optional($product->subCategory)->name
+                                            : 'No Category';
                                     @endphp
 
                                     <div class="th-item-card">
                                         <div class="th-product-card">
                                             <div class="th-product-image-container">
-                                                <img src="{{ asset('storage/products/' . $mainImage) }}"
-                                                    class="th-product-image" alt="{{ $productName }}">
+                                                <img src="{{ asset('storage/' . ltrim($mainImage, '/')) }}"
+                                                    alt="{{ $productName }}" class="th-product-image">
                                                 @unless ($product)
                                                     <div class="th-product-deleted-badge">
                                                         <i class="fas fa-trash-alt"></i> DELETED
@@ -111,11 +120,12 @@
                                                     Rp {{ number_format($productPrice, 0, ',', '.') }}
                                                 </p>
                                                 <p class="th-product-quantity">
-                                                    x{{ $order->quantity }}
+                                                    x{{ $checkout->quantity }}
                                                 </p>
                                             </div>
+
                                             <div class="th-total-price">
-                                                Rp {{ number_format($order->quantity * $productPrice, 0, ',', '.') }}
+                                                Rp {{ number_format($checkout->quantity * $productPrice, 0, ',', '.') }}
                                             </div>
                                         </div>
                                     </div>
@@ -138,9 +148,9 @@
                     @endforelse
                 </div>
 
-                @if ($checkouts->hasPages())
+                @if ($orders->hasPages())
                     <div class="th-pagination-wrapper mt-5">
-                        {{ $checkouts->withQueryString()->links() }}
+                        {{ $orders->withQueryString()->links() }}
                     </div>
                 @endif
             </div>

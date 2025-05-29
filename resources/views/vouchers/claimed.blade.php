@@ -16,7 +16,7 @@
                 You haven't claimed any vouchers yet.
             </div>
         @else
-            <div class="voucher-claimed-row row">
+            <div class="voucher-claimed-row d-flex flex-wrap">
                 @foreach ($claimedVouchers as $claimedVoucher)
                     @php
                         $voucher = $claimedVoucher->voucher;
@@ -26,31 +26,21 @@
                             : 'Discount Rp ' . number_format($voucher->discount_value, 0, ',', '.');
                     @endphp
 
-                    <div class="voucher-claimed-col col-md-4 mb-4">
+                    <div class="voucher-claimed-col">
                         <div class="voucher-claimed-card card shadow-lg border-0 rounded-lg position-relative">
                             <div class="voucher-claimed-card-body card-body">
                                 <h5 class="voucher-claimed-code card-title text-center font-weight-bold mb-3">
                                     {{ $voucher->code }}
                                 </h5>
 
-<<<<<<< HEAD
                                 <p class="voucher-claimed-validity card-text text-center mb-2">
-=======
-                                <p class="voucher-claimed-validity card-text text-center">
->>>>>>> pp2025
                                     <span class="text-muted">Claimed On:</span>
                                     <strong>{{ $claimedVoucher->created_at->format('M d, Y') }}</strong>
                                 </p>
 
-<<<<<<< HEAD
                                 <p class="voucher-claimed-validity card-text text-center mb-2">
                                     <span class="text-muted">Validity:</span>
                                     <strong>{{ $voucher->start_date->format('M d, Y') }}</strong>
-=======
-                                <p class="voucher-claimed-validity card-text text-center">
-                                    <span class="text-muted">Validity:</span>
-                                    <strong>{{ \Carbon\Carbon::parse($claimedVoucher->voucher->start_date)->format('M d, Y') }}</strong>
->>>>>>> pp2025
                                     <span> to </span>
                                     <strong>{{ $voucher->end_date->format('M d, Y') }}</strong>
                                 </p>

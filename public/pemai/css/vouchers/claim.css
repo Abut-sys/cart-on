@@ -7,11 +7,19 @@
 
 .voucher-claim-row {
     display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    gap: 20px;
-    align-items: flex-start;
-    margin-bottom: 40px;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+}
+
+.voucher-claim-col {
+    width: 33.3333%;
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .voucher-claim-col {
+        width: 100%;
+    }
 }
 
 .voucher-claim-card {

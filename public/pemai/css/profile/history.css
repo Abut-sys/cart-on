@@ -314,7 +314,6 @@
 }
 
 .th-total-amount::before {
-    content: '$';
     font-size: 0.9rem;
     opacity: 0.8;
 }
@@ -486,7 +485,6 @@
 }
 
 .th-unit-price::before {
-    content: '$';
     font-size: 0.7rem;
     opacity: 0.7;
 }
@@ -517,7 +515,6 @@
 }
 
 .th-total-price::before {
-    content: '$';
     font-size: 0.8rem;
     opacity: 0.8;
 }

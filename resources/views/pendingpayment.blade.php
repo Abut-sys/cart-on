@@ -25,7 +25,6 @@
                                     <tr>
                                         <th>Order ID</th>
                                         <th>Order Date</th>
-                                        <th>Customer</th>
                                         <th>Amount</th>
                                         <th>Shipping</th>
                                         <th>Actions</th>
@@ -36,14 +35,6 @@
                                         <tr>
                                             <td>{{ $order->unique_order_id }}</td>
                                             <td>{{ $order->order_date->format('d M Y H:i') }}</td>
-                                            <td>
-                                                @if ($order->user)
-                                                    {{ $order->user->name }}
-                                                @else
-                                                    <span class="text-danger">User missing (ID:
-                                                        {{ $order->user_id }})</span>
-                                                @endif
-                                            </td>
                                             <td>{{ number_format($order->amount, 0) }}</td>
                                             <td>{{ $order->shipping_service }}</td>
                                             <td>
