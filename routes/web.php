@@ -24,7 +24,6 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\CategoryProductController;
-use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitingPaymentController;
 
 /*
@@ -75,6 +74,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     Route::get('/orders/history', [ListOrderController::class, 'history'])->name('orders.history');
     Route::get('/orders/pending', [WaitingPaymentController::class, 'pending'])->name('orders.pending');
+    Route::delete('/orders/{order}/cancel', [WaitingPaymentController::class, 'cancel'])->name('orders.cancel');
 
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
@@ -92,8 +92,6 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('voucher/check', [CheckoutController::class, 'checkVoucher'])->name('voucher.check');
     Route::post('voucher/updateUsage', [CheckoutController::class, 'updateVoucherUsage'])->name('voucher.updateUsage');
     Route::post('/get-shipping-cost', [CheckoutController::class, 'getShippingCost'])->name('get-shipping-cost');
-
-    Route::post('/status/update-payment', [StatusController::class, 'updatePaymentStatus'])->name('status.update');
 });
 
 // Route guest
@@ -138,8 +136,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('vouchers', VoucherController::class);
 
     Route::resource('orders', OrderController::class);
-    Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
-
 
     Route::resource('costumers', CostumersController::class);
     Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');
