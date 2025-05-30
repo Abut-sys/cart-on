@@ -1,30 +1,23 @@
-/* Account Layout */
 .ps-account-container {
-    padding: 20px 0;
-    background-color: #f8f9fa;
-    min-height: 100vh;
-}
-
-.ps-account-layout {
     display: flex;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 20px;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.ps-account-sidebar {
-    width: 250px;
-    flex-shrink: 0;
-}
-
-.ps-account-content {
-    flex-grow: 1;
-}
-
-/* Card Styles */
-.ps-card {
-    background: #fff;
-    border-radius: 8px;
+.ps-account-card {
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 16px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.08),
+        0 2px 6px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;    border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     overflow: hidden;
 }
