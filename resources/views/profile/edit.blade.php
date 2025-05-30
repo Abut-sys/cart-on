@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="profile-edit-container">
-        <div>
+        <div class="payment-sidebar">
             @include('components.profile-sidebar')
         </div>
         <div class="profile-edit-card">

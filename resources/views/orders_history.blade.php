@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="th-bg-container">
-        <div>
+        <div class="payment-sidebar">
             @include('components.profile-sidebar')
         </div>
         <div class="th-bg-card">
