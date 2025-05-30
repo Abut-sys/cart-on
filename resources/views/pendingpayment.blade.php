@@ -15,7 +15,7 @@
                         <div class="title-wrapper">
                             <i class="fas fa-clock nav-icon pulse"></i>
                             <h2 class="card-title">Orders Waiting for Payment</h2>
-                            <span class="badge badge-pill">{{ $pendingOrders->total() }}</span>
+                            <span class="badge badge-pill">{{ $orders->total() }}</span>
                         </div>
                         <p class="subtitle">Manage your pending transactions</p>
                     </div>
@@ -23,15 +23,15 @@
                         <div class="filter-group">
                             <button class="filter-btn active" data-filter="all">
                                 <span>All</span>
-                                <span class="filter-count">{{ $pendingOrders->total() }}</span>
+                                <span class="filter-count">{{ $orders->total() }}</span>
                             </button>
                             <button class="filter-btn" data-filter="pending">
                                 <span>Pending</span>
-                                <span class="filter-count">{{ $pendingOrders->where('payment_status', 'pending')->count() }}</span>
+                                <span class="filter-count">{{ $orders->where('payment_status', 'pending')->count() }}</span>
                             </button>
                             <button class="filter-btn" data-filter="failed">
                                 <span>Failed</span>
-                                <span class="filter-count">{{ $pendingOrders->where('payment_status', 'failed')->count() }}</span>
+                                <span class="filter-count">{{ $orders->where('payment_status', 'failed')->count() }}</span>
                             </button>
                         </div>
                         <div class="search-box">
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="card-body">
-                    @if ($pendingOrders->isEmpty())
+                    @if ($orders->isEmpty())
                         <div class="empty-state">
                             <div class="empty-icon">
                                 <i class="fas fa-check-circle"></i>
@@ -68,7 +68,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($pendingOrders as $order)
+                                    @foreach ($orders as $order)
                                         <tr class="order-row" data-status="{{ $order->payment_status }}" data-id="{{ $order->unique_order_id }}">
                                             <td>
                                                 <div class="order-cell">

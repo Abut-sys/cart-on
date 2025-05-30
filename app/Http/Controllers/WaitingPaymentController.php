@@ -17,15 +17,15 @@ class WaitingPaymentController extends Controller
     {
         $user = Auth::user();
 
-        $pendingOrders = Order::where('payment_status', 'pending')
-            ->whereHas('checkouts', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with('checkouts') // untuk validasi dan akses di view
+        $orders = Order::whereHas('checkouts', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->whereIn('payment_status', ['pending', 'failed']) 
+            ->with('checkouts')
             ->orderBy('order_date', 'desc')
             ->paginate(10);
 
-        return view('pendingpayment', compact('pendingOrders'));
+        return view('pendingpayment', compact('orders'));
     }
 
     /**
