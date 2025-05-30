@@ -33,7 +33,7 @@
                             <div class="th-transaction-header">
                                 <div class="th-meta-group">
                                     <h3 class="th-transaction-id">
-                                        ORDER-{{ strtoupper(substr($order->unique_order_id, 0, 8)) }}
+                                        {{ strtoupper(substr($order->unique_order_id, 0, 8)) }}
                                     </h3>
                                     <p class="th-transaction-date">
                                         <i class="fas fa-calendar-alt mr-2"></i>

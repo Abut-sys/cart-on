@@ -8,19 +8,27 @@
             <h2 class="text-center w-100 fw-bold">Order List</h2>
         </div>
 
+        @if (session('success'))
+            <div id="success-alert" class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="order-index-form">
             <form method="GET" action="{{ route('orders.index') }}" class="mb-4">
                 <div class="order-index-head-row d-flex justify-content-between align-items-center">
                     <div class="order-index-left-col d-flex">
                         <div class="order-index-col-md-4 me-2">
-                            <input type="text" name="search" class="form-control order-index-search pe-5" placeholder="Search by ID or Status" value="{{ request('search') }}">
+                            <input type="text" name="search" class="form-control order-index-search pe-5"
+                                placeholder="Search by ID or Status" value="{{ request('search') }}">
                         </div>
                         <div class="order-index-col-md-2 me-2">
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_id" class="form-select order-index-select pe-3">
-                                    <option value disabled selected ="">Sort ID</option>
+                                    <option value disabled selected>Sort ID</option>
                                     <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>ASC</option>
-                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>DESC</option>
+                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>DESC
+                                    </option>
                                 </select>
                                 <i class="fas fa-sort-down position-absolute end-0 me-2 order-index-sort-icon"></i>
                             </div>
@@ -28,9 +36,11 @@
                         <div class="order-index-col-md-2">
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_date" class="form-select order-index-select pe-5">
-                                    <option value disabled selected ="">Sort Date</option>
-                                    <option value="asc" {{ request('sort_date') == 'asc' ? 'selected' : '' }}>Oldest</option>
-                                    <option value="desc" {{ request('sort_date') == 'desc' ? 'selected' : '' }}>Newest</option>
+                                    <option value disabled selected>Sort Date</option>
+                                    <option value="asc" {{ request('sort_date') == 'asc' ? 'selected' : '' }}>Oldest
+                                    </option>
+                                    <option value="desc" {{ request('sort_date') == 'desc' ? 'selected' : '' }}>Newest
+                                    </option>
                                 </select>
                                 <i class="fas fa-sort-numeric-down position-absolute end-0 me-2 order-index-sort-icon"></i>
                             </div>
@@ -68,22 +78,59 @@
                             <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y, H:i') }}</td>
                             <td>{{ number_format($order->amount, 2) }}</td>
                             <td>
-                                <span class="badge bg-{{ $order->payment_status == 'completed' ? 'success' : ($order->payment_status == 'pending' ? 'warning' : 'danger') }}">
-                                    {{ ucfirst($order->payment_status) }}
+                                @php
+                                    $paymentColor = match ($order->payment_status->value) {
+                                        \App\Enums\PaymentStatusEnum::Completed => 'success',
+                                        \App\Enums\PaymentStatusEnum::Pending => 'warning',
+                                        \App\Enums\PaymentStatusEnum::Failed => 'danger',
+                                        default => 'secondary',
+                                    };
+                                @endphp
+                                <span class="badge bg-{{ $paymentColor }}">
+                                    {{ $order->payment_status->description }}
                                 </span>
                             </td>
                             <td>
-                                <span class="badge bg-{{ $order->order_status == 'delivered' ? 'success' : ($order->order_status == 'shipped' ? 'info' : ($order->order_status == 'pending' ? 'warning' : 'danger')) }}">
-                                    {{ ucfirst($order->order_status) }}
+                                @php
+                                    $orderColor = match ($order->order_status->value) {
+                                        \App\Enums\OrderStatusEnum::Delivered => 'success',
+                                        \App\Enums\OrderStatusEnum::Shipped => 'info',
+                                        \App\Enums\OrderStatusEnum::Pending => 'warning',
+                                        \App\Enums\OrderStatusEnum::Canceled => 'danger',
+                                        default => 'secondary',
+                                    };
+                                @endphp
+                                <span class="badge bg-{{ $orderColor }}">
+                                    {{ $order->order_status->description }}
                                 </span>
                             </td>
                             <td><strong>{{ $orderCounts[$order->unique_order_id] ?? 0 }}</strong></td>
                             <td>
-                                <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('orders.updateStatus', $order->id) }}" method="POST"
+                                    class="d-flex align-items-center gap-1">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger order-index-btn-delete-order">
-                                        <i class="fas fa-trash-alt"></i>
+                                    @method('PUT')
+
+                                    <select name="payment_status" class="form-select form-select-sm">
+                                        @foreach (\App\Enums\PaymentStatusEnum::asSelectArray() as $key => $label)
+                                            <option value="{{ $key }}"
+                                                {{ $order->payment_status->value === $key ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <select name="order_status" class="form-select form-select-sm">
+                                        @foreach (\App\Enums\OrderStatusEnum::asSelectArray() as $key => $label)
+                                            <option value="{{ $key }}"
+                                                {{ $order->order_status->value === $key ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-save"></i>
                                     </button>
                                 </form>
                             </td>
@@ -99,4 +146,15 @@
             </nav>
         </div>
     </div>
+
+    <script>
+        setTimeout(() => {
+            const alert = document.getElementById('success-alert');
+            if (alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 10000);
+    </script>
 @endsection

@@ -407,9 +407,38 @@
 
                     if (data.success && data.snapToken) {
                         snap.pay(data.snapToken, {
-                            onSuccess: function(result) {
-                                window.location.href =
-                                    '{{ route('home.index') }}';
+                            onSuccess: async function(result) {
+                                try {
+                                    const response = await fetch('/status/update-payment', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector(
+                                                    'meta[name="csrf-token"]')
+                                                .getAttribute('content'),
+                                        },
+                                        body: JSON.stringify({
+                                            order_id: result
+                                                .order_id,
+                                            payment_status: result
+                                                .transaction_status
+                                        }),
+                                    });
+
+                                    const data = await response.json();
+
+                                    if (response.ok) {
+                                        window.location.href = '{{ route('orders.history') }}';
+                                    } else {
+                                        alert('Gagal update status pembayaran: ' + (data
+                                            .message || 'Error tidak dikenal'));
+                                    }
+                                } catch (error) {
+                                    console.error('Error update status payment:', error);
+                                    alert(
+                                        'Terjadi kesalahan saat mengupdate status pembayaran.'
+                                        );
+                                }
                             },
                             onPending: function(result) {
                                 window.location.href =
@@ -420,7 +449,7 @@
                                 alert('Pembayaran Gagal: ' + result.status_message);
                             },
                             onClose: function() {
-                                alert('Anda menutup pop-up pembayaran.');
+                                window.location.href = '{{ route('orders.pending') }}';
                             }
                         });
                     } else {

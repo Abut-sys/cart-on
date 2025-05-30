@@ -23,7 +23,7 @@ class PaymentService
     public function generateSnapTokenForOrder(string $orderId, int $finalPrice, User $user, array $midtransItems): string
     {
         $transactionDetails = [
-            'order_id' => 'ORDER-' . uniqid() . '-' . Str::random(10),
+            'order_id' => $orderId,
             'gross_amount' => (int) $finalPrice,
         ];
 

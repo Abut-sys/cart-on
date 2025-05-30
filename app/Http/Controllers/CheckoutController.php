@@ -334,14 +334,6 @@ class CheckoutController extends Controller
                 ];
             }
 
-            // Log::info('--- Checkout Process Payment Log ---');
-            // Log::info('Calculated rawProductTotal: ' . $rawProductTotal);
-            // Log::info('Voucher: ' . ($voucher->code ?? 'N/A') . ', Type: ' . ($voucher->type ?? 'N/A') . ', Value: ' . ($voucher->discount_value ?? 'N/A'));
-            // Log::info('Calculated discountAmount: ' . $discountAmount);
-            // Log::info('Validated shippingCost: ' . $shippingCost);
-            // Log::info('Calculated finalPrice (Total sent to Midtrans): ' . $finalPrice);
-            // Log::info('Midtrans items array: ' . json_encode($midtransItems));
-
             $midtransCalculatedTotal = 0;
             foreach ($midtransItems as $mi) {
                 $midtransCalculatedTotal += $mi['price'] * $mi['quantity'];
@@ -353,8 +345,6 @@ class CheckoutController extends Controller
                 $user,
                 $midtransItems
             );
-
-            // Log::info('Snap Token berhasil dibuat: ' . $snapToken);
 
             return response()->json([
                 'success' => true,
