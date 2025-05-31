@@ -76,6 +76,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/orders/history', [ListOrderController::class, 'history'])->name('orders.history');
     Route::get('/orders/pending', [WaitingPaymentController::class, 'pending'])->name('orders.pending');
     Route::delete('/orders/{order}/cancel', [WaitingPaymentController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/order/{order}/pay', [WaitingPaymentController::class, 'triggerPayment'])->name('orders.triggerPayment');
 
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
@@ -139,6 +140,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('vouchers', VoucherController::class);
 
     Route::resource('orders', OrderController::class);
+    Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
     Route::resource('costumers', CostumersController::class);
     Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');

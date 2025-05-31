@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('vouchers:update-status')->dailyAt('00:00');
         $schedule->command('app:delete-unverified-users')->hourly();
+        $schedule->command('orders:expire-pending')->everyMinute();
 
         $schedule->call(function () {
             $tomorrow = Carbon::tomorrow()->toDateString();

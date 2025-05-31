@@ -2,12 +2,10 @@
 
 @section('content')
     <div class="payment-container">
-        <!-- Profile Sidebar - Left -->
         <div class="payment-sidebar">
             @include('components.profile-sidebar')
         </div>
 
-        <!-- Main Content - Right -->
         <div class="payment-main">
             <div class="payment-card">
                 <div class="card-header">
@@ -69,7 +67,8 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($orders as $order)
-                                        <tr class="order-row" data-status="{{ $order->payment_status }}" data-id="{{ $order->unique_order_id }}">
+                                        <tr class="order-row" data-status="{{ $order->payment_status }}"
+                                            data-id="{{ $order->unique_order_id }}">
                                             <td>
                                                 <div class="order-cell">
                                                     <span class="order-id">#{{ $order->unique_order_id }}</span>
@@ -78,14 +77,17 @@
                                             <td>
                                                 <div class="order-cell">
                                                     <div class="date-group">
-                                                        <span class="order-date">{{ $order->order_date->format('d M Y') }}</span>
-                                                        <small class="order-time">{{ $order->order_date->format('H:i') }}</small>
+                                                        <span
+                                                            class="order-date">{{ $order->order_date->format('d M Y') }}</span>
+                                                        <small
+                                                            class="order-time">{{ $order->order_date->format('H:i') }}</small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="order-cell">
-                                                    <span class="order-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
+                                                    <span
+                                                        class="order-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
                                                 </div>
                                             </td>
                                             <td>
@@ -103,11 +105,12 @@
                                                             <span class="status-dot"></span>
                                                             {{ ucfirst($order->payment_status) }}
                                                         </span>
-                                                        @if($order->payment_status == 'pending')
-                                                        <div class="countdown-timer" data-expires="{{ $order->order_date->addHours(24)->format('Y-m-d H:i:s') }}">
-                                                            <i class="fas fa-hourglass-half"></i>
-                                                            <span class="timer-text"></span>
-                                                        </div>
+                                                        @if ($order->payment_status == 'pending')
+                                                            <div class="countdown-timer"
+                                                                data-expires="{{ $order->order_date->addHours(24)->format('Y-m-d H:i:s') }}">
+                                                                <i class="fas fa-hourglass-half"></i>
+                                                                <span class="timer-text"></span>
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -116,23 +119,36 @@
                                                 <div class="order-cell">
                                                     <div class="action-buttons">
                                                         @if ($order->payment_status == 'pending')
-                                                            <div class="btn-group">
-                                                                <a href="{{ route('checkout.process', ['order' => $order->id]) }}" class="btn btn-pay btn-sm">
+                                                            <form method="POST"
+                                                                action="{{ route('orders.triggerPayment', $order->id) }}"
+                                                                style="display:inline-block;">
+                                                                @csrf
+                                                                <button type="button" class="btn btn-pay btn-sm"
+                                                                    title="Pay">
                                                                     <i class="fas fa-credit-card"></i>
-                                                                </a>
-                                                                <form action="{{ route('orders.cancel', $order->id) }}"
-                                                                    method="POST" class="action-form">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-cancel btn-sm">
-                                                                        <i class="fas fa-times"></i>
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        @elseif($order->payment_status == 'failed')
-                                                            <button class="btn btn-retry btn-sm">
-                                                                <i class="fas fa-sync-alt"></i> Retry
-                                                            </button>
+                                                                </button>
+                                                            </form>
+
+                                                            <form method="POST"
+                                                                action="{{ route('orders.cancel', $order->id) }}"
+                                                                style="display:inline-block; margin-left: 5px;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-cancel btn-sm"
+                                                                    title="Cancel">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </form>
+                                                        @elseif ($order->payment_status == 'failed')
+                                                            <form method="POST"
+                                                                action="{{ route('orders.triggerPayment', $order->id) }}"
+                                                                style="display:inline-block;">
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-retry btn-sm"
+                                                                    title="Retry Payment">
+                                                                    <i class="fas fa-sync-alt"></i> Retry
+                                                                </button>
+                                                            </form>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -144,14 +160,26 @@
                                                     <div class="details-section">
                                                         <h4>Order Details</h4>
                                                         <div class="products-list">
-                                                            @foreach($order->checkouts as $checkout)
-                                                            <div class="product-item">
-                                                                <img src="{{ $checkout->product->image_url }}" alt="{{ $checkout->product->name }}" class="product-image">
-                                                                <div class="product-info">
-                                                                    <h5>{{ $checkout->product->name }}</h5>
-                                                                    <p>Qty: {{ $checkout->quantity }} × Rp{{ number_format($checkout->amount, 0, ',', '.') }}</p>
+                                                            @foreach ($order->checkouts as $checkout)
+                                                                <div class="product-item">
+                                                                    @php
+                                                                        $imagePath = optional(
+                                                                            $checkout->product->images->first(),
+                                                                        )->image_path;
+                                                                        $imageUrl = $imagePath
+                                                                            ? asset('storage/' . ltrim($imagePath, '/'))
+                                                                            : asset('images/default.png');
+                                                                    @endphp
+                                                                    <img src="{{ $imageUrl }}"
+                                                                        alt="{{ $checkout->product->name }}"
+                                                                        class="product-image">
+                                                                    <div class="product-info">
+                                                                        <h5>{{ $checkout->product->name }}</h5>
+                                                                        <p>Qty: {{ $checkout->quantity }} ×
+                                                                            Rp{{ number_format($checkout->amount, 0, ',', '.') }}
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
                                                             @endforeach
                                                         </div>
                                                     </div>
@@ -164,11 +192,13 @@
                                                             </div>
                                                             <div class="info-row">
                                                                 <span>Total Amount:</span>
-                                                                <span class="total-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
+                                                                <span
+                                                                    class="total-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
                                                             </div>
                                                             <div class="info-row">
                                                                 <span>Payment Deadline:</span>
-                                                                <span class="deadline">{{ $order->order_date->addHours(24)->format('d M Y H:i') }}</span>
+                                                                <span
+                                                                    class="deadline">{{ $order->order_date->addHours(24)->format('d M Y H:i') }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -179,23 +209,103 @@
                                 </tbody>
                             </table>
                         </div>
-
                     @endif
                 </div>
             </div>
         </div>
     </div>
-@endsection
+
+    @if (isset($snapToken))
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+        </script>
+    @endif
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Toggle order details
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            document.querySelectorAll('.btn-pay').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const form = this.closest('form');
+                    const url = form.action;
+
+                    fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({}),
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.snap_token) {
+                                snap.pay(data.snap_token, {
+                                    onSuccess: function(result) {
+                                        fetch("{{ route('status.update') }}", {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': csrfToken,
+                                                    'Accept': 'application/json',
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                    order_id: result
+                                                        .order_id ||
+                                                        result
+                                                        .transaction_id ||
+                                                        '',
+                                                    payment_status: result
+                                                        .transaction_status ||
+                                                        'success',
+                                                }),
+                                            })
+                                            .then(res => res.json())
+                                            .then(resp => {
+                                                window.location.href =
+                                                    "{{ route('orders.history') }}";
+                                            })
+                                            .catch(() => alert(
+                                                'Gagal update status pembayaran.'
+                                            ));
+                                    },
+                                    onPending: function() {
+                                        window.location.href =
+                                            "{{ route('orders.pending') }}";
+                                    },
+                                    onError: function() {
+                                        alert('Terjadi kesalahan pembayaran.');
+                                    },
+                                    onClose: function() {
+                                        "{{ route('orders.pending') }}";
+                                    }
+                                });
+                            } else if (data.error) {
+                                alert(data.error);
+                            } else {
+                                alert('Gagal mendapatkan token pembayaran.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert('Terjadi kesalahan jaringan.');
+                        });
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.order-row').forEach(row => {
                 row.addEventListener('click', function(e) {
-                    // Don't toggle if clicking on action buttons
-                    if (e.target.closest('.action-buttons') || e.target.closest('.btn')) {
-                        return;
-                    }
+                    if (e.target.closest('.action-buttons') || e.target.closest('.btn')) return;
 
                     const detailsRow = this.nextElementSibling;
                     if (detailsRow && detailsRow.classList.contains('order-details-row')) {
@@ -209,12 +319,10 @@
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const filter = this.dataset.filter;
-
-                    // Update active button
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove(
+                        'active'));
                     this.classList.add('active');
 
-                    // Filter rows
                     document.querySelectorAll('.order-row').forEach(row => {
                         if (filter === 'all') {
                             row.style.display = '';
@@ -225,18 +333,13 @@
                 });
             });
 
-            // Search functionality
+            // Search orders by Order ID
             const searchInput = document.getElementById('orderSearch');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
-
                 document.querySelectorAll('.order-row').forEach(row => {
                     const orderId = row.dataset.id.toLowerCase();
-                    if (orderId.includes(searchTerm)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
+                    row.style.display = orderId.includes(searchTerm) ? '' : 'none';
                 });
             });
 
@@ -248,7 +351,8 @@
                     const distance = expires - now;
 
                     if (distance < 0) {
-                        timer.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span class="timer-text">Expired</span>';
+                        timer.innerHTML =
+                            '<i class="fas fa-exclamation-circle"></i> <span class="timer-text">Failed</span>';
                         return;
                     }
 
@@ -260,17 +364,8 @@
                         `${hours}h ${minutes}m ${seconds}s left`;
                 });
             }
-
             updateCountdowns();
             setInterval(updateCountdowns, 1000);
-
-            // Confirm cancel
-            document.querySelectorAll('.action-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    if (!confirm('Are you sure you want to cancel this order?')) {
-                        e.preventDefault();
-                    }
-                });
-            });
         });
     </script>
+@endsection
