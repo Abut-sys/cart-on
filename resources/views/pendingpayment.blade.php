@@ -2,12 +2,10 @@
 
 @section('content')
     <div class="payment-container">
-        <!-- Profile Sidebar - Left -->
         <div class="payment-sidebar">
             @include('components.profile-sidebar')
         </div>
 
-        <!-- Main Content - Right -->
         <div class="payment-main">
             <div class="payment-card">
                 <div class="card-header">
@@ -121,24 +119,36 @@
                                                 <div class="order-cell">
                                                     <div class="action-buttons">
                                                         @if ($order->payment_status == 'pending')
-                                                            <div class="btn-group">
-                                                                <a href="{{ route('checkout.process', ['order' => $order->id]) }}"
-                                                                    class="btn btn-pay btn-sm">
+                                                            <form method="POST"
+                                                                action="{{ route('orders.triggerPayment', $order->id) }}"
+                                                                style="display:inline-block;">
+                                                                @csrf
+                                                                <button type="button" class="btn btn-pay btn-sm"
+                                                                    title="Pay">
                                                                     <i class="fas fa-credit-card"></i>
-                                                                </a>
-                                                                <form action="{{ route('orders.cancel', $order->id) }}"
-                                                                    method="POST" class="action-form">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-cancel btn-sm">
-                                                                        <i class="fas fa-times"></i>
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        @elseif($order->payment_status == 'failed')
-                                                            <button class="btn btn-retry btn-sm">
-                                                                <i class="fas fa-sync-alt"></i> Retry
-                                                            </button>
+                                                                </button>
+                                                            </form>
+
+                                                            <form method="POST"
+                                                                action="{{ route('orders.cancel', $order->id) }}"
+                                                                style="display:inline-block; margin-left: 5px;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-cancel btn-sm"
+                                                                    title="Cancel">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </form>
+                                                        @elseif ($order->payment_status == 'failed')
+                                                            <form method="POST"
+                                                                action="{{ route('orders.triggerPayment', $order->id) }}"
+                                                                style="display:inline-block;">
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-retry btn-sm"
+                                                                    title="Retry Payment">
+                                                                    <i class="fas fa-sync-alt"></i> Retry
+                                                                </button>
+                                                            </form>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -204,92 +214,158 @@
             </div>
         </div>
     </div>
-@endsection
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.order-row').forEach(row => {
-            row.addEventListener('click', function(e) {
-                if (e.target.closest('.action-buttons') || e.target.closest('.btn')) {
-                    return;
-                }
+    @if (isset($snapToken))
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+        </script>
+    @endif
 
-                const detailsRow = this.nextElementSibling;
-                if (detailsRow && detailsRow.classList.contains('order-details-row')) {
-                    detailsRow.classList.toggle('show-details');
-                    this.classList.toggle('active-row');
-                }
-            });
-        });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-        // Filter orders
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const filter = this.dataset.filter;
+            document.querySelectorAll('.btn-pay').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
 
-                // Update active button
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove(
-                    'active'));
-                this.classList.add('active');
+                    const form = this.closest('form');
+                    const url = form.action;
 
-                // Filter rows
-                document.querySelectorAll('.order-row').forEach(row => {
-                    if (filter === 'all') {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = row.dataset.status === filter ? '' : 'none';
-                    }
+                    fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({}),
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.snap_token) {
+                                snap.pay(data.snap_token, {
+                                    onSuccess: function(result) {
+                                        fetch("{{ route('status.update') }}", {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': csrfToken,
+                                                    'Accept': 'application/json',
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                    order_id: result
+                                                        .order_id ||
+                                                        result
+                                                        .transaction_id ||
+                                                        '',
+                                                    payment_status: result
+                                                        .transaction_status ||
+                                                        'success',
+                                                }),
+                                            })
+                                            .then(res => res.json())
+                                            .then(resp => {
+                                                window.location.href =
+                                                    "{{ route('orders.history') }}";
+                                            })
+                                            .catch(() => alert(
+                                                'Gagal update status pembayaran.'
+                                            ));
+                                    },
+                                    onPending: function() {
+                                        window.location.href =
+                                            "{{ route('orders.pending') }}";
+                                    },
+                                    onError: function() {
+                                        alert('Terjadi kesalahan pembayaran.');
+                                    },
+                                    onClose: function() {
+                                        "{{ route('orders.pending') }}";
+                                    }
+                                });
+                            } else if (data.error) {
+                                alert(data.error);
+                            } else {
+                                alert('Gagal mendapatkan token pembayaran.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert('Terjadi kesalahan jaringan.');
+                        });
                 });
             });
         });
+    </script>
 
-        // Search functionality
-        const searchInput = document.getElementById('orderSearch');
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.order-row').forEach(row => {
-                const orderId = row.dataset.id.toLowerCase();
-                if (orderId.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.addEventListener('click', function(e) {
+                    if (e.target.closest('.action-buttons') || e.target.closest('.btn')) return;
+
+                    const detailsRow = this.nextElementSibling;
+                    if (detailsRow && detailsRow.classList.contains('order-details-row')) {
+                        detailsRow.classList.toggle('show-details');
+                        this.classList.toggle('active-row');
+                    }
+                });
             });
+
+            // Filter orders
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove(
+                        'active'));
+                    this.classList.add('active');
+
+                    document.querySelectorAll('.order-row').forEach(row => {
+                        if (filter === 'all') {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = row.dataset.status === filter ? '' : 'none';
+                        }
+                    });
+                });
+            });
+
+            // Search orders by Order ID
+            const searchInput = document.getElementById('orderSearch');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                document.querySelectorAll('.order-row').forEach(row => {
+                    const orderId = row.dataset.id.toLowerCase();
+                    row.style.display = orderId.includes(searchTerm) ? '' : 'none';
+                });
+            });
+
+            // Countdown timers
+            function updateCountdowns() {
+                document.querySelectorAll('.countdown-timer').forEach(timer => {
+                    const expires = new Date(timer.dataset.expires).getTime();
+                    const now = new Date().getTime();
+                    const distance = expires - now;
+
+                    if (distance < 0) {
+                        timer.innerHTML =
+                            '<i class="fas fa-exclamation-circle"></i> <span class="timer-text">Failed</span>';
+                        return;
+                    }
+
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    timer.querySelector('.timer-text').textContent =
+                        `${hours}h ${minutes}m ${seconds}s left`;
+                });
+            }
+            updateCountdowns();
+            setInterval(updateCountdowns, 1000);
         });
-
-        // Countdown timers
-        function updateCountdowns() {
-            document.querySelectorAll('.countdown-timer').forEach(timer => {
-                const expires = new Date(timer.dataset.expires).getTime();
-                const now = new Date().getTime();
-                const distance = expires - now;
-
-                if (distance < 0) {
-                    timer.innerHTML =
-                        '<i class="fas fa-exclamation-circle"></i> <span class="timer-text">Failed</span>';
-                    return;
-                }
-
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                timer.querySelector('.timer-text').textContent =
-                    `${hours}h ${minutes}m ${seconds}s left`;
-            });
-        }
-
-        updateCountdowns();
-        setInterval(updateCountdowns, 1000);
-
-        // Confirm cancel
-        document.querySelectorAll('.action-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                if (!confirm('Are you sure you want to cancel this order?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-    });
-</script>
+    </script>
+@endsection
