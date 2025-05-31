@@ -24,6 +24,7 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitingPaymentController;
 
 /*
@@ -92,6 +93,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('voucher/check', [CheckoutController::class, 'checkVoucher'])->name('voucher.check');
     Route::post('voucher/updateUsage', [CheckoutController::class, 'updateVoucherUsage'])->name('voucher.updateUsage');
     Route::post('/get-shipping-cost', [CheckoutController::class, 'getShippingCost'])->name('get-shipping-cost');
+
+    Route::post('/status/update-payment', [StatusController::class, 'updatePaymentStatus'])->name('status.update');
 });
 
 // Route guest
@@ -141,6 +144,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');
 
     Route::resource('informations', InformationController::class);
+
+    Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });
 
 // Route untuk memastikan pengguna yang belum memverifikasi akun mereka tidak dapat mengakses halaman login
