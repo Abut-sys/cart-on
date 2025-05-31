@@ -69,7 +69,8 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($orders as $order)
-                                        <tr class="order-row" data-status="{{ $order->payment_status }}" data-id="{{ $order->unique_order_id }}">
+                                        <tr class="order-row" data-status="{{ $order->payment_status }}"
+                                            data-id="{{ $order->unique_order_id }}">
                                             <td>
                                                 <div class="order-cell">
                                                     <span class="order-id">#{{ $order->unique_order_id }}</span>
@@ -78,14 +79,17 @@
                                             <td>
                                                 <div class="order-cell">
                                                     <div class="date-group">
-                                                        <span class="order-date">{{ $order->order_date->format('d M Y') }}</span>
-                                                        <small class="order-time">{{ $order->order_date->format('H:i') }}</small>
+                                                        <span
+                                                            class="order-date">{{ $order->order_date->format('d M Y') }}</span>
+                                                        <small
+                                                            class="order-time">{{ $order->order_date->format('H:i') }}</small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="order-cell">
-                                                    <span class="order-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
+                                                    <span
+                                                        class="order-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
                                                 </div>
                                             </td>
                                             <td>
@@ -103,11 +107,12 @@
                                                             <span class="status-dot"></span>
                                                             {{ ucfirst($order->payment_status) }}
                                                         </span>
-                                                        @if($order->payment_status == 'pending')
-                                                        <div class="countdown-timer" data-expires="{{ $order->order_date->addHours(24)->format('Y-m-d H:i:s') }}">
-                                                            <i class="fas fa-hourglass-half"></i>
-                                                            <span class="timer-text"></span>
-                                                        </div>
+                                                        @if ($order->payment_status == 'pending')
+                                                            <div class="countdown-timer"
+                                                                data-expires="{{ $order->order_date->addHours(24)->format('Y-m-d H:i:s') }}">
+                                                                <i class="fas fa-hourglass-half"></i>
+                                                                <span class="timer-text"></span>
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -117,7 +122,8 @@
                                                     <div class="action-buttons">
                                                         @if ($order->payment_status == 'pending')
                                                             <div class="btn-group">
-                                                                <a href="{{ route('checkout.process', ['order' => $order->id]) }}" class="btn btn-pay btn-sm">
+                                                                <a href="{{ route('checkout.process', ['order' => $order->id]) }}"
+                                                                    class="btn btn-pay btn-sm">
                                                                     <i class="fas fa-credit-card"></i>
                                                                 </a>
                                                                 <form action="{{ route('orders.cancel', $order->id) }}"
@@ -144,14 +150,26 @@
                                                     <div class="details-section">
                                                         <h4>Order Details</h4>
                                                         <div class="products-list">
-                                                            @foreach($order->checkouts as $checkout)
-                                                            <div class="product-item">
-                                                                <img src="{{ $checkout->product->image_url }}" alt="{{ $checkout->product->name }}" class="product-image">
-                                                                <div class="product-info">
-                                                                    <h5>{{ $checkout->product->name }}</h5>
-                                                                    <p>Qty: {{ $checkout->quantity }} × Rp{{ number_format($checkout->amount, 0, ',', '.') }}</p>
+                                                            @foreach ($order->checkouts as $checkout)
+                                                                <div class="product-item">
+                                                                    @php
+                                                                        $imagePath = optional(
+                                                                            $checkout->product->images->first(),
+                                                                        )->image_path;
+                                                                        $imageUrl = $imagePath
+                                                                            ? asset('storage/' . ltrim($imagePath, '/'))
+                                                                            : asset('images/default.png');
+                                                                    @endphp
+                                                                    <img src="{{ $imageUrl }}"
+                                                                        alt="{{ $checkout->product->name }}"
+                                                                        class="product-image">
+                                                                    <div class="product-info">
+                                                                        <h5>{{ $checkout->product->name }}</h5>
+                                                                        <p>Qty: {{ $checkout->quantity }} ×
+                                                                            Rp{{ number_format($checkout->amount, 0, ',', '.') }}
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
                                                             @endforeach
                                                         </div>
                                                     </div>
@@ -164,11 +182,13 @@
                                                             </div>
                                                             <div class="info-row">
                                                                 <span>Total Amount:</span>
-                                                                <span class="total-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
+                                                                <span
+                                                                    class="total-amount">Rp{{ number_format($order->amount, 0, ',', '.') }}</span>
                                                             </div>
                                                             <div class="info-row">
                                                                 <span>Payment Deadline:</span>
-                                                                <span class="deadline">{{ $order->order_date->addHours(24)->format('d M Y H:i') }}</span>
+                                                                <span
+                                                                    class="deadline">{{ $order->order_date->addHours(24)->format('d M Y H:i') }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -179,7 +199,6 @@
                                 </tbody>
                             </table>
                         </div>
-
                     @endif
                 </div>
             </div>
@@ -187,90 +206,90 @@
     </div>
 @endsection
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Toggle order details
-            document.querySelectorAll('.order-row').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    // Don't toggle if clicking on action buttons
-                    if (e.target.closest('.action-buttons') || e.target.closest('.btn')) {
-                        return;
-                    }
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.order-row').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('.action-buttons') || e.target.closest('.btn')) {
+                    return;
+                }
 
-                    const detailsRow = this.nextElementSibling;
-                    if (detailsRow && detailsRow.classList.contains('order-details-row')) {
-                        detailsRow.classList.toggle('show-details');
-                        this.classList.toggle('active-row');
-                    }
-                });
+                const detailsRow = this.nextElementSibling;
+                if (detailsRow && detailsRow.classList.contains('order-details-row')) {
+                    detailsRow.classList.toggle('show-details');
+                    this.classList.toggle('active-row');
+                }
             });
+        });
 
-            // Filter orders
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const filter = this.dataset.filter;
+        // Filter orders
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.dataset.filter;
 
-                    // Update active button
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove(
+                    'active'));
+                this.classList.add('active');
 
-                    // Filter rows
-                    document.querySelectorAll('.order-row').forEach(row => {
-                        if (filter === 'all') {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = row.dataset.status === filter ? '' : 'none';
-                        }
-                    });
-                });
-            });
-
-            // Search functionality
-            const searchInput = document.getElementById('orderSearch');
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-
+                // Filter rows
                 document.querySelectorAll('.order-row').forEach(row => {
-                    const orderId = row.dataset.id.toLowerCase();
-                    if (orderId.includes(searchTerm)) {
+                    if (filter === 'all') {
                         row.style.display = '';
                     } else {
-                        row.style.display = 'none';
-                    }
-                });
-            });
-
-            // Countdown timers
-            function updateCountdowns() {
-                document.querySelectorAll('.countdown-timer').forEach(timer => {
-                    const expires = new Date(timer.dataset.expires).getTime();
-                    const now = new Date().getTime();
-                    const distance = expires - now;
-
-                    if (distance < 0) {
-                        timer.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span class="timer-text">Expired</span>';
-                        return;
-                    }
-
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    timer.querySelector('.timer-text').textContent =
-                        `${hours}h ${minutes}m ${seconds}s left`;
-                });
-            }
-
-            updateCountdowns();
-            setInterval(updateCountdowns, 1000);
-
-            // Confirm cancel
-            document.querySelectorAll('.action-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    if (!confirm('Are you sure you want to cancel this order?')) {
-                        e.preventDefault();
+                        row.style.display = row.dataset.status === filter ? '' : 'none';
                     }
                 });
             });
         });
-    </script>
+
+        // Search functionality
+        const searchInput = document.getElementById('orderSearch');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            document.querySelectorAll('.order-row').forEach(row => {
+                const orderId = row.dataset.id.toLowerCase();
+                if (orderId.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Countdown timers
+        function updateCountdowns() {
+            document.querySelectorAll('.countdown-timer').forEach(timer => {
+                const expires = new Date(timer.dataset.expires).getTime();
+                const now = new Date().getTime();
+                const distance = expires - now;
+
+                if (distance < 0) {
+                    timer.innerHTML =
+                        '<i class="fas fa-exclamation-circle"></i> <span class="timer-text">Failed</span>';
+                    return;
+                }
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timer.querySelector('.timer-text').textContent =
+                    `${hours}h ${minutes}m ${seconds}s left`;
+            });
+        }
+
+        updateCountdowns();
+        setInterval(updateCountdowns, 1000);
+
+        // Confirm cancel
+        document.querySelectorAll('.action-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (!confirm('Are you sure you want to cancel this order?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
