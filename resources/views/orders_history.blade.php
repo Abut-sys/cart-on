@@ -147,10 +147,9 @@
                         </div>
                     @endforelse
                 </div>
-
                 @if ($orders->hasPages())
                     <div class="th-pagination-wrapper mt-5">
-                        {{ $orders->withQueryString()->links() }}
+                        {{ $orders->links('components.pagination') }}
                     </div>
                 @endif
             </div>

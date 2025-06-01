@@ -47,7 +47,7 @@
                             </div>
                             <h3>No pending payments</h3>
                             <p>All your orders are processed. Start shopping to see new orders here.</p>
-                            <a href="{{ route('products.index') }}" class="btn btn-primary btn-icon">
+                            <a href="{{ route('products.index') }}" class="beten btn-primary btn-icon">
                                 <i class="fas fa-shopping-bag"></i>
                                 <span>Continue Shopping</span>
                             </a>
@@ -123,7 +123,7 @@
                                                                 action="{{ route('orders.triggerPayment', $order->id) }}"
                                                                 style="display:inline-block;">
                                                                 @csrf
-                                                                <button type="button" class="btn btn-pay btn-sm"
+                                                                <button type="button" class="beten btn-pay btn-sm"
                                                                     title="Pay">
                                                                     <i class="fas fa-credit-card"></i>
                                                                 </button>
@@ -134,7 +134,7 @@
                                                                 style="display:inline-block; margin-left: 5px;">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="submit" class="btn btn-cancel btn-sm"
+                                                                <button type="submit" class="beten btn-cancel btn-sm"
                                                                     title="Cancel">
                                                                     <i class="fas fa-times"></i>
                                                                 </button>
@@ -144,7 +144,7 @@
                                                                 action="{{ route('orders.triggerPayment', $order->id) }}"
                                                                 style="display:inline-block;">
                                                                 @csrf
-                                                                <button type="submit" class="btn btn-retry btn-sm"
+                                                                <button type="submit" class="beten btn-retry btn-sm"
                                                                     title="Retry Payment">
                                                                     <i class="fas fa-sync-alt"></i> Retry
                                                                 </button>

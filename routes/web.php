@@ -146,6 +146,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');
 
     Route::resource('informations', InformationController::class);
+
+    Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });
 
 // Route untuk memastikan pengguna yang belum memverifikasi akun mereka tidak dapat mengakses halaman login
