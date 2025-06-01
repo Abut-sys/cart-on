@@ -418,7 +418,7 @@ class CheckoutController extends Controller
         $address = Address::findOrFail($checkoutItems[0]->address_id);
         $order = Order::create([
             'order_date' => now(),
-            'unique_order_id' => 'ORDER-' . Str::uuid(),
+            'unique_order_id' =>  'ORDER-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)),
             'address' => $address->address_line1 . ', ' . $address->city . ', ' . $address->postal_code,
             'courier' => $courier,
             'shipping_service' => $shippingService,

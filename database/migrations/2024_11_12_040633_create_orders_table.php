@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->decimal('shipping_cost', 13, 0);
             $table->decimal('amount', 13, 0);
             $table->enum('payment_status', ['pending', 'completed', 'failed']);
-            $table->enum('order_status', ['pending', 'shipped', 'delivered', 'canceled']);
+            $table->enum('order_status', ['pending', 'packaged', 'shipped', 'delivered', 'canceled']);
             $table->timestamps();
         });
     }

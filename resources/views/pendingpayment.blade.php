@@ -57,7 +57,7 @@
                             <table class="order-table">
                                 <thead>
                                     <tr>
-                                        <th>Order ID</th>
+                                        <th>Resi</th>
                                         <th>Date</th>
                                         <th>Amount</th>
                                         <th>Shipping</th>

@@ -14,7 +14,7 @@ class ListOrderController extends Controller
     {
         $validated = $request->validate([
             'payment_status' => 'nullable|in:pending,completed,failed',
-            'order_status' => 'nullable|in:pending,shipped,delivered,canceled',
+            'order_status' => 'nullable|in:pending,packaged,shipped,delivered,canceled',
         ]);
 
         $user = auth()->user();

@@ -17,7 +17,7 @@
                         {{-- Filter Group --}}
                         <div class="th-filter-group">
                             <button type="button" class="th-filter-btn filter-active" data-status="all">All</button>
-                            @foreach (['pending', 'shipped', 'delivered', 'canceled'] as $status)
+                            @foreach (['pending', 'packaged', 'shipped', 'delivered', 'canceled'] as $status)
                                 <button type="button" class="th-filter-btn" data-status="{{ $status }}">
                                     {{ ucfirst($status) }}
                                 </button>
@@ -33,7 +33,7 @@
                             <div class="th-transaction-header">
                                 <div class="th-meta-group">
                                     <h3 class="th-transaction-id">
-                                        {{ strtoupper(substr($order->unique_order_id, 0, 8)) }}
+                                        {{ $order->unique_order_id }}
                                     </h3>
                                     <p class="th-transaction-date">
                                         <i class="fas fa-calendar-alt mr-2"></i>

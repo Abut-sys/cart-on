@@ -14,6 +14,7 @@ use BenSampo\Enum\Enum;
 final class OrderStatusEnum extends Enum
 {
     const Pending   = 'pending';
+    const Packaged  = 'packaged';
     const Shipped   = 'shipped';
     const Delivered = 'delivered';
     const Canceled  = 'canceled';
@@ -22,6 +23,7 @@ final class OrderStatusEnum extends Enum
     {
         return match ($value) {
             self::Pending   => 'Pending',
+            self::Packaged  => 'Packaged',
             self::Shipped   => 'Shipped',
             self::Delivered => 'Delivered',
             self::Canceled  => 'Canceled',

@@ -2,8 +2,6 @@
 
 @section('content')
     <div class="container py-4">
-        <h2 class="checkout-title mb-4 text-center">Checkout</h2>
-
         <div class="checkout-container">
             <div class="row g-4">
                 <div class="col-lg-8 col-md-12">
@@ -428,7 +426,8 @@
                                     const data = await response.json();
 
                                     if (response.ok) {
-                                        window.location.href = '{{ route('orders.history') }}';
+                                        window.location.href =
+                                            '{{ route('orders.history') }}';
                                     } else {
                                         alert('Gagal update status pembayaran: ' + (data
                                             .message || 'Error tidak dikenal'));
@@ -437,7 +436,7 @@
                                     console.error('Error update status payment:', error);
                                     alert(
                                         'Terjadi kesalahan saat mengupdate status pembayaran.'
-                                        );
+                                    );
                                 }
                             },
                             onPending: function(result) {
