@@ -66,6 +66,7 @@
                         <th>Amount</th>
                         <th>Payment Status</th>
                         <th>Order Status</th>
+                        <th>Resi</th>
                         <th>Total Orders</th>
                         <th>Action</th>
                     </tr>
@@ -104,14 +105,21 @@
                                     {{ $order->order_status->description }}
                                 </span>
                             </td>
+                            <td>
+                                @if ($order->tracking_number)
+                                    <span class="badge bg-secondary">{{ $order->tracking_number }}</span>
+                                @else
+                                    <span class="badge bg-light text-dark">No Tracking</span>
+                                @endif
+                            </td>
                             <td><strong>{{ $orderCounts[$order->unique_order_id] ?? 0 }}</strong></td>
                             <td>
                                 <form action="{{ route('orders.updateStatus', $order->id) }}" method="POST"
-                                    class="d-flex align-items-center gap-1">
+                                    class="d-flex flex-column gap-1 order-form">
                                     @csrf
                                     @method('PUT')
 
-                                    <select name="payment_status" class="form-select form-select-sm">
+                                    <select name="payment_status" class="form-select form-select-sm mb-1">
                                         @foreach (\App\Enums\PaymentStatusEnum::asSelectArray() as $key => $label)
                                             <option value="{{ $key }}"
                                                 {{ $order->payment_status->value === $key ? 'selected' : '' }}>
@@ -120,7 +128,7 @@
                                         @endforeach
                                     </select>
 
-                                    <select name="order_status" class="form-select form-select-sm">
+                                    <select name="order_status" class="form-select form-select-sm mb-1 order-status-select">
                                         @foreach (\App\Enums\OrderStatusEnum::asSelectArray() as $key => $label)
                                             <option value="{{ $key }}"
                                                 {{ $order->order_status->value === $key ? 'selected' : '' }}>
@@ -128,6 +136,12 @@
                                             </option>
                                         @endforeach
                                     </select>
+
+                                    <input type="text" name="tracking_number"
+                                        class="form-control form-control-sm tracking-number-input mb-1"
+                                        placeholder="Tracking Number"
+                                        style="display: {{ $order->order_status->value === 'shipped' ? 'block' : 'none' }};"
+                                        value="{{ $order->tracking_number }}">
 
                                     <button type="submit" class="btn btn-sm btn-success">
                                         <i class="fas fa-save"></i>
@@ -148,6 +162,23 @@
     </div>
 
     <script>
+        document.querySelectorAll('.order-form').forEach(form => {
+            const statusSelect = form.querySelector('.order-status-select');
+            const trackingInput = form.querySelector('.tracking-number-input');
+
+            const toggleTrackingInput = () => {
+                if (statusSelect.value === 'shipped') {
+                    trackingInput.style.display = 'block';
+                } else {
+                    trackingInput.style.display = 'none';
+                    trackingInput.value = '';
+                }
+            };
+
+            statusSelect.addEventListener('change', toggleTrackingInput);
+            toggleTrackingInput();
+        });
+
         setTimeout(() => {
             const alert = document.getElementById('success-alert');
             if (alert) {

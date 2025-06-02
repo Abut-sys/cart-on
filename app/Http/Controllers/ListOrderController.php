@@ -34,7 +34,7 @@ class ListOrderController extends Controller
                 }
             ])
             ->orderByDesc('order_date')
-            ->paginate(10)
+            ->paginate(5)
             ->appends($request->query());
 
         return view('orders_history', compact('orders'));

@@ -142,6 +142,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::resource('orders', OrderController::class);
     Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::patch('/orders/{order}/tracking', [OrderController::class, 'updateTracking'])->name('orders.updateTracking');
 
     Route::resource('costumers', CostumersController::class);
     Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');
