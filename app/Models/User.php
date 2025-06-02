@@ -11,13 +11,16 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'phone_number', 'email_verified_at', 'password', 'image_url', 'role', 'google_id'];
+    protected $fillable = ['name', 'email', 'phone_number', 'email_verified_at', 'password', 'image_url', 'role', 'google_id', 'last_online_at'];
 
     protected $hidden = ['password', 'remember_token'];
+
+    protected $dates = ['last_online_at'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'last_online_at' => 'datetime',
     ];
 
     public function isEmailVerified()

@@ -67,6 +67,10 @@
         </div>
     </div>
 
+    @yield('dongol')
+
+    {{-- Include Chat --}}
+
     @yield('chat')
 
     {{-- Include Sidebar --}}

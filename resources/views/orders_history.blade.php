@@ -2,7 +2,7 @@
 
 @section('title', 'Transaction History')
 
-@section('content')
+@section('dongol')
     <div class="th-bg-container">
         <div class="payment-sidebar">
             @include('components.profile-sidebar')

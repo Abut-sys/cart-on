@@ -87,7 +87,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/cart/selected', [CartController::class, 'checkoutSelected'])->name('cart.selected');
     Route::delete('cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
-    Route::post('cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
+Route::post('cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
 
     Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
@@ -128,6 +128,7 @@ Route::middleware(['guest'])->group(function () {
 // Route admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard/filter', [DashboardController::class, 'filterData']);
 
     Route::get('/admin/profile/edit', [ProfileController::class, 'edit'])->name('admin.profile.edit');
 

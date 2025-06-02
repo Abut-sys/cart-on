@@ -2,7 +2,7 @@
 
 @section('title', 'Edit Profile')
 
-@section('content')
+@section('dongol')
     <div class="profile-edit-container">
         <div class="payment-sidebar">
             @include('components.profile-sidebar')
