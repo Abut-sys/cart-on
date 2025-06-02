@@ -46,4 +46,16 @@ class Order extends Model
     {
         return $this->checkouts->first()->user ?? null;
     }
+
+    public function getTrackingUrlAttribute()
+    {
+        $trackingNumber = $this->tracking_number;
+
+        return match (strtolower($this->courier)) {
+            'jne'  => 'https://jne.co.id/tracking-package?awb=' . $trackingNumber,
+            'tiki' => 'https://www.tiki.id/id/track?cn=' . $trackingNumber,
+            'pos'  => 'https://www.posindonesia.co.id/id/tracking?barcode=' . $trackingNumber,
+            default => null,
+        };
+    }
 }

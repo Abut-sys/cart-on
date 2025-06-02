@@ -30,6 +30,36 @@
                     @forelse ($orders as $order)
                         <div class="th-transaction-card" data-order-status="{{ $order->order_status }}"
                             data-payment-status="{{ $order->payment_status }}">
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="tracking-resi-wrapper d-flex align-items-center gap-2">
+                                    @if ($order->tracking_url)
+                                        <a href="{{ $order->tracking_url }}" target="_blank"
+                                            class="btn btn-sm btn-outline-primary btn-track" style="display: none;">
+                                            <i class="fas fa-truck"></i> Lacak Pesanan
+                                        </a>
+                                    @endif
+
+                                    @if ($order->tracking_number)
+                                        <span class="tracking-number text-muted resi-info"
+                                            style="font-size: 0.9rem; display: none;">
+                                            Resi: {{ $order->tracking_number }}
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="th-status-badges d-flex align-items-center gap-2">
+                                    <span class="th-status-badge badge-payment-{{ $order->payment_status }}">
+                                        <i class="fas fa-credit-card mr-1"></i>
+                                        {{ strtoupper($order->payment_status) }}
+                                    </span>
+                                    <span class="th-status-badge badge-order-{{ $order->order_status }}">
+                                        <i class="fas fa-truck mr-1"></i>
+                                        {{ strtoupper($order->order_status) }}
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="th-transaction-header">
                                 <div class="th-meta-group">
                                     <h3 class="th-transaction-id">
@@ -42,16 +72,6 @@
                                 </div>
 
                                 <div class="th-status-group">
-                                    <div class="th-status-badges">
-                                        <span class="th-status-badge badge-payment-{{ $order->payment_status }}">
-                                            <i class="fas fa-credit-card mr-1"></i>
-                                            {{ strtoupper($order->payment_status) }}
-                                        </span>
-                                        <span class="th-status-badge badge-order-{{ $order->order_status }}">
-                                            <i class="fas fa-truck mr-1"></i>
-                                            {{ strtoupper($order->order_status) }}
-                                        </span>
-                                    </div>
                                     <p class="th-total-amount">
                                         Total: Rp {{ number_format($order->amount, 0, ',', '.') }}
                                     </p>
@@ -161,15 +181,37 @@
             const filterButtons = document.querySelectorAll('.th-filter-btn');
             const transactionCards = document.querySelectorAll('.th-transaction-card');
 
+            function updateTrackingVisibility() {
+                transactionCards.forEach(card => {
+                    const orderStatus = card.dataset.orderStatus;
+
+                    const btnTrack = card.querySelector('.btn-track');
+                    const resiInfo = card.querySelector('.resi-info');
+
+                    if (btnTrack) btnTrack.style.display = 'none';
+                    if (resiInfo) resiInfo.style.display = 'none';
+
+                    if (orderStatus === 'shipped' && btnTrack) {
+                        btnTrack.style.display = 'inline-block';
+                    }
+
+                    if ((orderStatus === 'shipped' || orderStatus === 'delivered') && resiInfo) {
+                        resiInfo.style.display = 'inline-block';
+                    }
+                });
+            }
+
+            transactionCards.forEach(card => card.style.display = 'block');
+
+            updateTrackingVisibility();
+
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const status = this.dataset.status;
 
-                    // Update active class
                     filterButtons.forEach(btn => btn.classList.remove('filter-active'));
                     this.classList.add('filter-active');
 
-                    // Filter logic
                     transactionCards.forEach(card => {
                         const orderStatus = card.dataset.orderStatus;
 
@@ -179,6 +221,8 @@
                             card.style.display = orderStatus === status ? 'block' : 'none';
                         }
                     });
+
+                    updateTrackingVisibility();
                 });
             });
         });
