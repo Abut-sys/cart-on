@@ -120,9 +120,6 @@
                             <div class="stat-icon voucher-icon">
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
-                            <div class="stat-action">
-                                <i class="fas fa-arrow-right"></i>
-                            </div>
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Vouchers</h3>
@@ -139,7 +136,7 @@
                                 <div class="recent-vouchers">
                                     <h6 class="section-subtitle">
                                         <i class="fas fa-clock"></i>
-                                        Recent Vouchers
+                                        Recent
                                     </h6>
                                     <div class="voucher-list">
                                         @foreach ($recentVouchers->take(2) as $voucher)
@@ -150,9 +147,6 @@
                                                         {{ $voucher->type === 'percentage' ? $voucher->amount . '%' : 'IDR ' . number_format($voucher->amount, 0, ',', '.') }}
                                                     </span>
                                                 </div>
-                                                <span class="voucher-status-badge {{ $voucher->status }}">
-                                                    {{ ucfirst($voucher->status) }}
-                                                </span>
                                             </div>
                                         @endforeach
                                     </div>
@@ -270,6 +264,11 @@
         </div>
 
         <style>
+            /* ================================
+                MODERN DASHBOARD CSS
+                Complete styling including voucher card
+                ================================ */
+
             .modern-dashboard {
                 padding: 2rem 0;
                 background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -285,7 +284,9 @@
                 width: 100%;
             }
 
-            /* Welcome Section */
+            /* ================================
+                WELCOME SECTION
+                ================================ */
             .welcome-section {
                 margin-bottom: 2.5rem;
                 text-align: center;
@@ -305,7 +306,9 @@
                 margin-bottom: 0;
             }
 
-            /* Stats Grid */
+            /* ================================
+                STATS GRID LAYOUT
+                ================================ */
             .stats-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -313,6 +316,9 @@
                 margin-bottom: 2.5rem;
             }
 
+            /* ================================
+                BASE STAT CARD STYLES
+                ================================ */
             .stat-card {
                 background: #ffffff;
                 border-radius: 20px;
@@ -339,7 +345,9 @@
                 box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             }
 
-            /* Enhanced Sales Card */
+            /* ================================
+                ENHANCED SALES CARD
+                ================================ */
             .enhanced-sales {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
@@ -480,6 +488,9 @@
                 color: #f87171;
             }
 
+            /* ================================
+                STAT CARD COMPONENTS
+                ================================ */
             .stat-card-header {
                 display: flex;
                 justify-content: space-between;
@@ -602,8 +613,71 @@
                 font-weight: 500;
             }
 
-            /* Product-specific styles */
-            .top-products {
+            /* ================================
+                VOUCHER CARD SPECIFIC STYLES
+                ================================ */
+            .vouchers-card::before {
+                background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            }
+
+            .voucher-icon {
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            }
+
+            .voucher-status {
+                margin-bottom: 1.5rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+            }
+
+            .status-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                background: rgba(245, 158, 11, 0.1);
+                border-radius: 12px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #92400e;
+            }
+
+            .status-indicator {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #16a34a;
+                animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+
+            .status-indicator.active {
+                background: #16a34a;
+            }
+
+            .status-indicator.inactive {
+                background: #ef4444;
+                animation: none;
+            }
+
+            .status-indicator.expired {
+                background: #6b7280;
+                animation: none;
+            }
+
+            @keyframes pulse {
+
+                0%,
+                100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: 0.5;
+                }
+            }
+
+            .recent-vouchers {
                 margin-top: 1.5rem;
             }
 
@@ -612,6 +686,125 @@
                 color: #6b7280;
                 margin-bottom: 1rem;
                 font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .section-subtitle i {
+                font-size: 0.8rem;
+                color: #9ca3af;
+            }
+
+            .voucher-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .voucher-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+                background: rgba(245, 158, 11, 0.05);
+                border-radius: 12px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(245, 158, 11, 0.1);
+            }
+
+            .voucher-item:hover {
+                background: rgba(245, 158, 11, 0.1);
+                transform: translateX(4px);
+                border-color: rgba(245, 158, 11, 0.2);
+            }
+
+            .voucher-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+
+            .voucher-code {
+                font-size: 0.9rem;
+                color: #374151;
+                font-weight: 600;
+                font-family: 'Courier New', monospace;
+                background: rgba(245, 158, 11, 0.1);
+                padding: 0.2rem 0.5rem;
+                border-radius: 6px;
+                display: inline-block;
+            }
+
+            .voucher-discount {
+                font-size: 0.8rem;
+                color: #d97706;
+                font-weight: 700;
+            }
+
+            .voucher-status-badge {
+                padding: 0.4rem 0.8rem;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .voucher-status-badge.active {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            }
+
+            .voucher-status-badge.inactive {
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                color: white;
+                box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+            }
+
+            .voucher-status-badge.expired {
+                background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+                color: white;
+                box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+            }
+
+            /* Enhanced hover effects for voucher card */
+            .vouchers-card:hover .voucher-icon {
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+            }
+
+            .vouchers-card:hover .status-indicator.active {
+                animation-duration: 1s;
+            }
+
+            /* Additional voucher metrics */
+            .voucher-metrics {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #f3f4f6;
+            }
+
+            .voucher-metrics .metric-value {
+                font-size: 1.2rem;
+                color: #d97706;
+            }
+
+            .voucher-metrics .metric-label {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            /* ================================
+                PRODUCT SPECIFIC STYLES
+                ================================ */
+            .top-products {
+                margin-top: 1.5rem;
             }
 
             .product-list {
@@ -649,7 +842,9 @@
                 font-weight: 600;
             }
 
-            /* Analytics Section */
+            /* ================================
+                ANALYTICS SECTION
+                ================================ */
             .analytics-section {
                 display: grid;
                 grid-template-columns: 2fr 1fr;
@@ -728,7 +923,9 @@
                 opacity: 0.5;
             }
 
-            /* Customers Card */
+            /* ================================
+                CUSTOMERS CARD
+                ================================ */
             .customers-header {
                 display: flex;
                 justify-content: space-between;
@@ -758,18 +955,6 @@
                 background: #16a34a;
                 border-radius: 50%;
                 animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-            }
-
-            @keyframes pulse {
-
-                0%,
-                100% {
-                    opacity: 1;
-                }
-
-                50% {
-                    opacity: 0.5;
-                }
             }
 
             .customer-list {
@@ -848,6 +1033,9 @@
                 font-weight: 500;
             }
 
+            /* ================================
+                UTILITY CLASSES
+                ================================ */
             .card-link {
                 text-decoration: none;
                 color: inherit;
@@ -856,15 +1044,60 @@
             .empty-state {
                 margin-top: 1rem;
                 text-align: center;
+                padding: 1.5rem;
+                background: rgba(243, 244, 246, 0.5);
+                border-radius: 12px;
+                border: 2px dashed #d1d5db;
             }
 
             .empty-text {
                 font-size: 0.9rem;
                 color: #9ca3af;
                 font-style: italic;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
             }
 
-            /* Responsive Design */
+            .empty-text::before {
+                content: '🎫';
+                font-style: normal;
+                opacity: 0.5;
+            }
+
+            /* Loading state */
+            .voucher-loading {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+                color: #9ca3af;
+            }
+
+            .loading-spinner {
+                width: 24px;
+                height: 24px;
+                border: 2px solid #f3f4f6;
+                border-top: 2px solid #d97706;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-right: 0.5rem;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* ================================
+                RESPONSIVE DESIGN
+                ================================ */
             @media (max-width: 1024px) {
                 .analytics-section {
                     grid-template-columns: 1fr;
@@ -908,6 +1141,50 @@
                 .metric-icon {
                     width: 35px;
                     height: 35px;
+                }
+
+                /* Voucher card mobile adjustments */
+                .voucher-item {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.8rem;
+                }
+
+                .voucher-status-badge {
+                    align-self: flex-end;
+                }
+
+                .voucher-status {
+                    justify-content: center;
+                }
+
+                .voucher-metrics {
+                    grid-template-columns: 1fr;
+                    gap: 0.5rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .stat-card {
+                    padding: 1.2rem;
+                }
+
+                .stat-number {
+                    font-size: 2rem;
+                }
+
+                .voucher-code {
+                    font-size: 0.8rem;
+                    padding: 0.1rem 0.4rem;
+                }
+
+                .voucher-discount {
+                    font-size: 0.75rem;
+                }
+
+                .voucher-status-badge {
+                    padding: 0.3rem 0.6rem;
+                    font-size: 0.7rem;
                 }
             }
         </style>

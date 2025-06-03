@@ -31,6 +31,7 @@ class DashboardController extends Controller
             ->get();
         $totalBrands = Brand::count();
         $activeVouchers = Voucher::where('status', 'active')->count();
+        $recentVouchers = Voucher::orderBy('created_at', 'desc')->limit(5)->get();
 
         // Get available years for filter
         $availableYears = Order::selectRaw('YEAR(created_at) as year')
@@ -81,6 +82,7 @@ class DashboardController extends Controller
             'topProducts',
             'totalBrands',
             'activeVouchers',
+            'recentVouchers',
             'weekdayOrders',
             'recentCustomers',
             'availableYears',
