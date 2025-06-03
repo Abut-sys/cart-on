@@ -49,14 +49,14 @@
     0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
-.card-header {
+.pey-card-header {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
   background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
   position: relative;
 }
 
-.card-header::after {
+.pey-card-header::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -656,7 +656,7 @@
 }
 
 @media (max-width: 768px) {
-  .card-header {
+  .pey-card-header {
     padding: 1.5rem;
   }
 

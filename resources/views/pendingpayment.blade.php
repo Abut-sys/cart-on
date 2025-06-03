@@ -8,7 +8,7 @@
 
         <div class="payment-main">
             <div class="payment-card">
-                <div class="card-header">
+                <div class="pey-card-header">
                     <div class="header-content">
                         <div class="title-wrapper">
                             <i class="fas fa-clock nav-icon pulse"></i>

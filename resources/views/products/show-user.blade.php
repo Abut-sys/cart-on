@@ -58,8 +58,8 @@
                     <strong>Quantity</strong>
                     <div class="input-group ms-3" style="width: 120px;">
                         <button class="btn btn-outline-secondary product-user-show-btn-decrease" type="button">-</button>
-                        <input type="number" class="form-control text-center product-user-show-quantity-input"
-                            value="1" min="1">
+                        <input type="number" class="form-control text-center product-user-show-quantity-input" value="1"
+                            min="1">
                         <button class="btn btn-outline-secondary product-user-show-btn-increase" type="button">+</button>
                     </div>
                     <span class="ms-3 product-user-show-stock-display">Select Color And Size</span>
@@ -68,7 +68,8 @@
                 <div class="product-user-show-description">
                     <strong>Description</strong>
                     <p id="product-user-show-description-text" class="product-user-show-description-text">
-                        {{ $product->description }}</p>
+                        {{ $product->description }}
+                    </p>
                     <button id="product-user-show-btn-see-more" class="product-user-show-btn-see-more"
                         onclick="toggleDescription()">See
                         More</button>
@@ -97,7 +98,7 @@
         </div>
         @if (auth()->check())
             <i class="fas fa-heart product-user-show-toggle-wishlist-btn
-        {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                        {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                 data-product-id="{{ $product->id }}">
             </i>
         @endif
@@ -108,6 +109,8 @@
             width: 500px;
             height: 500px;
             object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
         }
 
         .product-user-show-additional-images img {
@@ -115,58 +118,50 @@
             height: 70px;
             object-fit: cover;
             cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            transition: border-color 0.2s ease;
+        }
+
+        .product-user-show-additional-images img:hover {
+            border-color: #4CAF50;
         }
 
         .product-user-show-title {
             font-size: 1.8rem;
-            font-weight: bold;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
         }
 
         .product-user-show-price {
             font-size: 1.5rem;
-            color: #28a745;
-            font-weight: bold;
+            color: #2E7D32;
+            font-weight: 600;
             margin-bottom: 2rem;
         }
 
         .product-user-show-color-option,
         .product-user-show-size-option {
             margin-top: 10px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            background: #f9f9f9;
+            transition: all 0.2s ease;
         }
 
-        .product-user-show-color-option:hover {
-            background-color: aqua;
-            border-color: #38ab38;
-            color: #ffc107;
-        }
-
-        .product-user-show-color-option:active {
-            background-color: aqua !important;
-            border-color: #38ab38 !important;
-            color: #ffc107 !important;
-        }
-
+        .product-user-show-color-option:hover,
         .product-user-show-size-option:hover {
-            background-color: aqua;
-            border-color: #38ab38;
-            color: #ffc107;
-        }
-
-        .product-user-show-size-option:active {
-            background-color: #38ab38 !important;
-            color: white !important;
-            border-color: aquamarine !important;
-        }
-
-        .product-user-show-action-buttons {
-            display: flex;
-            align-items: center;
+            background: #f0f0f0;
+            border-color: #bdbdbd;
         }
 
         .product-user-show-description {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #555;
             margin-top: 1.5rem;
+            line-height: 1.6;
         }
 
         .product-user-show-description-text {
@@ -177,77 +172,89 @@
             transition: max-height 0.3s ease-out;
         }
 
-        .product-user-show-description {
-            font-size: 1.2rem;
-            color: #555;
-            margin-top: 1.5rem;
-        }
-
         .product-user-show-btn-see-more {
             background: none;
             border: none;
-            color: #007bff;
+            color: #1976D2;
             padding: 0;
-            font-size: 16px;
+            font-size: 1rem;
             cursor: pointer;
-            text-decoration: none;
+            font-weight: 500;
         }
 
         .product-user-show-btn-see-more:hover {
             text-decoration: underline;
         }
 
+        .product-user-show-action-buttons {
+            display: flex;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
         .product-user-show-btn-add-to-cart {
-            background-color: #ffc107;
+            background-color: #2E7D32;
             border: none;
             color: #fff;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            margin-right: 10px
         }
 
-        .product-user-show-btn-add-to-cart,
         .product-user-show-btn-buy-now {
-            margin-right: 10px;
-        }
-
-        .product-user-show-btn-buy-now {
-            margin-left: 0;
+            background-color: #424242;
+            border: none;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
         }
 
         .product-user-show-btn-add-to-cart:hover {
-            background-color: #e0a800;
+            background-color: #1B5E20;
         }
 
-        .product-user-show-toggle-cart-btn {
-            position: absolute;
-            top: 20px;
-            right: 60px;
-            z-index: 10;
-            font-size: 26px;
-            background: transparent;
+        .product-user-show-btn-buy-now:hover {
+            background-color: #212121;
         }
 
-        .product-user-show-toggle-cart-btn i.text-danger {
-            color: #9cdc35;
-        }
-
-        .product-user-show-toggle-cart-btn i.text-secondary {
-            color: #6c757d;
-        }
-
+        .product-user-show-toggle-cart-btn,
         .product-user-show-toggle-wishlist-btn {
             position: absolute;
             top: 20px;
-            right: 20px;
-            z-index: 10;
             font-size: 26px;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.9);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+        }
+
+        .product-user-show-toggle-cart-btn {
+            right: 60px;
+        }
+
+        .product-user-show-toggle-wishlist-btn {
+            right: 20px;
+        }
+
+        .product-user-show-toggle-cart-btn:hover,
+        .product-user-show-toggle-wishlist-btn:hover {
+            opacity: 0.9;
+        }
+
+        .product-user-show-toggle-cart-btn i.text-danger {
+            color: #2E7D32;
         }
 
         .product-user-show-toggle-wishlist-btn i.text-danger {
-            color: #dc3545;
-        }
-
-        .product-user-show-toggle-wishlist-btn i.text-secondary {
-            color: #6c757d;
+            color: #C62828;
         }
 
         input[type="number"]::-webkit-outer-spin-button,
@@ -258,7 +265,7 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             let selectedColor = null;
             let selectedSize = null;
             const subVariant = @json($product->subVariant ?? []);
@@ -276,13 +283,13 @@
             }
 
             document.querySelectorAll('.product-user-show-additional-image').forEach(thumbnail => {
-                thumbnail.addEventListener('click', function() {
+                thumbnail.addEventListener('click', function () {
                     const imageUrl = this.getAttribute('data-full-image');
                     updateMainImage(imageUrl);
                 });
             });
 
-            $('.product-user-show-toggle-wishlist-btn ').on('click', function(event) {
+            $('.product-user-show-toggle-wishlist-btn ').on('click', function (event) {
                 event.preventDefault();
 
                 var productId = $(this).data('product-id');
@@ -295,7 +302,7 @@
                         product_id: productId,
                         _token: '{{ csrf_token() }}',
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status === 'added') {
                             $this.removeClass('text-secondary').addClass(
                                 'text-danger');
@@ -307,7 +314,7 @@
                         $('#for-badge-count-wishlist').text(response
                             .wishlistCount);
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         alert('Terjadi kesalahan saat memperbarui wishlist.');
                         console.error("AJAX error: " + status + ": " + error);
                     }
@@ -315,7 +322,7 @@
             });
 
             document.querySelectorAll('.product-user-show-color-option').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     if (selectedColor === this.dataset.color) {
                         selectedColor = null;
                         this.classList.remove('active');
@@ -332,7 +339,7 @@
             });
 
             document.querySelectorAll('.product-user-show-size-option').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     if (selectedSize === this.dataset.size) {
                         selectedSize = null;
                         this.classList.remove('active');
@@ -394,13 +401,13 @@
 
             function updateHiddenFields() {
                 document.querySelectorAll('.color-input-hidden').forEach(input => input.value = selectedColor ||
-                '');
+                    '');
                 document.querySelectorAll('.size-input-hidden').forEach(input => input.value = selectedSize || '');
                 document.querySelectorAll('.quantity-input-hidden').forEach(input => input.value = quantityInput
                     .value);
             }
 
-            btnIncrease.addEventListener('click', function() {
+            btnIncrease.addEventListener('click', function () {
                 let currentQuantity = parseInt(quantityInput.value);
                 if (currentQuantity < quantityInput.max) {
                     quantityInput.value = currentQuantity + 1;
@@ -408,7 +415,7 @@
                 }
             });
 
-            btnDecrease.addEventListener('click', function() {
+            btnDecrease.addEventListener('click', function () {
                 let currentQuantity = parseInt(quantityInput.value);
                 if (currentQuantity > 1) {
                     quantityInput.value = currentQuantity - 1;
@@ -433,7 +440,7 @@
             }
         }
 
-        $('#product-user-show-btn-see-more').on('click', function() {
+        $('#product-user-show-btn-see-more').on('click', function () {
             toggleDescription();
         });
     </script>
