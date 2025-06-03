@@ -30,6 +30,17 @@ class DashboardController extends Controller
             ->limit(3)
             ->get();
         $totalBrands = Brand::count();
+        $topBrands = Brand::select('brands.id', 'brands.name')
+            ->selectRaw('SUM(checkouts.quantity) as total_sold, SUM(checkouts.amount) as total_income')
+            ->join('products', 'products.brand_id', '=', 'brands.id')
+            ->join('checkouts', 'checkouts.product_id', '=', 'products.id')
+            ->join('order_checkouts', 'order_checkouts.checkout_id', '=', 'checkouts.id')
+            ->join('orders', 'orders.id', '=', 'order_checkouts.order_id')
+            ->where('orders.payment_status', 'completed')
+            ->groupBy('brands.id', 'brands.name')
+            ->orderByDesc('total_sold')
+            ->limit(3)
+            ->get();
         $activeVouchers = Voucher::where('status', 'active')->count();
         $recentVouchers = Voucher::orderBy('created_at', 'desc')->limit(5)->get();
 
@@ -81,6 +92,7 @@ class DashboardController extends Controller
             'totalProducts',
             'topProducts',
             'totalBrands',
+            'topBrands',
             'activeVouchers',
             'recentVouchers',
             'weekdayOrders',

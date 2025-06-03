@@ -144,7 +144,9 @@
                                                 <div class="voucher-info">
                                                     <span class="voucher-code">{{ $voucher->code }}</span>
                                                     <span class="voucher-discount">
-                                                        {{ $voucher->type === 'percentage' ? $voucher->amount . '%' : 'IDR ' . number_format($voucher->amount, 0, ',', '.') }}
+                                                        {{ $voucher->type === 'percentage'
+                                                            ? $voucher->discount_value . '%'
+                                                            : 'IDR ' . number_format($voucher->discount_value, 0, ',', '.') }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -161,23 +163,6 @@
                 </div>
             </div>
 
-            {{-- <!-- Brands Card -->
-            <div class="stat-card brands-card" data-aos="fade-up" data-aos-delay="300">
-                <a href="{{ route('brands.index') }}" class="card-link">
-                    <div class="stat-card-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="stat-action">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="stat-title">Brands</h3>
-                        <div class="stat-number">{{ $totalBrands ?? '0' }}</div>
-                    </div>
-                </a>
-            </div> --}}
             <!-- Analytics Section -->
             <div class="analytics-section">
                 <!-- Chart Card -->
@@ -260,6 +245,48 @@
                         @endif
                     </div>
                 </div>
+            </div>
+
+             <!-- Brands Card -->
+            <div class="stat-card brands-card" data-aos="fade-up" data-aos-delay="300">
+                <a href="{{ route('brands.index') }}" class="card-link">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-action">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-title">Brands</h3>
+                        <div class="stat-number">{{ $totalBrands ?? '0' }}</div>
+
+                        @if ($topBrands->isNotEmpty() && $topBrands->sum('total_sold') > 0)
+                            <div class="top-brands">
+                                <h6 class="section-subtitle">
+                                    <i class="fas fa-crown"></i>
+                                    Top Brands
+                                </h6>
+                                <div class="brand-list">
+                                    @foreach ($topBrands as $brand)
+                                        <div class="brand-item">
+                                            <span class="brand-name">{{ Str::limit($brand->name, 20) }}</span>
+                                            <div class="brand-badge text-end">
+                                                <small>{{ $brand->total_sold }} sold</small><br>
+                                                <small>IDR {{ number_format($brand->total_income, 0, ',', '.') }}</small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <div class="empty-state">
+                                <span class="empty-text">No brand data</span>
+                            </div>
+                        @endif
+                    </div>
+                </a>
             </div>
         </div>
 
