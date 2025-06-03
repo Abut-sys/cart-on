@@ -1,6 +1,6 @@
 @extends('layouts.index')
 
-@section('content')
+@section('dongol')
     <div class="payment-container">
         <div class="payment-sidebar">
             @include('components.profile-sidebar')
