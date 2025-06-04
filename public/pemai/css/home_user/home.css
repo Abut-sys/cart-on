@@ -92,7 +92,7 @@
 }
 
 .home-user-banner::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
@@ -117,14 +117,14 @@
     background: #ffffff;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid #e5e7eb;
 }
 
 .home-user-ad:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 .home-user-ad:active {
@@ -178,14 +178,14 @@
     margin: 0 auto;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap; /* agar responsif di layar kecil */
+    flex-wrap: wrap;
     padding: 20px 0;
 }
 
 .home-user-category {
     text-align: center;
-    flex: 1;
-    max-width: 210px;
+    flex: 1 1 calc(20% - 16px);
+    max-width: calc(20% - 16px);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -204,6 +204,19 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+@media (max-width: 1024px) {
+    .home-user-category {
+        flex: 1 1 45%;
+        max-width: 45%;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-user-category {
+        flex: 1 1 90%;
+        max-width: 90%;
+    }
+}
 
 .home-product-newest-header {
     display: flex;
@@ -235,7 +248,7 @@
     margin-right: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 .home-product-newest-card:hover {
@@ -370,14 +383,5 @@
 
     .home-user-ad img {
         height: 80px;
-    }
-
-    .home-user-categories-container {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .home-user-category img {
-        height: 150px;
     }
 }
