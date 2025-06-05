@@ -346,6 +346,9 @@ class CheckoutController extends Controller
                 $midtransItems
             );
 
+            $order->snap_token = $snapToken;
+            $order->save();
+
             return response()->json([
                 'success' => true,
                 'snapToken' => $snapToken,

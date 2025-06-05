@@ -19,17 +19,26 @@
                     </div>
                     <div class="header-actions">
                         <div class="filter-group">
+                            @php
+                                $pendingCount = $orders
+                                    ->where('payment_status', \App\Enums\PaymentStatusEnum::Pending)
+                                    ->count();
+                                $failedCount = $orders
+                                    ->where('payment_status', \App\Enums\PaymentStatusEnum::Failed)
+                                    ->count();
+                            @endphp
+
                             <button class="filter-btn active" data-filter="all">
                                 <span>All</span>
                                 <span class="filter-count">{{ $orders->total() }}</span>
                             </button>
                             <button class="filter-btn" data-filter="pending">
                                 <span>Pending</span>
-                                <span class="filter-count">{{ $orders->where('payment_status', 'pending')->count() }}</span>
+                                <span class="filter-count">{{ $pendingCount }}</span>
                             </button>
                             <button class="filter-btn" data-filter="failed">
                                 <span>Failed</span>
-                                <span class="filter-count">{{ $orders->where('payment_status', 'failed')->count() }}</span>
+                                <span class="filter-count">{{ $failedCount }}</span>
                             </button>
                         </div>
                         <div class="search-box">
@@ -67,7 +76,8 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($orders as $order)
-                                        <tr class="order-row" data-status="{{ $order->payment_status }}"
+                                        <tr class="order-row" data-order-id="{{ $order->id }}"
+                                            data-status="{{ strtolower($order->payment_status) }}"
                                             data-id="{{ $order->unique_order_id }}">
                                             <td>
                                                 <div class="order-cell">
@@ -101,13 +111,17 @@
                                             <td>
                                                 <div class="order-cell">
                                                     <div class="status-wrapper">
-                                                        <span class="status-badge status-{{ $order->payment_status }}">
+                                                        {{-- Status Badge --}}
+                                                        <span id="order-status-{{ $order->id }}"
+                                                            class="status-badge status-{{ strtolower($order->payment_status) }}">
                                                             <span class="status-dot"></span>
                                                             {{ ucfirst($order->payment_status) }}
                                                         </span>
-                                                        @if ($order->payment_status == 'pending')
-                                                            <div class="countdown-timer"
-                                                                data-expires="{{ $order->order_date->addHours(24)->format('Y-m-d H:i:s') }}">
+
+                                                        {{-- Countdown Timer --}}
+                                                        @if ($order->payment_status == \App\Enums\PaymentStatusEnum::Pending)
+                                                            <div class="countdown-timer" id="countdown-{{ $order->id }}"
+                                                                data-expires="{{ \Carbon\Carbon::parse($order->order_date)->addHours(24)->format('Y-m-d H:i:s') }}">
                                                                 <i class="fas fa-hourglass-half"></i>
                                                                 <span class="timer-text"></span>
                                                             </div>
@@ -118,19 +132,18 @@
                                             <td>
                                                 <div class="order-cell">
                                                     <div class="action-buttons">
-                                                        @if ($order->payment_status == 'pending')
-                                                            <form method="POST"
-                                                                action="{{ route('orders.triggerPayment', $order->id) }}"
-                                                                style="display:inline-block;">
-                                                                @csrf
-                                                                <button type="button" class="beten btn-pay btn-sm"
-                                                                    title="Pay">
-                                                                    <i class="fas fa-credit-card"></i>
-                                                                </button>
-                                                            </form>
+                                                        @if ($order->payment_status == \App\Enums\PaymentStatusEnum::Pending)
+                                                            {{-- Tombol Pay Now --}}
+                                                            <button class="beten btn-pay btn-sm"
+                                                                data-id="{{ $order->id }}"
+                                                                data-url="{{ route('orders.triggerPayment', ['order' => $order->id]) }}">
+                                                                <i class="fas fa-credit-card"></i>
+                                                            </button>
 
+                                                            {{-- Tombol Cancel --}}
                                                             <form method="POST"
                                                                 action="{{ route('orders.cancel', $order->id) }}"
+                                                                class="cancel-form"
                                                                 style="display:inline-block; margin-left: 5px;">
                                                                 @csrf
                                                                 @method('DELETE')
@@ -139,16 +152,11 @@
                                                                     <i class="fas fa-times"></i>
                                                                 </button>
                                                             </form>
-                                                        @elseif ($order->payment_status == 'failed')
-                                                            <form method="POST"
-                                                                action="{{ route('orders.triggerPayment', $order->id) }}"
-                                                                style="display:inline-block;">
-                                                                @csrf
-                                                                <button type="submit" class="beten btn-retry btn-sm"
-                                                                    title="Retry Payment">
-                                                                    <i class="fas fa-sync-alt"></i> Retry
-                                                                </button>
-                                                            </form>
+                                                        @elseif ($order->payment_status == \App\Enums\PaymentStatusEnum::Failed)
+                                                            <a href="{{ route('products-all.index') }}"
+                                                                class="beten btn-retry btn-sm" title="Retry Payment">
+                                                                <i class="fas fa-sync-alt"></i> Shopping
+                                                            </a>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -215,10 +223,8 @@
         </div>
     </div>
 
-    @if (isset($snapToken))
-        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
-        </script>
-    @endif
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -228,10 +234,12 @@
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
 
-                    const form = this.closest('form');
-                    const url = form.action;
+                    const orderId = this.dataset.id;
+                    const payUrl = this.dataset.url;
 
-                    fetch(url, {
+                    if (!orderId || !payUrl) return alert('Order ID or URL not found');
+
+                    fetch(payUrl, {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -272,7 +280,7 @@
                                                     "{{ route('orders.history') }}";
                                             })
                                             .catch(() => alert(
-                                                'Gagal update status pembayaran.'
+                                                'Failed to update payment status.'
                                             ));
                                     },
                                     onPending: function() {
@@ -280,32 +288,38 @@
                                             "{{ route('orders.pending') }}";
                                     },
                                     onError: function() {
-                                        alert('Terjadi kesalahan pembayaran.');
+                                        alert('Payment error occurred.');
                                     },
                                     onClose: function() {
                                         "{{ route('orders.pending') }}";
                                     }
                                 });
+                            } else if (data.message) {
+                                alert(data.message);
                             } else if (data.error) {
                                 alert(data.error);
                             } else {
-                                alert('Gagal mendapatkan token pembayaran.');
+                                alert('Failed to get payment token.');
                             }
                         })
                         .catch(error => {
                             console.error(error);
-                            alert('Terjadi kesalahan jaringan.');
+                            alert('Network error occurred.');
                         });
                 });
             });
-        });
-    </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.cancel-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (!confirm('Are you sure you want to cancel this order?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+
             document.querySelectorAll('.order-row').forEach(row => {
                 row.addEventListener('click', function(e) {
-                    if (e.target.closest('.action-buttons') || e.target.closest('.btn')) return;
+                    if (e.target.closest('.action-buttons') || e.target.closest('button')) return;
 
                     const detailsRow = this.nextElementSibling;
                     if (detailsRow && detailsRow.classList.contains('order-details-row')) {
@@ -315,7 +329,6 @@
                 });
             });
 
-            // Filter orders
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const filter = this.dataset.filter;
@@ -333,7 +346,6 @@
                 });
             });
 
-            // Search orders by Order ID
             const searchInput = document.getElementById('orderSearch');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
@@ -343,16 +355,16 @@
                 });
             });
 
-            // Countdown timers
-            function updateCountdowns() {
-                document.querySelectorAll('.countdown-timer').forEach(timer => {
-                    const expires = new Date(timer.dataset.expires).getTime();
+            document.querySelectorAll('.countdown-timer').forEach(function(timer) {
+                const expires = new Date(timer.dataset.expires).getTime();
+                const textSpan = timer.querySelector('.timer-text');
+
+                function updateCountdown() {
                     const now = new Date().getTime();
                     const distance = expires - now;
 
-                    if (distance < 0) {
-                        timer.innerHTML =
-                            '<i class="fas fa-exclamation-circle"></i> <span class="timer-text">Failed</span>';
+                    if (distance <= 0) {
+                        textSpan.innerText = 'Expired';
                         return;
                     }
 
@@ -360,12 +372,63 @@
                     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                    timer.querySelector('.timer-text').textContent =
-                        `${hours}h ${minutes}m ${seconds}s left`;
-                });
-            }
-            updateCountdowns();
-            setInterval(updateCountdowns, 1000);
+                    textSpan.innerText = `${hours}j ${minutes}m ${seconds}s`;
+                }
+
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                function updateOrderStatus(orderId, uniqueId) {
+                    fetch(`/orders/${orderId}/check-status`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.payment_status === 'completed') {
+                                const row = document.querySelector(
+                                    `.order-row[data-order-id="${orderId}"]`);
+                                const statusBadge = row.querySelector(`#order-status-${orderId}`);
+                                const actionButtons = row.querySelector('.action-buttons');
+
+                                // Ubah status badge
+                                statusBadge.textContent = 'Completed';
+                                statusBadge.className = 'status-badge status-completed';
+
+                                // Hapus tombol aksi
+                                actionButtons.innerHTML = `<span class="badge bg-success">Paid</span>`;
+                            }
+                        })
+                        .catch(err => {
+                            console.warn(`Error checking order ${orderId}:`, err);
+                        });
+                }
+
+                function startPolling() {
+                    document.querySelectorAll('.order-row').forEach(row => {
+                        const orderId = row.dataset.orderId;
+                        const status = row.dataset.status;
+                        const uniqueId = row.dataset.id;
+
+                        if (status === 'pending') {
+                            setInterval(() => {
+                                updateOrderStatus(orderId, uniqueId);
+                            }, 3000); // 3 detik
+                        }
+                    });
+                }
+
+                startPolling();
+            });
         });
     </script>
 @endsection

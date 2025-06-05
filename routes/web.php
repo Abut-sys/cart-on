@@ -77,6 +77,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/orders/pending', [WaitingPaymentController::class, 'pending'])->name('orders.pending');
     Route::delete('/orders/{order}/cancel', [WaitingPaymentController::class, 'cancel'])->name('orders.cancel');
     Route::post('/order/{order}/pay', [WaitingPaymentController::class, 'triggerPayment'])->name('orders.triggerPayment');
+    Route::post('/orders/{order}/check-status', [WaitingPaymentController::class, 'checkAndSyncStatus'])->name('orders.checkStatus');
 
     Route::get('/claim-voucher', [VoucherController::class, 'claim'])->name('voucher.claim');
     Route::get('/your-vouchers', [VoucherController::class, 'claimedVouchers'])->name('your-vouchers');
@@ -87,7 +88,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/cart/selected', [CartController::class, 'checkoutSelected'])->name('cart.selected');
     Route::delete('cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
-Route::post('cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
+    Route::post('cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
 
     Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');

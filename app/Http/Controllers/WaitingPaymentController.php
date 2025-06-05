@@ -16,25 +16,43 @@ use Illuminate\Support\Facades\Notification;
 
 class WaitingPaymentController extends Controller
 {
+    protected $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
+
     public function pending()
     {
         $user = Auth::user();
 
-        Order::whereHas('checkouts', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->where('payment_status', PaymentStatusEnum::Pending)
-            ->where('order_date', '<', now()->subHours(24))
-            ->update([
-                'payment_status' => PaymentStatusEnum::Failed,
-                'order_status' => OrderStatusEnum::Canceled,
-            ]);
+        $expiredOrders = Order::whereHas('checkouts', fn($q) => $q->where('user_id', $user->id))
+            ->where('payment_status', PaymentStatusEnum::Pending)
+            ->get();
 
-        $orders = Order::whereHas('checkouts', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-            ->whereIn('payment_status', ['pending', 'failed'])
-            ->with(['checkouts' => fn($q) => $q->with(['product.images'])])
-            ->orderBy('order_date', 'desc')
+        foreach ($expiredOrders as $order) {
+
+            $statusData = $this->paymentService->getTransactionStatus($order->unique_order_id);
+            $midtransStatus = strtolower($statusData->transaction_status ?? '');
+
+            if (in_array($midtransStatus, ['settlement', 'capture', 'success'])) {
+                $order->update([
+                    'payment_status' => PaymentStatusEnum::Completed,
+                    'order_status' => OrderStatusEnum::Pending,
+                ]);
+            } elseif ($midtransStatus === 'expire') {
+                $order->update([
+                    'payment_status' => PaymentStatusEnum::Failed,
+                    'order_status' => OrderStatusEnum::Canceled,
+                ]);
+            }
+        }
+
+        $orders = Order::whereHas('checkouts', fn($q) => $q->where('user_id', $user->id))
+            ->whereIn('payment_status', [PaymentStatusEnum::Pending, PaymentStatusEnum::Failed])
+            ->with(['checkouts.product.images'])
+            ->orderByDesc('order_date')
             ->paginate(10);
 
         return view('pendingpayment', compact('orders'));
@@ -49,21 +67,25 @@ class WaitingPaymentController extends Controller
         }
 
         DB::transaction(function () use ($order, $user) {
+            $midtransStatus = strtolower($this->paymentService->getTransactionStatus($order->unique_order_id)->transaction_status ?? '');
+
+            if ($midtransStatus !== 'cancel') {
+                $this->paymentService->cancelTransaction($order->unique_order_id);
+            }
+
             $order->update([
-                'payment_status' =>  PaymentStatusEnum::Failed,
+                'payment_status' => PaymentStatusEnum::Failed,
                 'order_status' => OrderStatusEnum::Canceled,
             ]);
 
             $user->notify(new OrderCanceledNotification($order, $user));
-
-            $admins = User::where('role', 'admin')->get();
-            Notification::send($admins, new OrderCanceledNotification($order, $user));
+            Notification::send(User::where('role', 'admin')->get(), new OrderCanceledNotification($order, $user));
         });
 
         return redirect()->route('orders.pending')->with('success', 'Order has been cancelled successfully.');
     }
 
-    public function triggerPayment(Order $order, PaymentService $paymentService)
+    public function triggerPayment(Order $order)
     {
         $user = auth()->user();
 
@@ -71,28 +93,55 @@ class WaitingPaymentController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        try {
-            $items = [[
-                'id' => $order->id,
-                'price' => (int) $order->amount,
-                'quantity' => 1,
-                'name' => 'Pembayaran Order #' . $order->unique_order_id,
-            ]];
+        $status = strtolower($this->paymentService->getTransactionStatus($order->unique_order_id)->transaction_status ?? '');
 
-            $snapToken = $paymentService->generateSnapTokenForOrder(
-                $order->unique_order_id,
-                (int) $order->amount,
-                $user,
-                $items
-            );
+        if (in_array($status, ['settlement', 'capture', 'success'])) {
+            if ($order->payment_status !== PaymentStatusEnum::Completed) {
+                $order->update([
+                    'payment_status' => PaymentStatusEnum::Completed,
+                    'order_status' => OrderStatusEnum::Pending,
+                ]);
+            }
 
-            return response()->json(['snap_token' => $snapToken]);
-        } catch (\Throwable $e) {
-            Log::error('Midtrans trigger error', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+            return response()->json([
+                'status' => 'paid',
+                'message' => 'Order sudah dibayar.',
             ]);
-            return response()->json(['error' => 'Gagal memproses pembayaran.'], 500);
         }
+
+        $stillValid = $order->snap_token && $order->order_date && now()->diffInHours($order->order_date) < 24;
+
+        if ($stillValid && $status === 'pending') {
+            return response()->json([
+                'status' => 'unpaid',
+                'snap_token' => $order->snap_token,
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Snap token tidak valid atau pembayaran sudah tidak bisa diproses.',
+        ], 400);
+    }
+
+    public function checkAndSyncStatus(Order $order)
+    {
+        $midtransStatus = strtolower($this->paymentService->getTransactionStatus($order->unique_order_id)->transaction_status ?? '');
+
+        match ($midtransStatus) {
+            'settlement', 'capture', 'success' => $order->update([
+                'payment_status' => PaymentStatusEnum::Completed,
+                'order_status' => OrderStatusEnum::Pending,
+            ]),
+            'expire' => $order->update([
+                'payment_status' => PaymentStatusEnum::Failed,
+                'order_status' => OrderStatusEnum::Canceled,
+            ]),
+            default => null,
+        };
+
+        return response()->json([
+            'payment_status' => $order->payment_status->value,
+        ]);
     }
 }

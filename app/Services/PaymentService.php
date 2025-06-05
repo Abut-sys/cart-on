@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Midtrans\Config;
+use Midtrans\Transaction;
 
 class PaymentService
 {
@@ -47,6 +48,11 @@ class PaymentService
             'transaction_details' => $transactionDetails,
             'customer_details' => $customerDetails,
             'item_details' => $midtransItems,
+            'expiry' => [
+                'start_time' => now()->format('Y-m-d H:i:s O'),
+                'unit' => 'hours',
+                'duration' => 24,
+            ],
         ];
 
         try {
@@ -56,6 +62,26 @@ class PaymentService
         } catch (Exception $e) {
             Log::error("Gagal membuat Snap Token Midtrans untuk Order ID {$orderId}: " . $e->getMessage());
             throw new Exception("Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi nanti.");
+        }
+    }
+
+    public function getTransactionStatus(string $orderId)
+    {
+        try {
+            return Transaction::status($orderId);
+        } catch (Exception $e) {
+            Log::error("Error fetching Midtrans transaction status for order {$orderId}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function cancelTransaction(string $orderId)
+    {
+        try {
+            return Transaction::cancel($orderId);
+        } catch (Exception $e) {
+            Log::error("Error cancelling Midtrans transaction for order {$orderId}: " . $e->getMessage());
+            return null;
         }
     }
 }
