@@ -57,6 +57,12 @@
                 <span class="ps-nav-text">Voucher</span>
             </a>
 
+            <a href="{{ route('allNotifications') }}"
+                class="ps-nav-item {{ request()->routeIs('allNotifications') ? 'is-active' : '' }}">
+                <i class="fas fa-bell ps-nav-icon"></i>
+                <span class="ps-nav-text">Notification</span>
+            </a>
+
             <form method="POST" action="{{ route('logout') }}" class="ps-nav-item logout">
                 @csrf
                 <button type="submit" class="ps-nav-button">

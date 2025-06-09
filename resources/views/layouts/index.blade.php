@@ -108,6 +108,9 @@
     @vite('resources/js/bootstrap.js')
     {{-- notif --}}
     <script>
+        const userRole = "{{ auth()->check() ? auth()->user()->role : '' }}";
+    </script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const icon = document.getElementById('notificationIcon');
             const dropdown = document.getElementById('notificationDropdown');
@@ -171,6 +174,29 @@
 
                     dropdown.appendChild(div);
                 });
+
+                // See All
+                const footerDiv = document.createElement('div');
+                footerDiv.classList.add('notification-footer');
+                if (userRole === 'user') {
+                    footerDiv.innerHTML = `
+                        <a href="{{ route('allNotifications') }}" class="see-all-link">See All</a>
+                        <button id="markAllAsReadBtn" class="mark-all-text">Mark As Read</button>
+                    `;
+                } else if (userRole === 'admin') {
+                    footerDiv.innerHTML = `
+                        <button id="markAllAsReadBtn" class="mark-all-text">Mark As Read</button>
+                    `;
+                }
+                dropdown.appendChild(footerDiv);
+
+                // markAsRead
+                setTimeout(() => {
+                    document.getElementById('markAllAsReadBtn')?.addEventListener('click', async () => {
+                        await markAsRead('all');
+                        fetchNotifications();
+                    });
+                }, 0);
             }
 
             async function markAsRead(notificationIds) {

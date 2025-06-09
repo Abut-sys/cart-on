@@ -270,6 +270,40 @@
     font-size: 14px;
 }
 
+.notification-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-top: 1px solid #ddd;
+    background: #f8f8f8;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
+.see-all-link {
+    color: #007bff;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.mark-all-text {
+    font-size: 14px;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.see-all-link:hover,
+.mark-all-text:hover {
+    color: #0056b3;
+}
+
 #wishlistCount {
     position: absolute;
     top: -10px;

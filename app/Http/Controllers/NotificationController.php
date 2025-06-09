@@ -25,19 +25,30 @@ class NotificationController extends Controller
         $user = auth()->user();
         $notificationIds = $request->input('notification_ids', []);
 
-        if (!empty($notificationIds)) {
+        if ($notificationIds === 'all') {
+            $user->unreadNotifications()->update(['read_at' => now()]);
+        } elseif (!empty($notificationIds)) {
             $user->unreadNotifications()->whereIn('id', $notificationIds)->update(['read_at' => now()]);
         }
 
         return response()->json(['status' => 'success']);
     }
 
-    public function showAllNotifications()
+    public function showAllNotifications(Request $request)
     {
         $user = auth()->user();
+        $status = $request->query('status', 'all');
 
-        $notifications = $user->notifications()->orderBy('created_at', 'desc')->get();
+        $query = $user->notifications()->orderBy('created_at', 'desc');
 
-        return view('notifications.show', compact('notifications'));
+        if ($status === 'read') {
+            $query->whereNotNull('read_at');
+        } elseif ($status === 'unread') {
+            $query->whereNull('read_at');
+        }
+
+        $notifications = $query->paginate(10)->withQueryString();
+
+        return view('notifications.index', compact('notifications', 'status'));
     }
 }
