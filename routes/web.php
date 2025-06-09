@@ -92,6 +92,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     Route::get('checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('checkout/process', [CheckoutController::class, 'processPayment'])->name('checkout.process');
+    Route::post('/order/notify-created', [CheckoutController::class, 'notifyOrderCreated'])->name('order.notifyCreated');
+    Route::post('/cancel-order', [CheckoutController::class, 'cancelOrder'])->name('checkout.cancel');
     Route::post('voucher/check', [CheckoutController::class, 'checkVoucher'])->name('voucher.check');
     Route::post('voucher/updateUsage', [CheckoutController::class, 'updateVoucherUsage'])->name('voucher.updateUsage');
     Route::post('/get-shipping-cost', [CheckoutController::class, 'getShippingCost'])->name('get-shipping-cost');

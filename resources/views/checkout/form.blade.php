@@ -439,16 +439,63 @@
                                     );
                                 }
                             },
-                            onPending: function(result) {
-                                window.location.href =
-                                    '{{ route('home.index') }}';
+                            onPending: async function(result) {
+                                try {
+                                    const notifyResponse = await fetch(
+                                        '/order/notify-created', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': document.querySelector(
+                                                        'meta[name="csrf-token"]')
+                                                    .getAttribute('content'),
+                                            },
+                                            body: JSON.stringify({
+                                                order_id: result.order_id
+                                            }),
+                                        });
+
+                                    if (!notifyResponse.ok) {
+                                        const errorData = await notifyResponse.json();
+                                        console.error(
+                                            'Gagal kirim notifikasi order created:',
+                                            errorData.message || notifyResponse
+                                            .statusText);
+                                    }
+                                } catch (error) {
+                                    console.error('Error notify order created:', error);
+                                }
+
+                                window.location.href = '{{ route('orders.pending') }}';
                             },
                             onError: function(result) {
                                 console.error(result);
                                 alert('Pembayaran Gagal: ' + result.status_message);
                             },
-                            onClose: function() {
-                                window.location.href = '{{ route('orders.pending') }}';
+                            onClose: async function() {
+                                try {
+                                    await fetch('/cancel-order', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector(
+                                                    'meta[name="csrf-token"]')
+                                                .getAttribute('content'),
+                                        },
+                                        body: JSON.stringify({
+                                            checkout_ids: data
+                                                .checkoutIds 
+                                        }),
+                                    });
+                                } catch (error) {
+                                    console.error('Gagal menghapus order sementara:',
+                                        error);
+                                }
+
+                                alert(
+                                    'Kamu menutup pembayaran sebelum memilih metode. Order dibatalkan.'
+                                );
+                                window.location.href = '{{ route('home.index') }}';
                             }
                         });
                     } else {

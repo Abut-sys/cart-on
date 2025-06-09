@@ -305,7 +305,7 @@ class CheckoutController extends Controller
             // --- Midtrans ---
             $midtransItems = [];
             foreach ($checkoutRecords as $item) {
-                 $unitPrice = $item->product->price;
+                $unitPrice = $item->product->price;
                 $midtransItems[] = [
                     'id' => $item->product_id,
                     'price' => (int) $unitPrice,
@@ -353,6 +353,7 @@ class CheckoutController extends Controller
                 'success' => true,
                 'snapToken' => $snapToken,
                 'orderId' => $order->unique_order_id,
+                'checkoutIds' => collect($checkoutRecords)->pluck('id'),
                 'message' => 'Transaksi berhasil dibuat.',
             ]);
         } catch (Exception $e) {
@@ -440,10 +441,27 @@ class CheckoutController extends Controller
             ]);
         }
 
-        $user->notify(new OrderPlacedNotification($order, collect($checkoutItems)));
-        Notification::send(User::where('role', 'admin')->get(), new AdminOrderNotification($order, collect($checkoutItems), $user));
-
         return $order;
+    }
+
+    public function notifyOrderCreated(Request $request)
+    {
+        $order = Order::with('checkouts.user')->where('unique_order_id', $request->order_id)->first();
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        if ($order->user) {
+            $order->user->notify(new OrderPlacedNotification($order, $order->checkouts));
+        }
+
+        Notification::send(
+            User::where('role', 'admin')->get(),
+            new AdminOrderNotification($order, $order->checkouts, $order->user)
+        );
+
+        return response()->json(['message' => 'Notification sent']);
     }
 
     public function updateVoucherUsage(User $user, Voucher $voucher)
@@ -543,6 +561,64 @@ class CheckoutController extends Controller
             }
         } else {
             return response()->json(['error' => 'Gagal mendapatkan biaya pengiriman dari API: ' . $costResponse->body()], $costResponse->status());
+        }
+    }
+
+    public function cancelOrder(Request $request)
+    {
+        $request->validate([
+            'checkout_ids' => 'required|array',
+            'checkout_ids.*' => 'integer|exists:checkouts,id',
+        ]);
+
+        $checkoutIds = $request->input('checkout_ids');
+        $user = auth()->user();
+
+        $orderIds = DB::table('order_checkouts')
+            ->whereIn('checkout_id', $checkoutIds)
+            ->pluck('order_id')
+            ->unique();
+
+        $orders = Order::with('checkouts')->whereIn('id', $orderIds)->get();
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($orders as $order) {
+                foreach ($order->checkouts as $checkout) {
+                    $variant = SubVariant::where('product_id', $checkout->product_id)
+                        ->first();
+
+                    if ($variant) {
+                        $variant->increment('stock', $checkout->quantity);
+                    }
+
+                    $product = Product::find($checkout->product_id);
+                    if ($product) {
+                        $product->decrement('sales', $checkout->quantity);
+                    }
+
+                    if ($checkout->voucher_code) {
+                        $voucher = Voucher::where('code', $checkout->voucher_code)->first();
+                        if ($voucher) {
+                            UserVoucher::where('user_id', $user->id)
+                                ->where('voucher_id', $voucher->id)
+                                ->delete();
+
+                            $voucher->increment('usage_limit');
+                        }
+                    }
+                }
+            }
+
+            Order::whereIn('id', $orderIds)->delete();
+            Checkout::whereIn('id', $checkoutIds)->delete();
+
+            DB::commit();
+            return response()->json(['message' => 'Order dibatalkan dan data berhasil di-rollback.'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Gagal membatalkan order: ' . $e->getMessage()], 500);
         }
     }
 }
