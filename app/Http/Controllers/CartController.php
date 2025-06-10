@@ -118,53 +118,63 @@ class CartController extends Controller
     public function increase($id)
     {
         $cart = Cart::findOrFail($id);
+        $stock = $cart->size || $cart->color
+            ? SubVariant::where('product_id', $cart->product_id)
+            ->where('size', $cart->size)
+            ->where('color', $cart->color)
+            ->first()?->stock ?? 0
+            : $cart->product->stock;
 
-        if ($cart->size || $cart->color) {
-            $variant = SubVariant::where('product_id', $cart->product_id)
-                ->where('size', $cart->size)
-                ->where('color', $cart->color)
-                ->first();
-
-            if (!$variant) {
-                return redirect()->back()->with('error', 'Variant not found.');
-            }
-
-            if ($variant->stock > $cart->quantity) {
-                $cart->quantity += 1;
-                $cart->save();
-            } else {
-                return redirect()->back()->with('error', 'Stock not sufficient.');
-            }
-        } else {
-            $product = $cart->product;
-            if ($product->stock > $cart->quantity) {
-                $cart->quantity += 1;
-                $cart->save();
-            } else {
-                return redirect()->back()->with('error', 'Stock not sufficient.');
-            }
+        if ($cart->quantity < $stock) {
+            $cart->quantity += 1;
+            $cart->save();
         }
 
-        return redirect()->back();
+        return response()->json([
+            'success' => true,
+            'quantity' => $cart->quantity,
+            'stock' => $stock,
+            'total' => $cart->product->price * $cart->quantity,
+        ]);
     }
 
     public function decrease($id)
     {
         $cart = Cart::findOrFail($id);
 
+        $stock = $cart->size || $cart->color
+            ? SubVariant::where('product_id', $cart->product_id)
+            ->where('size', $cart->size)
+            ->where('color', $cart->color)
+            ->first()?->stock ?? 0
+            : $cart->product->stock;
+
         if ($cart->quantity > 1) {
             $cart->quantity -= 1;
             $cart->save();
+
+            return response()->json([
+                'success' => true,
+                'quantity' => $cart->quantity,
+                'stock' => $stock,
+                'total' => $cart->product->price * $cart->quantity,
+            ]);
         } else {
             $cart->delete();
+            return response()->json([
+                'success' => true,
+                'deleted' => true,
+            ]);
         }
-
-        return redirect()->back();
     }
 
     public function remove($id)
     {
         Cart::findOrFail($id)->delete();
-        return back();
+
+        return response()->json([
+            'success' => true,
+            'deleted' => true,
+        ]);
     }
 }

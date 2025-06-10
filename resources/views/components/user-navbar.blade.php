@@ -32,22 +32,20 @@
         <div class="link-section">
             <a href="{{ route('cart.index') }}">
                 <i class="fas fa-shopping-cart link-icon {{ request()->is('cart') ? 'active' : '' }}"></i>
-                <span id="for-badge-count-cart" class="badge {{ Auth::check() ? '' : 'bg-danger' }}"
-                    style="{{ Auth::check() ? '' : 'display:none;' }}">
-                    {{ Auth::check() ? Auth::user()->carts->count() : '' }}
+                <span id="for-badge-count-cart" class="badge" style="{{ Auth::check() ? '' : 'display:none;' }}">
+                    {{ Auth::check() ? Auth::user()->carts->count() : '0' }}
                 </span>
             </a>
         </div>
 
 
         <div class="link-section">
-            <a href="{{ route('wishlist.index') }}" class="{{ request()->is('wishlist') ? 'active' : '' }}">
-                <i class="fas fa-heart link-icon"></i>
+            <a href="{{ route('wishlist.index') }}">
+                <i class="fas fa-heart link-icon {{ request()->is('wishlist') ? 'active' : '' }}"></i>
                 <span id="for-badge-count-wishlist" class="badge" style="{{ Auth::check() ? '' : 'display:none;' }}">
-                    {{ Auth::check() ? Auth::user()->wishlists->count() : '' }}
+                    {{ Auth::check() ? Auth::user()->wishlists->count() : '0' }}
                 </span>
             </a>
-        </div>
         </div>
     @endif
 

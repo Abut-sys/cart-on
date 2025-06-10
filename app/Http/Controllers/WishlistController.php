@@ -22,17 +22,19 @@ class WishlistController extends Controller
                     $query->orderBy('created_at', 'desc');
                     break;
                 case 'bestselling':
-                    $query->orderBy('sales', 'desc');
+                    $query->join('products', 'wishlists.product_id', '=', 'products.id')
+                        ->orderBy('products.sales', 'desc')
+                        ->select('wishlists.*');
                     break;
                 case 'lowest_price':
-                    $query->with(['product' => function ($query) {
-                        $query->orderBy('price', 'asc');
-                    }]);
+                    $query->join('products', 'wishlists.product_id', '=', 'products.id')
+                        ->orderBy('products.price', 'asc')
+                        ->select('wishlists.*');
                     break;
                 case 'highest_price':
-                    $query->with(['product' => function ($query) {
-                        $query->orderBy('price', 'desc');
-                    }]);
+                    $query->join('products', 'wishlists.product_id', '=', 'products.id')
+                        ->orderBy('products.price', 'desc')
+                        ->select('wishlists.*');
                     break;
             }
         }

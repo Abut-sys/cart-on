@@ -32,8 +32,9 @@
                         $stock = $variant ? $variant->stock : $cart->product->stock;
                     @endphp
 
-                    <div
-                        class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between">
+                    <div class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between"
+                        data-id="{{ $cart->id }}">
+                        {{-- detail product --}}
                         <div class="cart-product-info d-flex align-items-center">
                             <img src="{{ asset('storage/' . ($cart->product->images->first()->image_path ?? 'default-image.jpg')) }}"
                                 alt="{{ $cart->product->name }}" class="img-thumbnail cart-product-image" />
@@ -51,6 +52,7 @@
                                     Total: Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}
                                 </p>
 
+                                {{-- checkbox --}}
                                 <div class="form-check">
                                     <input class="form-check-input cart-checkbox" type="checkbox"
                                         value="{{ $cart->id }}" id="cartItem{{ $cart->id }}"
@@ -61,29 +63,22 @@
                             </div>
                         </div>
 
+                        {{-- remove --}}
                         <div class="cart-actions d-flex align-items-center">
-                            <form action="{{ route('cart.remove', $cart->id) }}" method="POST" class="me-2">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-remove"
+                                data-id="{{ $cart->id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
 
+                            {{-- quantity --}}
                             <div class="input-group input-group-sm cart-quantity-controls" style="width: 120px;">
-                                <form action="{{ route('cart.decrease', $cart->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
-                                </form>
-
+                                <button type="button" class="btn btn-outline-secondary btn-sm btn-decrease"
+                                    data-id="{{ $cart->id }}">-</button>
                                 <input type="text" class="form-control text-center cart-quantity"
                                     value="{{ $cart->quantity }}" readonly data-stock="{{ $stock }}">
-
-                                <form action="{{ route('cart.increase', $cart->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm increase-btn"
-                                        {{ $cart->quantity >= $stock ? 'disabled' : '' }}>+</button>
-                                </form>
+                                <button type="button" class="btn btn-outline-secondary btn-sm increase-btn btn-increase"
+                                    data-id="{{ $cart->id }}"
+                                    {{ $cart->quantity >= $stock ? 'disabled' : '' }}>+</button>
                             </div>
                         </div>
                     </div>
@@ -94,6 +89,10 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            function formatRupiah(value) {
+                return 'Rp' + value.toLocaleString('id-ID');
+            }
+
             function updateTotalPrice() {
                 let totalPrice = 0;
                 let selectedProducts = [];
@@ -107,14 +106,12 @@
                     }
                 });
 
-                document.getElementById('cart-total-price').textContent = 'Rp' + totalPrice.toLocaleString();
-
-                // Update the href attribute of the checkout link with the selected products
+                document.getElementById('cart-total-price').textContent = formatRupiah(totalPrice);
+                // checkout
                 let checkoutLink = document.getElementById('checkout-button');
                 checkoutLink.href = "{{ route('checkout.show', ['id' => 0, 'selected-products' => '']) }}" +
                     selectedProducts.join(',');
-
-                document.getElementById('checkout-button').disabled = selectedProducts.length === 0;
+                checkoutLink.disabled = selectedProducts.length === 0;
             }
 
             function updateIncreaseButtons() {
@@ -123,21 +120,120 @@
                     let quantity = parseInt(input.value);
                     let increaseBtn = input.closest('.cart-quantity-controls').querySelector(
                         '.increase-btn');
-
-                    if (quantity >= stock) {
-                        increaseBtn.disabled = true;
-                    } else {
-                        increaseBtn.disabled = false;
-                    }
+                    increaseBtn.disabled = quantity >= stock;
                 });
+            }
+
+            function updateCartUI(id, quantity, total, stock) {
+                const card = document.querySelector(`.cart-card[data-id="${id}"]`);
+                if (!card) return;
+
+                const input = card.querySelector('.cart-quantity');
+                const totalEl = card.querySelector('.cart-product-total');
+                const increaseBtn = card.querySelector('.increase-btn');
+                const checkbox = card.querySelector('.cart-checkbox');
+
+                if (input && totalEl && increaseBtn && checkbox) {
+                    input.value = quantity;
+                    checkbox.setAttribute('data-quantity', quantity);
+                    totalEl.textContent = `Total: ${formatRupiah(total)}`;
+                    increaseBtn.disabled = quantity >= parseInt(stock);
+                }
+
+                updateTotalPrice();
+            }
+
+            function updateCartBadgeCount(count = null) {
+                const badge = document.getElementById('for-badge-count-cart');
+
+                if (!badge) return;
+
+                if (count === null) {
+                    count = document.querySelectorAll('.cart-card').length;
+                }
+
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            }
+
+            function removeCartItem(id) {
+                const card = document.querySelector(`[data-id="${id}"]`)?.closest('.cart-card');
+                if (card) card.remove();
+                updateTotalPrice();
+                updateCartBadgeCount();
             }
 
             document.querySelectorAll('.cart-checkbox').forEach(function(checkbox) {
                 checkbox.addEventListener('change', updateTotalPrice);
             });
 
+            // Increase
+            document.querySelectorAll('.btn-increase').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    fetch(`/cart/increase/${id}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                updateCartUI(id, data.quantity, data.total, data.stock);
+                            }
+                        });
+                });
+            });
+
+            // Decrease
+            document.querySelectorAll('.btn-decrease').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    fetch(`/cart/decrease/${id}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                if (data.deleted) {
+                                    removeCartItem(id);
+                                } else {
+                                    updateCartUI(id, data.quantity, data.total, data.stock);
+                                }
+                            }
+                        });
+                });
+            });
+
+            // Remove
+            document.querySelectorAll('.btn-remove').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    fetch(`/cart/delete/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                removeCartItem(id);
+                            }
+                        });
+                });
+            });
+
             updateTotalPrice();
             updateIncreaseButtons();
+            updateCartBadgeCount();
         });
     </script>
 @endsection
