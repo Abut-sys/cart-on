@@ -22,8 +22,7 @@ class ProductController extends Controller
 
         // Filter pencarian berdasarkan ID atau nama produk
         if ($search) {
-            $query->where('id', 'like', "%{$search}%")
-                ->orWhere('name', 'like', "%{$search}%");
+            $query->where('id', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%");
         }
 
         // Filter pengurutan berdasarkan ID
@@ -66,10 +65,19 @@ class ProductController extends Controller
             'variants.*.stock' => 'required|integer|min:0',
         ]);
 
+        $markupPercentage = $request->markup;
+        $markupAmount = ($request->price * $markupPercentage) / 100;
+        $oldPrice = $request->price + $markupAmount;
+
+        $ppnAmount = ($oldPrice * 11) / 100;
+        $finalPrice = $oldPrice + $ppnAmount;
+
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price,
+            'markup' => $markupPercentage,
+            'old_price' => $oldPrice,
+            'price' => $finalPrice,
             'sub_category_product_id' => $request->sub_category_product_id,
             'brand_id' => $request->brand_id,
         ]);
@@ -92,7 +100,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with(['subCategory', 'brand', 'subVariant', 'images'])->findOrFail($id);
+        $product = Product::with(['subCategory', 'brand', 'subVariant', 'images', 'markupPercentage', 'ppnAmount'])->findOrFail($id);
 
         return view('products.show', compact('product'));
     }
@@ -123,10 +131,19 @@ class ProductController extends Controller
             'variants.*.stock' => 'required|integer|min:0',
         ]);
 
+        $markupPercentage = $request->markup;
+        $markupAmount = ($request->price * $markupPercentage) / 100;
+        $oldPrice = $request->price + $markupAmount;
+
+        $ppnAmount = ($oldPrice * 11) / 100;
+        $finalPrice = $oldPrice + $ppnAmount;
+
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price,
+            'markup' => $markupPercentage,
+            'old_price' => $oldPrice,
+            'price' => $finalPrice,
             'sub_category_product_id' => $request->sub_category_product_id,
             'brand_id' => $request->brand_id,
         ]);
@@ -148,7 +165,6 @@ class ProductController extends Controller
                 $image->delete();
             }
         }
-        
 
         return redirect()->route('products.index')->with('msg', 'Product updated successfully.');
     }

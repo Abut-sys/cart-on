@@ -15,7 +15,8 @@
             </a>
         </div>
         <div class="nav-dropdown-item category-container">
-            <a href="#" class="category-link {{ request()->is('categories/*') ? 'active' : '' }}" onclick="toggleCategoryDropdown(event)">
+            <a href="#" class="category-link {{ request()->is('categories/*') ? 'active' : '' }}"
+                onclick="toggleCategoryDropdown(event)">
                 <i class="fas fa-shapes icon"></i> Category
                 <!-- Ikon dropdown, misalnya panah ke bawah -->
                 <i class="fas fa-chevron-down dropdown-icon"></i>
@@ -40,6 +41,12 @@
             </a>
         </div>
         <div class="nav-item">
+            <a href="{{ route('report.orders') }}" class="{{ request()->is('report/orders') ? 'active' : '' }}">
+                <i class="fas fa-file-alt icon"></i> Report Management
+            </a>
+        </div>
+
+        <div class="nav-item">
             <a href="{{ route('costumers.index') }}" class="{{ request()->is('customers') ? 'active' : '' }}">
                 <i class="fas fa-users icon"></i> Account
             </a>
@@ -51,7 +58,7 @@
         </div>
         <div class="logout-container">
             <a href="{{ route('logout') }}" class="logout-link"
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fas fa-sign-out-alt"></i> Log Out
             </a>
         </div>
@@ -59,7 +66,6 @@
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
-
     @endif
 </div>
 

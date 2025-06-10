@@ -28,7 +28,8 @@
                     <!-- Product Image -->
                     <div class="product-create-form-group mb-4">
                         <label for="images" class="product-create-label">Images</label>
-                        <input type="file" name="images[]" id="images" class="product-create-input-file" accept="image/*" multiple required>
+                        <input type="file" name="images[]" id="images" class="product-create-input-file"
+                            accept="image/*" multiple required>
                         @error('images.*')
                             <div class="product-create-alert-danger">{{ $message }}</div>
                         @enderror
@@ -43,6 +44,27 @@
                             <div class="product-create-alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <!-- Markup -->
+                    <div class="product-create-form-group mb-4">
+                        <label for="markup" class="product-create-label">Markup (%)</label>
+                        <input type="number" name="markup" id="markup" class="product-create-input"
+                            value="{{ old('markup') }}" required placeholder="Contoh: 10">
+                        @error('markup')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- PPN -->
+                    <div class="product-create-form-group mb-4">
+                        <label for="ppn" class="product-create-label">PPN (%)</label>
+                        <input type="number" name="ppn" id="ppn" class="product-create-input"
+                            value="{{ old('ppn') }}" required placeholder="Contoh: 11">
+                        @error('ppn')
+                            <div class="product-create-alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
 
                     <!-- Product Description -->
                     <div class="product-create-form-group mb-4">
