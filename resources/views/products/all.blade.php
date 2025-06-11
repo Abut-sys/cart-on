@@ -106,20 +106,32 @@
                             <div class="col">
                                 <a href="{{ route('products-all.show', $product->id) }}"
                                     class="card product-user-view-card">
+
+                                    @if (auth()->check())
+                                        <i class="fas fa-heart product-user-view-toggle-wishlist-btn 
+                        {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                                            data-product-id="{{ $product->id }}"></i>
+                                    @endif
+
                                     <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
                                         alt="{{ $product->name }}" class="product-user-view-card-img-top">
+
                                     <div class="product-user-view-card-body text-center">
                                         <h6 class="product-user-view-card-title">{{ $product->name }}</h6>
-                                        <p class="product-user-view-card-price">
+                                        <div class="product-user-view-card-price">
                                             Rp{{ number_format($product->price, 0, ',', '.') }}
-                                        </p>
-                                        <p class="product-user-view-card-sales">
-                                            Sold | {{ $product->sales }}
-                                        </p>
-                                        @if (auth()->check())
-                                            <i class="fas fa-heart product-user-view-toggle-wishlist-btn {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
-                                                data-product-id="{{ $product->id }}"></i>
-                                        @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="product-user-view-card-footer d-flex justify-content-between px-3 pb-2">
+                                        <div class="rating text-warning d-flex align-items-center gap-1"
+                                            style="font-size: 14px;">
+                                            <i class="fas fa-star"></i>
+                                            <span class="text-dark">{{ number_format($product->rating ?? 4.5, 1) }}</span>
+                                        </div>
+                                        <div class="product-user-view-card-sales text-muted" style="font-size: 13px;">
+                                            {{ $product->sales }}+ Sold
+                                        </div>
                                     </div>
                                 </a>
                             </div>
@@ -274,21 +286,21 @@
 
 <style>
     .product-user-view-card {
+        position: relative;
         height: 100%;
         border: 1px solid #ddd;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         text-decoration: none;
         color: inherit;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .product-user-view-card:hover {
-        text-decoration: none;
-        color: inherit;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .product-user-view-card:active {
@@ -302,39 +314,46 @@
     }
 
     .product-user-view-card-img-top {
-        height: 150px;
-        object-fit: cover;
+        height: 170px;
         width: 100%;
+        object-fit: cover;
     }
 
     .product-user-view-card-body {
-        padding: 15px;
+        flex-grow: 1;
+        padding: 10px 15px 0 15px;
     }
 
     .product-user-view-card-title {
-        font-size: 12px;
+        font-size: 13px;
         font-weight: bold;
-        margin-bottom: 5px;
+        color: black;
+        margin-bottom: 6px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        text-align: left;
     }
 
     .product-user-view-card-price {
-        font-size: 14px;
+        font-size: 15px;
         font-weight: bold;
-        color: #99bc85;
+        color: #76a984;
+        text-align: center;
         margin-bottom: 8px;
-        text-align: left;
     }
 
     .product-user-view-card-sales {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: bold;
         color: gray;
-        margin-bottom: 1px;
-        text-align: justify;
+        text-align: right;
+    }
+
+    .product-user-view-card-footer {
+        margin-top: auto;
+        padding-top: 4px;
+        padding-bottom: 8px;
+        font-size: 13px;
     }
 
     .product-user-view-filter-section h5 {
@@ -425,9 +444,9 @@
 
     .product-user-view-toggle-wishlist-btn {
         position: absolute;
-        bottom: 6px;
-        right: 6px;
-        z-index: 10;
-        font-size: 20px;
+        top: 8px;
+        right: 10px;
+        font-size: 18px;
+        z-index: 9999;
     }
 </style>

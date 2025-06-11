@@ -49,19 +49,27 @@
         <div class="home-product-newest-container d-flex flex-wrap justify-content-start">
             @forelse ($products->take(5) as $product)
                 <a href="{{ Auth::check() ? route('products-all.show', $product->id) : route('login') }}"
-                    class="home-product-newest-card">
+                    class="home-product-newest-card text-decoration-none text-dark">
+
+                    @if (auth()->check())
+                        <i class="fas fa-heart home-product-newest-wishlist-icon 
+                    {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                            data-product-id="{{ $product->id }}"></i>
+                    @endif
+
                     <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}"
                         class="home-product-newest-img-top">
                     <div class="home-product-newest-body text-center">
-                        <h6 class="home-product-newest-title" style="color: black">{{ $product->name }}</h6>
+                        <h6 class="home-product-newest-title">{{ $product->name }}</h6>
                         <p class="home-product-newest-price">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
-                        <p class="home-product-sales"
-                            style="font-size: 11px; font-weight: bold; color: gray; margin-bottom: 1px; text-align: justify;">
-                            Sold | {{ $product->sales }}</p>
-                        @if (auth()->check())
-                            <i class="fas fa-heart home-product-newest-wishlist-icon {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
-                                data-product-id="{{ $product->id }}"></i>
-                        @endif
+                        <div class="d-flex justify-content-between align-items-center px-2"
+                            style="font-size: 13px; color: gray;">
+                            <div class="d-flex align-items-center gap-1 text-warning">
+                                <i class="fas fa-star"></i>
+                                <span class="text-dark">{{ number_format($product->rating ?? 4.5, 1) }}</span>
+                            </div>
+                            <span>{{ $product->sales }}+ Sold</span>
+                        </div>
                     </div>
                 </a>
             @empty
@@ -350,7 +358,7 @@
 
 @push('scripts')
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // ==================== BANNER SLIDER ====================
             const banner = document.querySelector('.home-user-banner');
             const images = document.querySelectorAll('.home-user-banner-image');
@@ -378,7 +386,9 @@
             // Set initial positions
             function initializeSlider() {
                 images.forEach((img, index) => {
-                    img.style.transform = translateX(${ index * 100} %);
+                    img.style.transform = translateX($ {
+                        index * 100
+                    } % );
                 });
             }
 
@@ -391,7 +401,9 @@
             // Update slider position and active dot
             function updateSlider() {
                 images.forEach((img, index) => {
-                    img.style.transform = translateX(${ 100 * (index - currentIndex) } %);
+                    img.style.transform = translateX($ {
+                        100 * (index - currentIndex)
+                    } % );
                 });
 
                 // Update active dot
@@ -417,7 +429,7 @@
             prevBtn.addEventListener('click', prevSlide);
 
             // Keyboard navigation
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener('keydown', function(e) {
                 if (e.key === 'ArrowRight') nextSlide();
                 if (e.key === 'ArrowLeft') prevSlide();
             });
@@ -440,12 +452,16 @@
 
             banner.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
+            }, {
+                passive: true
+            });
 
             banner.addEventListener('touchend', (e) => {
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
-            }, { passive: true });
+            }, {
+                passive: true
+            });
 
             function handleSwipe() {
                 const threshold = 50;
@@ -460,7 +476,7 @@
             initializeSlider();
 
             // ==================== WISHLIST HANDLER ====================
-            $('.home-product-newest-wishlist-icon').on('click', function (event) {
+            $('.home-product-newest-wishlist-icon').on('click', function(event) {
                 event.preventDefault();
                 const productId = $(this).data('product-id');
                 const $this = $(this);
@@ -472,7 +488,7 @@
                         product_id: productId,
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function (response) {
+                    success: function(response) {
                         if (response.status === 'added') {
                             $this.removeClass('text-secondary').addClass('text-danger');
                         } else if (response.status === 'removed') {
@@ -480,7 +496,7 @@
                         }
                         $('#for-badge-count-wishlist').text(response.wishlistCount);
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         console.error("AJAX error:", error);
                     }
                 });

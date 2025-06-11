@@ -237,7 +237,6 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -264,17 +263,18 @@
 
 .home-product-newest-body {
     padding: 15px;
+    text-align: center !important;
 }
 
 .home-product-newest-title {
-    margin-bottom: 10px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: bold;
+    margin-bottom: 6px;
+    color: black !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: left;
-    color: inherit;
+    color: inherit !important;
 }
 
 .home-product-newest-price {
@@ -282,12 +282,18 @@
     font-weight: bold;
     color: #99bc85;
     margin-bottom: 8px;
-    text-align: left;
+}
+
+.home-product-newest-sales {
+    font-size: 12px;
+        font-weight: bold;
+        color: gray;
+        text-align: right;
 }
 
 .home-product-newest-wishlist-icon {
     position: absolute;
-    bottom: 10px;
+    top: 10px;
     right: 10px;
     padding: 5px;
     cursor: pointer;
@@ -297,7 +303,8 @@
 .home-product-newest-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: start;
+    gap: 15px;
     margin-top: 10px;
 }
 

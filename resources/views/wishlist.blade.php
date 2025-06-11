@@ -29,18 +29,28 @@
                     @foreach ($wishlists as $wishlist)
                         <div class="col" id="wishlist-item-{{ $wishlist->product->id }}">
                             <a href="{{ route('products-all.show', $wishlist->product->id) }}" class="card wishlist-card">
+                                <i class="fas fa-heart wishlist-toggle-btn 
+                    {{ in_array($wishlist->product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
+                                    data-product-id="{{ $wishlist->product->id }}">
+                                </i>
+
                                 <img src="{{ asset('storage/' . $wishlist->product->images->first()->image_path) }}"
                                     alt="{{ $wishlist->product->name }}" class="wishlist-card-img-top">
+
                                 <div class="wishlist-card-body text-center">
                                     <h6 class="wishlist-card-title">{{ $wishlist->product->name }}</h6>
                                     <p class="wishlist-card-price">
-                                        Rp{{ number_format($wishlist->product->price, 0, ',', '.') }}
-                                    </p>
-                                    <p class="wishlist-card-sales">Sold | {{ $wishlist->product->sales }}</p>
+                                        Rp{{ number_format($wishlist->product->price, 0, ',', '.') }}</p>
+                                    <div class="d-flex justify-content-between align-items-center px-2"
+                                        style="font-size: 13px; color: gray;">
+                                        <div class="d-flex align-items-center gap-1 text-warning">
+                                            <i class="fas fa-star"></i>
+                                            <span
+                                                class="text-dark">{{ number_format($wishlist->product->rating ?? 4.5, 1) }}</span>
+                                        </div>
+                                        <span>{{ $wishlist->product->sales }}+ Sold</span>
+                                    </div>
                                 </div>
-                                <i class="fas fa-heart wishlist-toggle-btn
-                                    {{ in_array($wishlist->product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
-                                    data-product-id="{{ $wishlist->product->id }}"></i>
                             </a>
                         </div>
                     @endforeach
@@ -164,66 +174,68 @@
 
 <style>
     .wishlist-card {
+        position: relative;
         height: 100%;
         border: 1px solid #ddd;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         text-decoration: none;
         color: inherit;
-        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .wishlist-card:hover {
-        text-decoration: none;
-        color: inherit;
+        transform: translateY(-8px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
     }
 
     .wishlist-card-img-top {
         height: 150px;
         object-fit: cover;
         width: 100%;
+        background-color: #d1e8ed;
     }
 
     .wishlist-card-body {
         padding: 15px;
+        text-align: center;
     }
 
     .wishlist-card-title {
-        font-size: 12px;
+        font-size: 13px;
         font-weight: bold;
-        margin-bottom: 5px;
+        color: black;
+        margin-bottom: 6px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        text-align: left;
     }
 
     .wishlist-card-price {
-        font-size: 12px;
+        font-size: 15px;
         font-weight: bold;
-        color: #99bc85;
+        color: #76a984;
+        text-align: center;
         margin-bottom: 8px;
-        text-align: left;
     }
 
     .wishlist-card-sales {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: bold;
         color: gray;
-        margin-bottom: 1px;
-        text-align: justify;
+        text-align: right;
     }
 
     .wishlist-toggle-btn {
         position: absolute;
-        bottom: 5px;
-        right: 5px;
-        z-index: 10;
+        top: 10px;
+        right: 10px;
+        padding: 5px;
         cursor: pointer;
+        z-index: 9999;
     }
 
     .wishlist-btn-group {
