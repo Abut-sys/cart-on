@@ -154,6 +154,25 @@
                                 <h5 class="mb-0">Kode Voucher</h5>
                             </div>
                             <div class="card-body">
+                                {{-- Select --}}
+                                <div class="mb-2">
+                                    <select id="voucher_select" class="form-select">
+                                        <option value="">-- Pilih voucher tersedia --</option>
+                                        @foreach ($vouchers as $voucherItem)
+                                            <option value="{{ $voucherItem->code }}">
+                                                {{ $voucherItem->code }} (
+                                                @if ($voucherItem->type === 'percentage')
+                                                    {{ $voucherItem->discount_value }}%
+                                                @elseif ($voucherItem->type === 'fixed')
+                                                    Rp{{ number_format($voucherItem->discount_value, 0, ',', '.') }}
+                                                @endif
+                                                )
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- Input --}}
                                 <div class="input-group mb-2">
                                     <input type="text" name="voucher_code_input" id="voucher_code_input"
                                         class="form-control" placeholder="Masukkan kode voucher"
@@ -209,6 +228,7 @@
             const applyVoucherBtn = document.getElementById('apply-voucher-btn');
             const voucherError = document.getElementById('voucher-error-message');
             const voucherSuccess = document.getElementById('voucher-success-message');
+            const voucherSelect = document.getElementById('voucher_select');
 
             const addressSelect = document.getElementById('address_id');
             const courierSelect = document.getElementById('courier');
@@ -356,6 +376,17 @@
 
             applyVoucherBtn.addEventListener('click', applyVoucher);
 
+            // select->input manual
+            voucherSelect.addEventListener('change', function() {
+                voucherCodeInput.value = this.value;
+                applyVoucher();
+            });
+
+            // input manual->reset select
+            voucherCodeInput.addEventListener('input', function() {
+                voucherSelect.value = '';
+            });
+
             addressSelect.addEventListener('change', fetchShippingOptions);
             courierSelect.addEventListener('change', fetchShippingOptions);
 
@@ -366,7 +397,7 @@
                     shippingCostInput.value = currentShippingCost;
                     document.getElementById('selected_courier').value = courierSelect.value;
                     document.getElementById('selected_shipping_service').value = shippingServiceSelect
-                        .value;
+                    .value;
                 } else {
                     currentShippingCost = 0;
                     shippingCostInput.value = 0;
@@ -390,7 +421,7 @@
 
                 document.getElementById('selected_courier').value = courierSelect.value;
                 document.getElementById('selected_shipping_service').value = shippingServiceSelect
-                    .value;
+                .value;
 
                 try {
                     const formData = new FormData(checkoutForm);
@@ -416,8 +447,7 @@
                                                 .getAttribute('content'),
                                         },
                                         body: JSON.stringify({
-                                            order_id: result
-                                                .order_id,
+                                            order_id: result.order_id,
                                             payment_status: result
                                                 .transaction_status
                                         }),
@@ -435,8 +465,7 @@
                                 } catch (error) {
                                     console.error('Error update status payment:', error);
                                     alert(
-                                        'Terjadi kesalahan saat mengupdate status pembayaran.'
-                                    );
+                                        'Terjadi kesalahan saat mengupdate status pembayaran.');
                                 }
                             },
                             onPending: async function(result) {
@@ -483,18 +512,16 @@
                                                 .getAttribute('content'),
                                         },
                                         body: JSON.stringify({
-                                            checkout_ids: data
-                                                .checkoutIds 
+                                            checkout_ids: data.checkoutIds
                                         }),
                                     });
                                 } catch (error) {
                                     console.error('Gagal menghapus order sementara:',
-                                        error);
+                                    error);
                                 }
 
                                 alert(
-                                    'Kamu menutup pembayaran sebelum memilih metode. Order dibatalkan.'
-                                );
+                                    'Kamu menutup pembayaran sebelum memilih metode. Order dibatalkan.');
                                 window.location.href = '{{ route('home.index') }}';
                             }
                         });
@@ -514,7 +541,6 @@
                     alert('Terjadi kesalahan saat membuat transaksi. Silakan coba lagi.');
                 }
             });
-
 
             updateSummaryDisplay();
             if (addressSelect.value && courierSelect.value) {

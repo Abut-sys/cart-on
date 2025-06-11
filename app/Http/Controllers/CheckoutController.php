@@ -42,9 +42,20 @@ class CheckoutController extends Controller
             $query->where('user_id', $user->id);
         })->get();
 
+        // voucher claimed & not used
         $vouchers = DB::table('claim_voucher')
-            ->where('user_id', $user->id)
             ->join('vouchers', 'claim_voucher.voucher_id', '=', 'vouchers.id')
+            ->leftJoin('user_voucher', function ($join) use ($user) {
+                $join->on('vouchers.id', '=', 'user_voucher.voucher_id')
+                    ->where('user_voucher.user_id', '=', $user->id);
+            })
+            ->where('claim_voucher.user_id', $user->id)
+            ->whereNull('user_voucher.id')
+            ->where('vouchers.status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('vouchers.end_date')
+                    ->orWhere('vouchers.end_date', '>', now());
+            })
             ->select('vouchers.*')
             ->get();
 
