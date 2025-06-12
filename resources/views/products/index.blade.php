@@ -64,7 +64,7 @@
                         <th class="product-index-th">Brand</th>
                         <th class="product-index-th">Old Price</th>
                         <th class="product-index-th">Price with Markup & PPN</th>
-                        <th class="product-index-th">Action</th>
+                         <th class="product-index-th">Action</th>
                     </tr>
                 </thead>
                 <tbody>

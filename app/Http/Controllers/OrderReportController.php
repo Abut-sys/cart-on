@@ -23,7 +23,14 @@ class OrderReportController extends Controller
 
     protected function transactionReport(Request $request)
     {
-        $query = DB::table('order_checkouts')->join('orders', 'order_checkouts.order_id', '=', 'orders.id')->join('checkouts', 'order_checkouts.checkout_id', '=', 'checkouts.id')->join('users', 'checkouts.user_id', '=', 'users.id')->join('products', 'checkouts.product_id', '=', 'products.id')->select('orders.id as order_id', 'orders.order_date', 'orders.unique_order_id', 'orders.payment_status', 'orders.order_status', 'orders.courier', 'orders.shipping_service', 'orders.tracking_number', 'orders.amount as order_total', 'orders.address as shipping_address', DB::raw('GROUP_CONCAT(products.name SEPARATOR ", ") as product_names'), DB::raw('SUM(checkouts.quantity) as total_quantity'), 'users.name as customer_name')->groupBy('orders.id', 'orders.order_date', 'orders.unique_order_id', 'orders.payment_status', 'orders.order_status', 'orders.courier', 'orders.shipping_service', 'orders.tracking_number', 'orders.amount', 'orders.address', 'users.name');
+        $query = DB::table('order_checkouts')
+                ->join('orders', 'order_checkouts.order_id', '=', 'orders.id')
+                ->join('checkouts', 'order_checkouts.checkout_id', '=', 'checkouts.id')
+                ->join('users', 'checkouts.user_id', '=', 'users.id')->join('products', 'checkouts.product_id', '=', 'products.id')
+                ->select('orders.id as order_id', 'orders.order_date', 'orders.unique_order_id', 'orders.payment_status', 'orders.order_status', 'orders.courier', 'orders.shipping_service', 'orders.tracking_number', 'orders.amount as order_total', 'orders.address as shipping_address',
+                DB::raw('GROUP_CONCAT(products.name SEPARATOR ", ") as product_names'),
+                DB::raw('SUM(checkouts.quantity) as total_quantity'), 'users.name as customer_name')->
+                groupBy('orders.id', 'orders.order_date', 'orders.unique_order_id', 'orders.payment_status', 'orders.order_status', 'orders.courier', 'orders.shipping_service', 'orders.tracking_number', 'orders.amount', 'orders.address', 'users.name');
 
         // Apply filters
         if ($request->filled('status')) {
@@ -53,15 +60,18 @@ class OrderReportController extends Controller
 
     protected function summaryReport(Request $request)
     {
-        $startDate = $request->filled('summary_start_date') ? $request->summary_start_date : now()->subMonth()->toDateString();
-        $endDate = $request->filled('summary_end_date') ? $request->summary_end_date : now()->toDateString();
+        $startDate = $request->filled('start_date') ? $request->start_date : now()->startOfMonth()->toDateString();
+        $endDate = $request->filled('end_date') ? $request->end_date : now()->endOfMonth()->toDateString();
+
 
         $diffDays = Carbon::parse($startDate)->diffInDays($endDate);
         $previousStartDate = Carbon::parse($startDate)->subDays($diffDays)->toDateString();
         $previousEndDate = Carbon::parse($startDate)->subDay()->toDateString();
 
         // Summary periode saat ini
+        // Summary periode saat ini
         $currentPeriod = DB::table('orders')
+            ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->whereBetween('order_date', [$startDate, $endDate])
             ->first();
@@ -73,7 +83,16 @@ class OrderReportController extends Controller
             ->sum('checkouts.quantity');
 
         // Summary periode sebelumnya
+
+        $currentProductsSold = DB::table('checkouts')
+            ->join('order_checkouts', 'checkouts.id', '=', 'order_checkouts.checkout_id')
+            ->join('orders', 'order_checkouts.order_id', '=', 'orders.id')
+            ->whereBetween('orders.order_date', [$startDate, $endDate])
+            ->sum('checkouts.quantity');
+
+        // Summary periode sebelumnya
         $previousPeriod = DB::table('orders')
+            ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->whereBetween('order_date', [$previousStartDate, $previousEndDate])
             ->first();
@@ -84,12 +103,21 @@ class OrderReportController extends Controller
             ->whereBetween('orders.order_date', [$previousStartDate, $previousEndDate])
             ->sum('checkouts.quantity');
 
+        $previousProductsSold = DB::table('checkouts')
+            ->join('order_checkouts', 'checkouts.id', '=', 'order_checkouts.checkout_id')
+            ->join('orders', 'order_checkouts.order_id', '=', 'orders.id')
+            ->whereBetween('orders.order_date', [$previousStartDate, $previousEndDate])
+            ->sum('checkouts.quantity');
+
+        // Persentase perubahan
         // Persentase perubahan
         $revenueChange = $this->calculatePercentageChange($previousPeriod->total_revenue ?? 0, $currentPeriod->total_revenue ?? 0);
         $transactionsChange = $this->calculatePercentageChange($previousPeriod->total_transactions ?? 0, $currentPeriod->total_transactions ?? 0);
         $aovChange = $this->calculatePercentageChange($previousPeriod->average_order_value ?? 0, $currentPeriod->average_order_value ?? 0);
         $productsChange = $this->calculatePercentageChange($previousProductsSold ?? 0, $currentProductsSold ?? 0);
+        $productsChange = $this->calculatePercentageChange($previousProductsSold ?? 0, $currentProductsSold ?? 0);
 
+        // Breakdown berdasarkan status
         // Breakdown berdasarkan status
         $statusBreakdown = DB::table('orders')
             ->select('order_status', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total'))
@@ -98,17 +126,15 @@ class OrderReportController extends Controller
             ->get();
 
         // Breakdown berdasarkan kategori produk
+        // Breakdown berdasarkan kategori produk
         $categoryBreakdown = DB::table('products')
             ->leftJoin('checkouts', 'products.id', '=', 'checkouts.product_id')
             ->leftJoin('order_checkouts', 'checkouts.id', '=', 'order_checkouts.checkout_id')
             ->leftJoin('orders', 'order_checkouts.order_id', '=', 'orders.id')
             ->leftJoin('sub_category_products', 'products.sub_category_product_id', '=', 'sub_category_products.id')
+            ->leftJoin('sub_category_products', 'products.sub_category_product_id', '=', 'sub_category_products.id')
             ->whereBetween('orders.order_date', [$startDate, $endDate])
-            ->select(
-                DB::raw('COALESCE(sub_category_products.name, "Uncategorized") as subCategory_name'),
-                DB::raw('SUM(checkouts.quantity) as total_sold'),
-                DB::raw('SUM(checkouts.amount) as total_revenue')
-            )
+            ->select(DB::raw('COALESCE(sub_category_products.name, "Uncategorized") as subCategory_name'), DB::raw('SUM(checkouts.quantity) as total_sold'), DB::raw('SUM(checkouts.amount) as total_revenue'))
             ->groupBy('sub_category_products.name')
             ->orderByDesc('total_revenue')
             ->limit(5)
@@ -121,6 +147,7 @@ class OrderReportController extends Controller
                 'total_revenue' => $currentPeriod->total_revenue ?? 0,
                 'total_transactions' => $currentPeriod->total_transactions ?? 0,
                 'average_order_value' => $currentPeriod->average_order_value ?? 0,
+                'total_products_sold' => $currentProductsSold ?? 0,
                 'total_products_sold' => $currentProductsSold ?? 0,
                 'revenue_change' => $revenueChange,
                 'transactions_change' => $transactionsChange,
