@@ -56,4 +56,9 @@ class Product extends Model
     {
         return $this->hasOne(ProductImage::class)->orderBy('id');
     }
+
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
 }

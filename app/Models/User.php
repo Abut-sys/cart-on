@@ -93,4 +93,9 @@ class User extends Authenticatable
 
         $this->attributes['phone_number'] = '+' . $cleaned;
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

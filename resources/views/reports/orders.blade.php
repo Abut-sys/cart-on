@@ -9,14 +9,15 @@
         <!-- Report Tabs -->
         <ul class="nav nav-tabs odr-tabs mb-4" id="reportTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button"
-                    role="tab">
+                <button
+                    class="nav-link {{ request('report_type') === 'summary' || request('report_type') === null ? 'active' : '' }}"
+                    id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">
                     <i class="fas fa-chart-line me-2"></i> Sales Summary
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="transaction-tab" data-bs-toggle="tab" data-bs-target="#transaction"
-                    type="button" role="tab">
+                <button class="nav-link {{ request('report_type') === 'transactions' ? 'active' : '' }}"
+                    id="transaction-tab" data-bs-toggle="tab" data-bs-target="#transaction" type="button" role="tab">
                     <i class="fas fa-receipt me-2"></i> Transaction History
                 </button>
             </li>
@@ -24,7 +25,7 @@
 
         <div class="tab-content" id="reportTabsContent">
             <!-- Transaction History Tab -->
-            <div class="tab-pane fade show active" id="transaction" role="tabpanel">
+            <div class="tab-pane fade {{ request('report_type') === 'transactions' ? 'show active' : '' }}" id="transaction" role="tabpanel">
                 <!-- Filter Form -->
                 <form method="GET"
                     class="mb-4 d-flex flex-wrap gap-3 align-items-end odr-filter-form p-4 bg-light rounded shadow-sm">
@@ -94,8 +95,7 @@
                                 <tr class="align-middle">
                                     <td class="text-muted">{{ $index + 1 }}</td>
                                     <td>
-                                        <span
-                                            class="badge bg-light text-dark border">{{ $report->unique_order_id }}</span>
+                                        <span class="badge bg-light text-dark border">{{ $report->unique_order_id }}</span>
                                     </td>
                                     <td>{{ $report->customer_name }}</td>
                                     <td class="text-nowrap">
@@ -138,7 +138,6 @@
                                                 <i class="fas fa-file-invoice"></i>
                                             </button>
                                         </div>
-
                                         <!-- Modal: Struk -->
                                         <div class="modal fade odr-modal" id="receiptModal{{ $report->order_id }}"
                                             tabindex="-1" aria-labelledby="receiptModalLabel{{ $report->order_id }}"
@@ -296,21 +295,20 @@
             </div>
 
             <!-- Sales Summary Tab -->
-            <div class="tab-pane fade {{ request('report_type') == 'summary' || request('report_type') === null ? 'show active' : '' }}" id="summary" role="tabpanel">
+            <div class="tab-pane fade {{ request('report_type') == 'summary' || request('report_type') === null ? 'show active' : '' }}"
+                id="summary" role="tabpanel">
                 <form method="GET"
                     class="mb-4 d-flex flex-wrap gap-3 align-items-end odr-filter-form p-4 bg-light rounded shadow-sm">
                     <input type="hidden" name="report_type" value="summary">
                     <div class="odr-form-group">
-                        <label for="summary_start_date" class="form-label text-muted small">Start Date</label>
-                        <input type="date" name="summary_start_date"
-                            class="form-control odr-form-control shadow-none border"
-                            value="{{ request('summary_start_date') }}">
+                        <label for="start_date" class="form-label text-muted small">Start Date</label>
+                        <input type="date" name="start_date" class="form-control odr-form-control shadow-none border"
+                            value="{{ request('start_date') }}">
                     </div>
                     <div class="odr-form-group">
-                        <label for="summary_end_date" class="form-label text-muted small">End Date</label>
-                        <input type="date" name="summary_end_date"
-                            class="form-control odr-form-control shadow-none border"
-                            value="{{ request('summary_end_date') }}">
+                        <label for="end_date" class="form-label text-muted small">End Date</label>
+                        <input type="date" name="end_date" class="form-control odr-form-control shadow-none border"
+                            value="{{ request('end_date') }}">
                     </div>
                     <div class="odr-form-group">
                         <button type="submit" class="btn btn-primary odr-btn-primary px-4">
@@ -327,7 +325,8 @@
                                     <div>
                                         <h6 class="text-muted mb-2">Total Revenue</h6>
                                         <h3 class="mb-0">Rp
-                                            {{ number_format($summary['total_revenue'] ?? 0, 0, ',', '.') }}</h3>
+                                            {{ number_format($summary['total_revenue'] ?? 0, 0, ',', '.') }}
+                                        </h3>
                                     </div>
                                     <div class="bg-primary bg-opacity-10 p-3 rounded">
                                         <i class="fas fa-wallet text-primary"></i>
@@ -336,7 +335,8 @@
                                 <div class="mt-3">
                                     <span
                                         class="badge bg-{{ ($summary['revenue_change'] ?? 0) >= 0 ? 'success' : 'danger' }}">
-                                        {{ ($summary['revenue_change'] ?? 0) >= 0 ? '+' : '' }}{{ number_format($summary['revenue_change'] ?? 0, 2) }}%
+                                        {{ ($summary['revenue_change'] ?? 0) >= 0 ? '+' : '' }}
+                                        {{ number_format($summary['revenue_change'] ?? 0, 2) }}%
                                     </span>
                                     <span class="text-muted small ms-2">vs previous period</span>
                                 </div>
@@ -466,7 +466,7 @@
                                         <tbody>
                                             @foreach ($summary['category_breakdown'] ?? [] as $category)
                                                 <tr>
-                                                    <td>{{ $category->category_name ?? 'Uncategorized' }}</td>
+                                                    <td>{{ $category->subCategory_name ?? 'Uncategorized' }}</td>
                                                     <td class="text-end">{{ $category->total_sold }}</td>
                                                     <td class="text-end">Rp
                                                         {{ number_format($category->total_revenue ?? 0, 0, ',', '.') }}
@@ -486,39 +486,22 @@
 @endsection
 
 <script>
-    function printSection(sectionId) {
-        var content = document.getElementById(sectionId).innerHTML;
-        var originalContent = document.body.innerHTML;
+    document.addEventListener('DOMContentLoaded', function () {
+        const summaryTab = document.getElementById('summary-tab');
+        const transactionTab = document.getElementById('transaction-tab');
+        const form = document.querySelector('form.odr-filter-form');
+        const reportTypeInput = form.querySelector('input[name="report_type"]');
 
-        var printWindow = window.open('', '', 'height=600,width=800');
-        printWindow.document.write('<html><head><title>Print</title>');
-        printWindow.document.write(
-            '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">'
-            );
-        printWindow.document.write(
-            '<style>body { font-family: Arial; padding: 20px; } @page { size: auto; margin: 0mm; }</style>');
-        printWindow.document.write('</head><body>');
-        printWindow.document.write('<div class="container">' + content + '</div>');
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
+        summaryTab.addEventListener('click', function () {
+            reportTypeInput.value = 'summary';
+            form.submit();
+        });
 
-        setTimeout(function() {
-            printWindow.print();
-            printWindow.close();
-        }, 200);
-    }
-
-    // Initialize tab from URL parameter if present
-    document.addEventListener('DOMContentLoaded', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const reportType = urlParams.get('report_type');
-
-        if (reportType) {
-            const tab = document.querySelector(`#${reportType}-tab`);
-            if (tab) {
-                const tabInstance = new bootstrap.Tab(tab);
-                tabInstance.show();
-            }
-        }
+        transactionTab.addEventListener('click', function () {
+            reportTypeInput.value = 'transactions';
+            form.submit();
+        });
     });
 </script>
+
+
