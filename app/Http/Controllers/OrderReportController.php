@@ -69,7 +69,9 @@ class OrderReportController extends Controller
         $previousEndDate = Carbon::parse($startDate)->subDay()->toDateString();
 
         // Summary periode saat ini
+        // Summary periode saat ini
         $currentPeriod = DB::table('orders')
+            ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->whereBetween('order_date', [$startDate, $endDate])
             ->first();
@@ -81,7 +83,16 @@ class OrderReportController extends Controller
             ->sum('checkouts.quantity');
 
         // Summary periode sebelumnya
+
+        $currentProductsSold = DB::table('checkouts')
+            ->join('order_checkouts', 'checkouts.id', '=', 'order_checkouts.checkout_id')
+            ->join('orders', 'order_checkouts.order_id', '=', 'orders.id')
+            ->whereBetween('orders.order_date', [$startDate, $endDate])
+            ->sum('checkouts.quantity');
+
+        // Summary periode sebelumnya
         $previousPeriod = DB::table('orders')
+            ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->selectRaw('SUM(amount) as total_revenue, COUNT(*) as total_transactions, AVG(amount) as average_order_value')
             ->whereBetween('order_date', [$previousStartDate, $previousEndDate])
             ->first();
@@ -92,12 +103,21 @@ class OrderReportController extends Controller
             ->whereBetween('orders.order_date', [$previousStartDate, $previousEndDate])
             ->sum('checkouts.quantity');
 
+        $previousProductsSold = DB::table('checkouts')
+            ->join('order_checkouts', 'checkouts.id', '=', 'order_checkouts.checkout_id')
+            ->join('orders', 'order_checkouts.order_id', '=', 'orders.id')
+            ->whereBetween('orders.order_date', [$previousStartDate, $previousEndDate])
+            ->sum('checkouts.quantity');
+
+        // Persentase perubahan
         // Persentase perubahan
         $revenueChange = $this->calculatePercentageChange($previousPeriod->total_revenue ?? 0, $currentPeriod->total_revenue ?? 0);
         $transactionsChange = $this->calculatePercentageChange($previousPeriod->total_transactions ?? 0, $currentPeriod->total_transactions ?? 0);
         $aovChange = $this->calculatePercentageChange($previousPeriod->average_order_value ?? 0, $currentPeriod->average_order_value ?? 0);
         $productsChange = $this->calculatePercentageChange($previousProductsSold ?? 0, $currentProductsSold ?? 0);
+        $productsChange = $this->calculatePercentageChange($previousProductsSold ?? 0, $currentProductsSold ?? 0);
 
+        // Breakdown berdasarkan status
         // Breakdown berdasarkan status
         $statusBreakdown = DB::table('orders')
             ->select('order_status', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total'))
@@ -106,10 +126,12 @@ class OrderReportController extends Controller
             ->get();
 
         // Breakdown berdasarkan kategori produk
+        // Breakdown berdasarkan kategori produk
         $categoryBreakdown = DB::table('products')
             ->leftJoin('checkouts', 'products.id', '=', 'checkouts.product_id')
             ->leftJoin('order_checkouts', 'checkouts.id', '=', 'order_checkouts.checkout_id')
             ->leftJoin('orders', 'order_checkouts.order_id', '=', 'orders.id')
+            ->leftJoin('sub_category_products', 'products.sub_category_product_id', '=', 'sub_category_products.id')
             ->leftJoin('sub_category_products', 'products.sub_category_product_id', '=', 'sub_category_products.id')
             ->whereBetween('orders.order_date', [$startDate, $endDate])
             ->select(DB::raw('COALESCE(sub_category_products.name, "Uncategorized") as subCategory_name'), DB::raw('SUM(checkouts.quantity) as total_sold'), DB::raw('SUM(checkouts.amount) as total_revenue'))
@@ -125,6 +147,7 @@ class OrderReportController extends Controller
                 'total_revenue' => $currentPeriod->total_revenue ?? 0,
                 'total_transactions' => $currentPeriod->total_transactions ?? 0,
                 'average_order_value' => $currentPeriod->average_order_value ?? 0,
+                'total_products_sold' => $currentProductsSold ?? 0,
                 'total_products_sold' => $currentProductsSold ?? 0,
                 'revenue_change' => $revenueChange,
                 'transactions_change' => $transactionsChange,

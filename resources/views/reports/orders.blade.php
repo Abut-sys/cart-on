@@ -96,6 +96,7 @@
                                     <td class="text-muted">{{ $index + 1 }}</td>
                                     <td>
                                         <span class="badge bg-light text-dark border">{{ $report->unique_order_id }}</span>
+                                        <span class="badge bg-light text-dark border">{{ $report->unique_order_id }}</span>
                                     </td>
                                     <td>{{ $report->customer_name }}</td>
                                     <td class="text-nowrap">
@@ -297,6 +298,8 @@
             <!-- Sales Summary Tab -->
             <div class="tab-pane fade {{ request('report_type') == 'summary' || request('report_type') === null ? 'show active' : '' }}"
                 id="summary" role="tabpanel">
+            <div class="tab-pane fade {{ request('report_type') == 'summary' || request('report_type') === null ? 'show active' : '' }}"
+                id="summary" role="tabpanel">
                 <form method="GET"
                     class="mb-4 d-flex flex-wrap gap-3 align-items-end odr-filter-form p-4 bg-light rounded shadow-sm">
                     <input type="hidden" name="report_type" value="summary">
@@ -327,6 +330,8 @@
                                         <h3 class="mb-0">Rp
                                             {{ number_format($summary['total_revenue'] ?? 0, 0, ',', '.') }}
                                         </h3>
+                                            {{ number_format($summary['total_revenue'] ?? 0, 0, ',', '.') }}
+                                        </h3>
                                     </div>
                                     <div class="bg-primary bg-opacity-10 p-3 rounded">
                                         <i class="fas fa-wallet text-primary"></i>
@@ -335,6 +340,8 @@
                                 <div class="mt-3">
                                     <span
                                         class="badge bg-{{ ($summary['revenue_change'] ?? 0) >= 0 ? 'success' : 'danger' }}">
+                                        {{ ($summary['revenue_change'] ?? 0) >= 0 ? '+' : '' }}
+                                        {{ number_format($summary['revenue_change'] ?? 0, 2) }}%
                                         {{ ($summary['revenue_change'] ?? 0) >= 0 ? '+' : '' }}
                                         {{ number_format($summary['revenue_change'] ?? 0, 2) }}%
                                     </span>
@@ -466,6 +473,7 @@
                                         <tbody>
                                             @foreach ($summary['category_breakdown'] ?? [] as $category)
                                                 <tr>
+                                                    <td>{{ $category->subCategory_name ?? 'Uncategorized' }}</td>
                                                     <td>{{ $category->subCategory_name ?? 'Uncategorized' }}</td>
                                                     <td class="text-end">{{ $category->total_sold }}</td>
                                                     <td class="text-end">Rp
