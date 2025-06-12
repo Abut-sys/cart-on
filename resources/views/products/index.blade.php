@@ -23,8 +23,9 @@
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_id" class="form-select product-index-select pe-3">
                                     <option value disabled selected ="">Sort ID</option>
-                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>ASC</option>    
-                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>DESC</option>
+                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>ASC</option>
+                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>DESC
+                                    </option>
                                 </select>
                                 <i class="fas fa-sort-down position-absolute end-0 me-2 product-index-sort-icon"></i>
                             </div>
@@ -33,8 +34,10 @@
                             <div class="d-flex align-items-center position-relative">
                                 <select name="sort_name" class="form-select product-index-select pe-5">
                                     <option value disabled selected ="">Sort Name</option>
-                                    <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z</option>
-                                    <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A</option>
+                                    <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z
+                                    </option>
+                                    <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A
+                                    </option>
                                 </select>
                                 <i class="fas fa-sort-alpha-down position-absolute end-0 me-2 product-index-sort-icon"></i>
                             </div>
@@ -59,7 +62,8 @@
                         <th class="product-index-th">Name</th>
                         <th class="product-index-th">SubCategory</th>
                         <th class="product-index-th">Brand</th>
-                        <th class="product-index-th">Price</th>
+                        <th class="product-index-th">Old Price</th>
+                        <th class="product-index-th">Price with Markup & PPN</th>
                         <th class="product-index-th">Action</th>
                     </tr>
                 </thead>
@@ -69,8 +73,8 @@
                             <td class="product-index-td">{{ $product->id }}</td>
                             <td class="product-index-td">
                                 @if ($product->images->isNotEmpty())
-                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
-                                         alt="{{ $product->name }}" width="50" class="img-fluid product-index-img">
+                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                                        alt="{{ $product->name }}" width="50" class="img-fluid product-index-img">
                                 @else
                                     <span class="product-index-no-image">No Image</span>
                                 @endif
@@ -78,14 +82,24 @@
                             <td class="product-index-td">{{ $product->name }}</td>
                             <td class="product-index-td">{{ $product->subCategory->name ?? 'N/A' }}</td>
                             <td class="product-index-td">{{ $product->brand->name ?? 'N/A' }}</td>
-                            <td class="product-index-td">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+                            <td class="product-index-td">Rp {{ number_format($product->old_price, 0, ',', '.') }}</td>
+                            <td class="product-index-td">
+                                Rp
+                                {{ number_format(
+                                    $product->price + ($product->price * $product->markup) / 100 + ($product->price * $product->ppn) / 100,
+                                    0,
+                                    ',',
+                                    '.',
+                                ) }}
+                            </td>
+
                             <td class="product-index-td">
                                 <a href="{{ route('products.edit', $product->id) }}"
-                                   class="btn btn-sm btn-warning product-index-btn-edit">
+                                    class="btn btn-sm btn-warning product-index-btn-edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST"
-                                      class="d-inline product-index-form-delete">
+                                    class="d-inline product-index-form-delete">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger product-index-btn-delete">
@@ -93,7 +107,7 @@
                                     </button>
                                 </form>
                                 <a href="{{ route('products.show', $product->id) }}"
-                                   class="btn btn-sm btn-info product-index-btn-details">
+                                    class="btn btn-sm btn-info product-index-btn-details">
                                     <i class="fas fa-eye"></i> Details
                                 </a>
                             </td>

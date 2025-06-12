@@ -17,7 +17,7 @@ class DashboardController extends Controller
     {
         // Data yang dihitung
         $totalOrders = Order::count();
-        $totalRevenue = Order::sum('amount');
+        $totalRevenue = Order::where('payment_status', 'completed')->sum('amount');
         $totalProducts = Product::count();
         $topProducts = Product::select('products.id', 'products.name')
             ->selectRaw('SUM(checkouts.quantity) as total_sold')

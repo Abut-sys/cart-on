@@ -9,6 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
@@ -21,11 +22,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListOrderController;
 use App\Http\Controllers\ProductAllController;
 use App\Http\Controllers\InformationController;
+use App\Http\Controllers\OrderReportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\CategoryProductController;
-use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitingPaymentController;
+use App\Http\Controllers\CategoryProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -146,6 +147,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::patch('/orders/{order}/tracking', [OrderController::class, 'updateTracking'])->name('orders.updateTracking');
+
+    Route::get('/report/orders', [OrderReportController::class, 'index'])->name('report.orders');
+
 
     Route::resource('costumers', CostumersController::class);
     Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');

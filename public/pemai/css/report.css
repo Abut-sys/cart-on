@@ -1,0 +1,103 @@
+    .odr-container {
+    max-width: 1200px;
+    }
+
+    .odr-title {
+    color: #333;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 10px;
+    }
+
+    .odr-title:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    height: 3px;
+    background: #6c757d;
+    }
+
+    .odr-filter-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    }
+
+    .odr-form-control {
+    border: 1px solid #dee2e6;
+    transition: all 0.3s;
+    }
+
+    .odr-form-control:focus {
+    border-color: #6c757d;
+    box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.15);
+    }
+
+    .odr-btn-primary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: all 0.3s;
+    }
+
+    .odr-btn-primary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    }
+
+    .odr-btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    }
+
+    .odr-btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    }
+
+    .odr-table {
+    font-size: 0.9rem;
+    }
+
+    .odr-table-head {
+    background-color: #f8f9fa !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    }
+
+    .odr-table tr:hover {
+    background-color: #f8f9fa;
+    }
+
+    .odr-modal {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .odr-modal-dialog {
+    max-width: 600px;
+    }
+
+    .odr-modal-content {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    }
+
+    .odr-modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.25rem 1.5rem;
+    }
+
+    .odr-modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    }
+
+    .odr-btn-close {
+    background-size: 0.8rem;
+    }
+
+    .odr-no-orders {
+    background-color: #f8f9fa;
+    }

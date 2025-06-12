@@ -38,9 +38,10 @@
                                 <div class="product-edit-image-wrapper mb-2">
                                     <img src="{{ asset('storage/' . $image->image_path) }}" alt="Image" width="100"
                                         class="img-fluid">
-                                        <button type="button" class="btn btn-danger btn-sm product-edit-btn-remove-image" data-id="{{ $image->id }}">
-                                            <i class="fas fa-trash-alt"></i> Delete
-                                        </button>
+                                    <button type="button" class="btn btn-danger btn-sm product-edit-btn-remove-image"
+                                        data-id="{{ $image->id }}">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </button>
                                 </div>
                             @endforeach
                         </div>
@@ -196,6 +197,33 @@
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            handleProductVariantForm();
+
+            const deletedImages = new Set();
+
+            document.querySelectorAll('.product-edit-btn-remove-image').forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-id');
+                    deletedImages.add(imageId);
+                    // Remove the image preview from the UI
+                    this.closest('.product-edit-image-wrapper').remove();
+                });
+            });
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function() {
+                deletedImages.forEach(id => {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'deleted_images[]';
+                    hiddenInput.value = id;
+                    form.appendChild(hiddenInput);
+                });
+            });
+        });
+
 
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.product-edit-btn-remove-image').forEach(button => {
