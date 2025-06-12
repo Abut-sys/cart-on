@@ -6,7 +6,7 @@
             <div class="row g-4">
                 <div class="col-lg-8 col-md-12">
                     <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">
+                        <div class="card-header bg-secondary text-white">
                             <h5 class="mb-0">Detail Produk</h5>
                         </div>
                         <div class="card-body">
@@ -32,7 +32,7 @@
                                             @endif
                                             <p class="mb-1">Quantity: <strong
                                                     class="text-dark">{{ $cart->quantity }}</strong></p>
-                                            <h6 class="checkout-product-price text-primary">
+                                            <h6 class="checkout-product-price">
                                                 Rp{{ number_format($cart->product->price, 2) }}
                                             </h6>
                                         </div>
@@ -53,7 +53,7 @@
                                         @endif
                                         <p class="mb-1">Quantity: <strong class="text-dark">{{ $quantity }}</strong>
                                         </p>
-                                        <h6 class="checkout-product-price text-primary">
+                                        <h6 class="checkout-product-price">
                                             Rp{{ number_format($product->price, 2) }}
                                         </h6>
                                     </div>
@@ -89,7 +89,7 @@
 
                         {{-- Shipping Address Section --}}
                         <div class="card shadow-sm mb-4">
-                            <div class="card-header bg-primary text-white">
+                            <div class="card-header bg-secondary text-white">
                                 <h5 class="mb-0">Alamat Pengiriman</h5>
                             </div>
                             <div class="card-body">
@@ -150,7 +150,7 @@
 
                         {{-- Voucher Code Section --}}
                         <div class="card shadow-sm mb-4">
-                            <div class="card-header bg-primary text-white">
+                            <div class="card-header bg-secondary text-white">
                                 <h5 class="mb-0">Kode Voucher</h5>
                             </div>
                             <div class="card-body">
@@ -187,7 +187,7 @@
 
                         {{-- Payment Summary Section --}}
                         <div class="card shadow-sm mb-4">
-                            <div class="card-header bg-primary text-white">
+                            <div class="card-header bg-secondary text-white">
                                 <h5 class="mb-0">Ringkasan Pembayaran</h5>
                             </div>
                             <div class="card-body">
@@ -203,7 +203,7 @@
                                     <span class="fw-bold">Rp<span id="shipping-cost-summary">0.00</span></span>
                                 </p>
                                 <hr>
-                                <h4 class="d-flex justify-content-between text-primary">Total Pembayaran:
+                                <h4 class="d-flex justify-content-between checkout-product-total-price">Total Pembayaran:
                                     <span class="fw-bold">Rp<span
                                             id="final-total-price-display">{{ number_format($rawProductTotal, 2) }}</span></span>
                                 </h4>
@@ -397,7 +397,7 @@
                     shippingCostInput.value = currentShippingCost;
                     document.getElementById('selected_courier').value = courierSelect.value;
                     document.getElementById('selected_shipping_service').value = shippingServiceSelect
-                    .value;
+                        .value;
                 } else {
                     currentShippingCost = 0;
                     shippingCostInput.value = 0;
@@ -421,7 +421,7 @@
 
                 document.getElementById('selected_courier').value = courierSelect.value;
                 document.getElementById('selected_shipping_service').value = shippingServiceSelect
-                .value;
+                    .value;
 
                 try {
                     const formData = new FormData(checkoutForm);
@@ -465,7 +465,8 @@
                                 } catch (error) {
                                     console.error('Error update status payment:', error);
                                     alert(
-                                        'Terjadi kesalahan saat mengupdate status pembayaran.');
+                                        'Terjadi kesalahan saat mengupdate status pembayaran.'
+                                    );
                                 }
                             },
                             onPending: async function(result) {
@@ -517,11 +518,12 @@
                                     });
                                 } catch (error) {
                                     console.error('Gagal menghapus order sementara:',
-                                    error);
+                                        error);
                                 }
 
                                 alert(
-                                    'Kamu menutup pembayaran sebelum memilih metode. Order dibatalkan.');
+                                    'Kamu menutup pembayaran sebelum memilih metode. Order dibatalkan.'
+                                );
                                 window.location.href = '{{ route('home.index') }}';
                             }
                         });
@@ -559,64 +561,29 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .checkout-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .checkout-card {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        .checkout-product-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: black;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 500px;
         }
 
-        .checkout-card-header {
-            background-color: #f1f1f1;
-            padding: 10px 15px;
-            font-size: 16px;
+        .checkout-product-price {
+            font-size: 15px;
             font-weight: bold;
-            border-bottom: 1px solid #ddd;
+            color: #76a984;
         }
 
-        .checkout-card-body {
-            padding: 15px;
-        }
-
-        .checkout-product-image img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .checkout-product-info h4 {
-            font-size: 18px;
+        .checkout-product-total-price{
+            font-size: 1.2rem;
             font-weight: bold;
-        }
-
-        .checkout-summary h4 {
-            font-size: 20px;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .checkout-discount {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #6c757d;
-        }
-
-        .checkout-discount .float-end {
-            color: #dc3545;
-        }
-
-
-        @media (max-width: 768px) {
-            .checkout-content {
-                flex-direction: column;
-            }
+            color: #76a984;
         }
     </style>
 @endsection

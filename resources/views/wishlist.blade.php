@@ -231,10 +231,9 @@
 
     .wishlist-toggle-btn {
         position: absolute;
-        top: 10px;
+        top: 8px;
         right: 10px;
-        padding: 5px;
-        cursor: pointer;
+        font-size: 18px;
         z-index: 9999;
     }
 

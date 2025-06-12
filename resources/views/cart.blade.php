@@ -32,53 +32,50 @@
                         $stock = $variant ? $variant->stock : $cart->product->stock;
                     @endphp
 
-                    <div class="col-12 mb-4 cart-card bg-white rounded shadow-sm p-3 d-flex align-items-center justify-content-between"
+                    <div class="col-12 mb-4 cart-card d-flex align-items-center p-3 bg-white shadow-sm rounded"
                         data-id="{{ $cart->id }}">
-                        {{-- detail product --}}
-                        <div class="cart-product-info d-flex align-items-center">
+                        <div class="d-flex align-items-center flex-grow-1">
                             <img src="{{ asset('storage/' . ($cart->product->images->first()->image_path ?? 'default-image.jpg')) }}"
-                                alt="{{ $cart->product->name }}" class="img-thumbnail cart-product-image" />
+                                alt="{{ $cart->product->name }}" class="cart-product-image rounded" />
 
                             <div class="ms-3">
                                 <h6 class="mb-1 cart-product-name">{{ $cart->product->name }}</h6>
-                                <small class="text-muted cart-product-size">Size: {{ $cart->size ?? 'N/A' }}</small>
-                                <small class="text-muted cart-product-color">Color: {{ $cart->color ?? 'N/A' }}</small>
-                                <p class="text-muted">Stock: <span class="cart-stock">{{ $stock }}</span></p>
-
-                                <p class="fw-bold mb-0 text-success cart-product-price">
+                                <small class="text-muted">Size: {{ $cart->size ?? 'N/A' }} | Color:
+                                    {{ $cart->color ?? 'N/A' }}</small>
+                                <p class="text-muted mb-1">Stock: <span class="cart-stock">{{ $stock }}</span></p>
+                                <p class="fw-bold text-success mb-0">
                                     Rp{{ number_format($cart->product->price, 0, ',', '.') }}
                                 </p>
-                                <p class="fw-bold mb-0 text-success cart-product-total">
-                                    Total: Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}
-                                </p>
-
-                                {{-- checkbox --}}
-                                <div class="form-check">
-                                    <input class="form-check-input cart-checkbox" type="checkbox"
-                                        value="{{ $cart->id }}" id="cartItem{{ $cart->id }}"
-                                        data-price="{{ $cart->product->price }}" data-quantity="{{ $cart->quantity }}"
-                                        name="selected_products[]">
-                                    <label class="form-check-label" for="cartItem{{ $cart->id }}"></label>
-                                </div>
                             </div>
                         </div>
 
-                        {{-- remove --}}
-                        <div class="cart-actions d-flex align-items-center">
-                            <button type="button" class="btn btn-outline-danger btn-sm btn-remove"
-                                data-id="{{ $cart->id }}">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <div class="cart-details-right d-flex align-items-center gap-3 me-2">
+                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                <p class="cart-product-total mb-2 text-center">
+                                    Total: Rp{{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}
+                                </p>
 
-                            {{-- quantity --}}
-                            <div class="input-group input-group-sm cart-quantity-controls" style="width: 120px;">
-                                <button type="button" class="btn btn-outline-secondary btn-sm btn-decrease"
-                                    data-id="{{ $cart->id }}">-</button>
-                                <input type="text" class="form-control text-center cart-quantity"
-                                    value="{{ $cart->quantity }}" readonly data-stock="{{ $stock }}">
-                                <button type="button" class="btn btn-outline-secondary btn-sm increase-btn btn-increase"
-                                    data-id="{{ $cart->id }}"
-                                    {{ $cart->quantity >= $stock ? 'disabled' : '' }}>+</button>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-remove" data-id="{{ $cart->id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+
+                                    <div class="cart-quantity-controls">
+                                        <button type="button" class="btn btn-decrease"
+                                            data-id="{{ $cart->id }}">-</button>
+                                        <input type="text" class="form-control cart-quantity"
+                                            value="{{ $cart->quantity }}" readonly data-stock="{{ $stock }}">
+                                        <button type="button" class="btn btn-increase increase-btn"
+                                            data-id="{{ $cart->id }}"
+                                            {{ $cart->quantity >= $stock ? 'disabled' : '' }}>+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-check d-flex align-items-center">
+                                <input class="cart-checkbox" type="checkbox" value="{{ $cart->id }}"
+                                    id="cartItem{{ $cart->id }}" data-price="{{ $cart->product->price }}"
+                                    data-quantity="{{ $cart->quantity }}" name="selected_products[]">
                             </div>
                         </div>
                     </div>
@@ -240,90 +237,128 @@
 
 <style>
     .cart-card {
-        height: 100%;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
         display: flex;
-        flex-direction: row;
+        align-items: center;
         justify-content: space-between;
-        text-decoration: none;
-        color: inherit;
-        position: relative;
-    }
-
-    .cart-card:hover {
-        text-decoration: none;
-        color: inherit;
+        gap: 16px;
+        background-color: #fff;
+        border: 1px solid #eee;
+        border-left: 6px solid #f5eae2;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .cart-product-image {
         width: 80px;
         height: 80px;
         object-fit: cover;
-    }
-
-    .cart-product-info {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+        border-radius: 8px;
+        border: 1px solid #ccc;
     }
 
     .cart-product-name {
-        font-weight: bold;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111;
     }
 
-    .cart-product-price,
     .cart-product-total {
-        color: #28a745;
+        font-size: 1rem;
         font-weight: bold;
+        color: #28a745;
+        margin: 0;
+        text-align: center;
     }
 
     .cart-actions {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 6px;
+        margin-right: 4px;
     }
 
     .cart-quantity-controls {
         display: flex;
-        gap: 5px;
-    }
-
-    .cart-checkout-card {
-        display: flex;
-        justify-content: flex-end;
-        flex-direction: column;
-    }
-
-    .cart-checkout-card-header {
-        background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 4px;
-    }
-
-    .cart-checkout-card-body {
-        padding: 15px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ccc;
+        border-radius: 999px;
+        overflow: hidden;
+        width: 110px;
+        height: 34px;
         background-color: #fff;
-        border-radius: 4px;
     }
 
-    .cart-checkout-summary-item {
-        display: flex;
-        justify-content: space-between;
+    .cart-quantity-controls .btn {
+        border: none;
+        background-color: transparent;
         font-size: 0.9rem;
-        color: #333;
+        width: 30px;
+        padding: 0;
+        color: #000;
     }
 
-    .cart-checkout-summary-item span {
-        font-weight: bold;
+    .cart-quantity-controls .form-control {
+        border: none;
+        text-align: center;
+        font-size: 0.9rem;
+        width: 40px;
+        background: none;
+        height: 32px;
+        padding: 0;
     }
 
-    .cart-total-price {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #007bff;
-        text-align: right;
-        margin-top: 1rem;
+    .btn-remove {
+        border: none;
+        background: none;
+        color: #dc3545;
+        font-size: 1.2rem;
+        padding: 0;
+        transition: 0.2s;
+    }
+
+    .btn-remove:hover {
+        color: #dc3545;
+    }
+
+    .cart-checkbox {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        cursor: pointer;
+        appearance: none;
+        transition: all 0.2s ease;
+        margin-top: 4px;
+        position: relative;
+    }
+
+    .cart-checkbox:checked {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .cart-checkbox:checked::after {
+        content: "✓";
+        color: white;
+        font-size: 13px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .cart-checkbox:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .cart-details-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 </style>

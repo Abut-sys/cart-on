@@ -22,7 +22,7 @@
             <div class="col-lg-6 product-user-show-col" style="margin-left: -10px;">
                 <h2 class="product-user-show-title">{{ $product->name }}</h2>
                 <div class="product-user-show-meta d-flex align-items-center mb-3" style="margin-left: -10px;">
-                    <span class="text-muted ms-1 product-user-show-sold-count">SOLD | {{ $product->sales }}</span>
+                    <span class="product-user-show-sold-count">SOLD | {{ $product->sales }}</span>
                 </div>
                 <h3 class="product-user-show-price" style="margin-left: -10px;">
                     Rp{{ number_format($product->price, 0, ',', '.') }}
@@ -35,7 +35,7 @@
                             $colors = $product->subVariant->pluck('color')->unique();
                         @endphp
                         @foreach ($colors as $color)
-                            <button class="btn btn-outline-secondary product-user-show-color-option me-2 mb-2"
+                            <button class="product-user-show-color-option me-2 mb-2"
                                 data-color="{{ $color }}">{{ ucfirst($color) }}</button>
                         @endforeach
                     </div>
@@ -48,7 +48,7 @@
                             $sizes = $product->subVariant->pluck('size')->unique();
                         @endphp
                         @foreach ($sizes as $size)
-                            <button class="btn btn-outline-secondary product-user-show-size-option me-2 mb-2"
+                            <button class="product-user-show-size-option me-2 mb-2"
                                 data-size="{{ $size }}">{{ strtoupper($size) }}</button>
                         @endforeach
                     </div>
@@ -58,8 +58,8 @@
                     <strong>Quantity</strong>
                     <div class="input-group ms-3" style="width: 120px;">
                         <button class="btn btn-outline-secondary product-user-show-btn-decrease" type="button">-</button>
-                        <input type="number" class="form-control text-center product-user-show-quantity-input" value="1"
-                            min="1">
+                        <input type="number" class="form-control text-center product-user-show-quantity-input"
+                            value="1" min="1">
                         <button class="btn btn-outline-secondary product-user-show-btn-increase" type="button">+</button>
                     </div>
                     <span class="ms-3 product-user-show-stock-display">Select Color And Size</span>
@@ -82,7 +82,7 @@
                         <input type="hidden" name="quantity" class="quantity-input-hidden">
                         <input type="hidden" name="color" class="color-input-hidden">
                         <input type="hidden" name="size" class="size-input-hidden">
-                        <button type="submit" class="btn btn-outline-primary product-user-show-btn-add-to-cart">Add to
+                        <button type="submit" class="btn btn-warning product-user-show-btn-add-to-cart">Add to
                             Cart</button>
                     </form>
 
@@ -130,14 +130,27 @@
         .product-user-show-title {
             font-size: 1.8rem;
             font-weight: 600;
-            color: #333;
+            color: black;
             margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 500px;
+        }
+
+        .product-user-show-sold-count {
+            font-size: 1.0rem;
+            font-weight: bold;
+            color: rgb(121, 116, 116);
+            text-align: right;
         }
 
         .product-user-show-price {
             font-size: 1.5rem;
-            color: #2E7D32;
-            font-weight: 600;
+            font-weight: bold;
+            color: #76a984;
             margin-bottom: 2rem;
         }
 
@@ -147,14 +160,25 @@
             padding: 8px 16px;
             border-radius: 4px;
             border: 1px solid #e0e0e0;
-            background: #f9f9f9;
+            background: #fff;
+            color: #000;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .product-user-show-color-option:hover,
         .product-user-show-size-option:hover {
-            background: #f0f0f0;
-            border-color: #bdbdbd;
+            background: #99bc85;
+            border-color: #99bc85;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #99bc85 !important;
+            border-color: #99bc85 !important;
+            color: #fff !important;
+            font-weight: bold;
         }
 
         .product-user-show-description {
@@ -193,7 +217,7 @@
         }
 
         .product-user-show-btn-add-to-cart {
-            background-color: #2E7D32;
+            background-color: #e0c020;
             border: none;
             color: #fff;
             padding: 10px 24px;
@@ -203,8 +227,13 @@
             margin-right: 10px
         }
 
+        .product-user-show-btn-add-to-cart:hover {
+            background-color: #e0c020;
+            color: #1c1919;
+        }
+
         .product-user-show-btn-buy-now {
-            background-color: #424242;
+            background-color: #47a0e9;
             border: none;
             color: #fff;
             padding: 10px 24px;
@@ -213,12 +242,9 @@
             transition: background-color 0.2s ease;
         }
 
-        .product-user-show-btn-add-to-cart:hover {
-            background-color: #1B5E20;
-        }
-
         .product-user-show-btn-buy-now:hover {
-            background-color: #212121;
+            background-color: #47a0e9;
+            color: #1c1919;
         }
 
         .product-user-show-toggle-cart-btn,
@@ -265,7 +291,7 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             let selectedColor = null;
             let selectedSize = null;
             const subVariant = @json($product->subVariant ?? []);
@@ -283,13 +309,13 @@
             }
 
             document.querySelectorAll('.product-user-show-additional-image').forEach(thumbnail => {
-                thumbnail.addEventListener('click', function () {
+                thumbnail.addEventListener('click', function() {
                     const imageUrl = this.getAttribute('data-full-image');
                     updateMainImage(imageUrl);
                 });
             });
 
-            $('.product-user-show-toggle-wishlist-btn ').on('click', function (event) {
+            $('.product-user-show-toggle-wishlist-btn ').on('click', function(event) {
                 event.preventDefault();
 
                 var productId = $(this).data('product-id');
@@ -302,7 +328,7 @@
                         product_id: productId,
                         _token: '{{ csrf_token() }}',
                     },
-                    success: function (response) {
+                    success: function(response) {
                         if (response.status === 'added') {
                             $this.removeClass('text-secondary').addClass(
                                 'text-danger');
@@ -314,7 +340,7 @@
                         $('#for-badge-count-wishlist').text(response
                             .wishlistCount);
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         alert('Terjadi kesalahan saat memperbarui wishlist.');
                         console.error("AJAX error: " + status + ": " + error);
                     }
@@ -322,7 +348,7 @@
             });
 
             document.querySelectorAll('.product-user-show-color-option').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     if (selectedColor === this.dataset.color) {
                         selectedColor = null;
                         this.classList.remove('active');
@@ -339,7 +365,7 @@
             });
 
             document.querySelectorAll('.product-user-show-size-option').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     if (selectedSize === this.dataset.size) {
                         selectedSize = null;
                         this.classList.remove('active');
@@ -407,7 +433,7 @@
                     .value);
             }
 
-            btnIncrease.addEventListener('click', function () {
+            btnIncrease.addEventListener('click', function() {
                 let currentQuantity = parseInt(quantityInput.value);
                 if (currentQuantity < quantityInput.max) {
                     quantityInput.value = currentQuantity + 1;
@@ -415,7 +441,7 @@
                 }
             });
 
-            btnDecrease.addEventListener('click', function () {
+            btnDecrease.addEventListener('click', function() {
                 let currentQuantity = parseInt(quantityInput.value);
                 if (currentQuantity > 1) {
                     quantityInput.value = currentQuantity - 1;
@@ -440,7 +466,7 @@
             }
         }
 
-        $('#product-user-show-btn-see-more').on('click', function () {
+        $('#product-user-show-btn-see-more').on('click', function() {
             toggleDescription();
         });
     </script>
