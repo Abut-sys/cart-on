@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/spinner.css">
     <style>
         body {
             background: linear-gradient(135deg, #66a3a1, #99bc85, #77d1b3);
@@ -22,9 +24,17 @@
         }
 
         @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .background-circle {
@@ -36,17 +46,66 @@
         }
 
         @keyframes floating {
-            0% { transform: translateY(0px) translateX(0px); }
-            50% { transform: translateY(-15px) translateX(10px); }
-            100% { transform: translateY(0px) translateX(0px); }
+            0% {
+                transform: translateY(0px) translateX(0px);
+            }
+
+            50% {
+                transform: translateY(-15px) translateX(10px);
+            }
+
+            100% {
+                transform: translateY(0px) translateX(0px);
+            }
         }
 
-        .circle1 { width: 150px; height: 150px; top: 5%; left: 5%; animation-delay: 0s; }
-        .circle2 { width: 100px; height: 100px; top: 15%; left: 85%; animation-delay: 1s; }
-        .circle3 { width: 120px; height: 120px; top: 50%; left: 5%; animation-delay: 2s; }
-        .circle4 { width: 80px; height: 80px; top: 65%; left: 80%; animation-delay: 3s; }
-        .circle5 { width: 180px; height: 180px; top: 90%; left: 10%; animation-delay: 4s; }
-        .circle6 { width: 90px; height: 90px; top: 5%; left: 65%; animation-delay: 5s; }
+        .circle1 {
+            width: 150px;
+            height: 150px;
+            top: 5%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .circle2 {
+            width: 100px;
+            height: 100px;
+            top: 15%;
+            left: 85%;
+            animation-delay: 1s;
+        }
+
+        .circle3 {
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .circle4 {
+            width: 80px;
+            height: 80px;
+            top: 65%;
+            left: 80%;
+            animation-delay: 3s;
+        }
+
+        .circle5 {
+            width: 180px;
+            height: 180px;
+            top: 90%;
+            left: 10%;
+            animation-delay: 4s;
+        }
+
+        .circle6 {
+            width: 90px;
+            height: 90px;
+            top: 5%;
+            left: 65%;
+            animation-delay: 5s;
+        }
 
         .register-card {
             background: rgba(255, 255, 255, 0.9);
@@ -122,16 +181,17 @@
             cursor: pointer;
         }
 
-        #eyeIcon, #eyeConfirmIcon {
+        #eyeIcon,
+        #eyeConfirmIcon {
             font-size: 18px;
             color: #99bc85;
             cursor: pointer;
         }
 
-        #eyeIcon:hover, #eyeConfirmIcon:hover {
+        #eyeIcon:hover,
+        #eyeConfirmIcon:hover {
             color: #66a3a1;
         }
-
     </style>
 </head>
 
@@ -158,7 +218,8 @@
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number" required>
+                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
+                            required>
                     </div>
                 </div>
             </div>
@@ -171,7 +232,8 @@
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Password" name="password" id="password" required>
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="password"
+                        required>
                     <span class="input-group-text" id="togglePassword">
                         <i class="fas fa-eye" id="eyeIcon"></i>
                     </span>
@@ -180,7 +242,8 @@
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="Confirm Password" name="password_confirmation" id="confirmPassword" required>
+                    <input type="password" class="form-control" placeholder="Confirm Password"
+                        name="password_confirmation" id="confirmPassword" required>
                     <span class="input-group-text" id="toggleConfirmPassword">
                         <i class="fas fa-eye" id="eyeConfirmIcon"></i>
                     </span>
@@ -197,7 +260,35 @@
         </form>
     </div>
 
+    <div id="customSpinnerLoader"
+        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+        style="background: rgba(0,0,0,0.5); z-index: 9999;">
+        <div class="spinner">
+            <div class="outer">
+                <div class="inner tl"></div>
+                <div class="inner tr"></div>
+                <div class="inner br"></div>
+                <div class="inner bl"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        function showCustomSpinner() {
+            document.getElementById('customSpinnerLoader').classList.remove('d-none');
+        }
+
+        function hideCustomSpinner() {
+            document.getElementById('customSpinnerLoader').classList.add('d-none');
+        }
+
+        window.addEventListener('beforeunload', function() {
+            showCustomSpinner();
+        });
+    </script>
+
     @if (session('msg'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -224,7 +315,7 @@
     @endif
 
     <script>
-        document.getElementById('togglePassword').addEventListener('click', function () {
+        document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -232,7 +323,7 @@
             eyeIcon.classList.toggle('fa-eye-slash');
         });
 
-        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
             const confirmPasswordInput = document.getElementById('confirmPassword');
             const eyeConfirmIcon = document.getElementById('eyeConfirmIcon');
             const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -241,4 +332,5 @@
         });
     </script>
 </body>
+
 </html>

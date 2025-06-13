@@ -233,11 +233,16 @@
             document.querySelectorAll('.btn-pay').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
+                    showCustomSpinner();
 
                     const orderId = this.dataset.id;
                     const payUrl = this.dataset.url;
 
-                    if (!orderId || !payUrl) return alert('Order ID or URL not found');
+                    if (!orderId || !payUrl) {
+                        alert('Order ID or URL not found');
+                        hideCustomSpinner();
+                        return;
+                    }
 
                     fetch(payUrl, {
                             method: 'POST',
@@ -279,32 +284,41 @@
                                                 window.location.href =
                                                     "{{ route('orders.history') }}";
                                             })
-                                            .catch(() => alert(
-                                                'Failed to update payment status.'
-                                            ));
+                                            .catch(() => {
+                                                alert(
+                                                    'Failed to update payment status.'
+                                                    );
+                                                hideCustomSpinner();
+                                            });
                                     },
                                     onPending: function() {
                                         window.location.href =
                                             "{{ route('orders.pending') }}";
+                                        hideCustomSpinner();
                                     },
                                     onError: function() {
                                         alert('Payment error occurred.');
+                                        hideCustomSpinner();
                                     },
                                     onClose: function() {
-                                        "{{ route('orders.pending') }}";
+                                        hideCustomSpinner();
                                     }
                                 });
                             } else if (data.message) {
                                 alert(data.message);
+                                hideCustomSpinner();
                             } else if (data.error) {
                                 alert(data.error);
+                                hideCustomSpinner();
                             } else {
                                 alert('Failed to get payment token.');
+                                hideCustomSpinner();
                             }
                         })
                         .catch(error => {
                             console.error(error);
                             alert('Network error occurred.');
+                            hideCustomSpinner();
                         });
                 });
             });

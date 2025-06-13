@@ -281,6 +281,7 @@
                 }
 
                 try {
+                    showCustomSpinner();
                     const response = await fetch('{{ route('get-shipping-cost') }}', {
                         method: 'POST',
                         headers: {
@@ -325,6 +326,7 @@
                         `<option value="" disabled selected>Gagal memuat layanan</option>`;
                 } finally {
                     updateSummaryDisplay();
+                    hideCustomSpinner();
                 }
             }
 
@@ -424,6 +426,7 @@
                     .value;
 
                 try {
+                    showCustomSpinner();
                     const formData = new FormData(checkoutForm);
                     const response = await fetch(checkoutForm.action, {
                         method: 'POST',
@@ -468,6 +471,7 @@
                                         'Terjadi kesalahan saat mengupdate status pembayaran.'
                                     );
                                 }
+                                hideCustomSpinner();
                             },
                             onPending: async function(result) {
                                 try {
@@ -497,10 +501,12 @@
                                 }
 
                                 window.location.href = '{{ route('orders.pending') }}';
+                                hideCustomSpinner();
                             },
                             onError: function(result) {
                                 console.error(result);
                                 alert('Pembayaran Gagal: ' + result.status_message);
+                                hideCustomSpinner();
                             },
                             onClose: async function() {
                                 try {
@@ -525,6 +531,7 @@
                                     'Kamu menutup pembayaran sebelum memilih metode. Order dibatalkan.'
                                 );
                                 window.location.href = '{{ route('home.index') }}';
+                                hideCustomSpinner();
                             }
                         });
                     } else {

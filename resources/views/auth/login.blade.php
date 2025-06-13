@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/spinner.css">
     <style>
         body {
             background: linear-gradient(135deg, #66a3a1, #99bc85);
@@ -200,26 +201,33 @@
         }
 
         .btn-google {
-        background-color: #e0e0e0; /* Ubah latar belakang menjadi abu-abu muda saat hover */
-        color: #000000; /* Teks tetap berwarna biru saat hover */
-        width: 100%;
-        border-radius: 30px;
-        padding: 10px 15px;
-        display: flex;
-        font-weight: bold;
-        align-items: center;
-        justify-content: center; /* Center the content */
+            background-color: #e0e0e0;
+            /* Ubah latar belakang menjadi abu-abu muda saat hover */
+            color: #000000;
+            /* Teks tetap berwarna biru saat hover */
+            width: 100%;
+            border-radius: 30px;
+            padding: 10px 15px;
+            display: flex;
+            font-weight: bold;
+            align-items: center;
+            justify-content: center;
+            /* Center the content */
         }
 
         .btn-google img {
-        margin-right: 10px; /* Maintain space between icon and text */
+            margin-right: 10px;
+            /* Maintain space between icon and text */
         }
 
 
         .btn-google:hover {
-        background-color: rgb(238, 238, 238); /* Latar belakang putih */
-        border: 1px solid #4285F4; /* Border berwarna biru Google */
-        color: #4285F4; /* Teks berwarna biru Google */
+            background-color: rgb(238, 238, 238);
+            /* Latar belakang putih */
+            border: 1px solid #4285F4;
+            /* Border berwarna biru Google */
+            color: #4285F4;
+            /* Teks berwarna biru Google */
         }
 
         .btn-login:hover {
@@ -325,15 +333,29 @@
             </div>
             <div class="mb-3">
                 <a href="{{ route('google.redirect') }}" class="btn btn-google">
-                    <img src="{{ asset('image/google-icon.png') }}" alt="Google Icon" style="width: 20px; height: 20px; margin-right: 10px;">
+                    <img src="{{ asset('image/google-icon.png') }}" alt="Google Icon"
+                        style="width: 20px; height: 20px; margin-right: 10px;">
                     Sign in with Google
                 </a>
             </div>
-            <di class="text-center text-muted">
+            <div class="text-center text-muted">
                 <a>Don't have an account? <a href="{{ route('register') }}"> Sign Up</a><br>
-                <a href="{{ route('forgot-password') }}">Forgot Password?</a>
+                    <a href="{{ route('forgot-password') }}">Forgot Password?</a>
             </div>
         </form>
+    </div>
+
+    <div id="customSpinnerLoader"
+        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+        style="background: rgba(0,0,0,0.5); z-index: 9999;">
+        <div class="spinner">
+            <div class="outer">
+                <div class="inner tl"></div>
+                <div class="inner tr"></div>
+                <div class="inner br"></div>
+                <div class="inner bl"></div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
@@ -361,6 +383,20 @@
             });
         </script>
     @endif
+
+    <script>
+        function showCustomSpinner() {
+            document.getElementById('customSpinnerLoader').classList.remove('d-none');
+        }
+
+        function hideCustomSpinner() {
+            document.getElementById('customSpinnerLoader').classList.add('d-none');
+        }
+
+        window.addEventListener('beforeunload', function() {
+            showCustomSpinner();
+        });
+    </script>
 
     <script>
         const togglePassword = document.getElementById("togglePassword");

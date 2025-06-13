@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/navbar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/footer.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/spinner.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
@@ -73,6 +74,20 @@
 
     @yield('chat')
 
+    <!-- Custom Spinner Loader -->
+    <div id="customSpinnerLoader"
+        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+        style="background: rgba(0,0,0,0.5); z-index: 9999;">
+        <div class="spinner">
+            <div class="outer">
+                <div class="inner tl"></div>
+                <div class="inner tr"></div>
+                <div class="inner br"></div>
+                <div class="inner bl"></div>
+            </div>
+        </div>
+    </div>
+
     {{-- Include Sidebar --}}
     @auth
         @if (Auth::user()->role == 'admin')
@@ -106,6 +121,22 @@
     <script src="{{ asset('pemai/js/sidebar.js') }}"></script>
 
     @vite('resources/js/bootstrap.js')
+
+    {{-- Loader --}}
+    <script>
+        function showCustomSpinner() {
+            document.getElementById('customSpinnerLoader').classList.remove('d-none');
+        }
+
+        function hideCustomSpinner() {
+            document.getElementById('customSpinnerLoader').classList.add('d-none');
+        }
+
+        window.addEventListener('beforeunload', function() {
+            showCustomSpinner();
+        });
+    </script>
+
     {{-- notif --}}
     <script>
         const userRole = "{{ auth()->check() ? auth()->user()->role : '' }}";
