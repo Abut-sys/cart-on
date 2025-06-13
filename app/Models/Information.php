@@ -2,23 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Information extends Model
 {
-    protected $table = 'information';
+    use HasFactory;
+
+    protected $table = 'information'; // Optional, jika mengikuti konvensi Laravel, boleh dihapus
 
     protected $fillable = [
         'title',
         'description',
-        'type',
         'rating',
         'rating_count',
-        'image_url',
-        'is_active',
     ];
 
+    /**
+     * Relasi polymorphic ke reviews.
+     */
     public function reviews()
     {
         return $this->morphMany(Review::class, 'reviewable');

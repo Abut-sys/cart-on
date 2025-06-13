@@ -8,6 +8,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\ProductController;
@@ -57,6 +58,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/chat', [ChatController::class, 'index']);
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+
+    Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
+    Route::get('/rating/check', [RatingController::class, 'check'])->name('rating.check');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
