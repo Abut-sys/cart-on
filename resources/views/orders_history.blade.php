@@ -14,7 +14,6 @@
                     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
                         <p class="th-subtitle text-muted mb-0">List of all your transactions</p>
 
-                        {{-- Filter Group --}}
                         <div class="th-filter-group">
                             <button type="button" class="th-filter-btn filter-active" data-status="all">All</button>
                             @foreach (['pending', 'packaged', 'shipped', 'delivered', 'canceled'] as $status)
@@ -30,9 +29,40 @@
                     @forelse ($orders as $order)
                         <div class="th-transaction-card" data-order-status="{{ $order->order_status }}"
                             data-payment-status="{{ $order->payment_status }}">
-
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div class="tracking-resi-wrapper d-flex align-items-center gap-2">
+                                    @if (in_array($order->order_status, ['delivered', 'completed']))
+                                        @php
+                                            $hasReview = $order->reviewProducts->count() >= $order->checkouts->count(); // semua produk diorder sudah direview
+                                        @endphp
+
+                                        @if (!$order->is_confirmed)
+                                            <form action="{{ route('orders.confirm', $order->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success">Konfirmasi Pesanan</button>
+                                            </form>
+                                        @else
+                                            @if ($hasReview)
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @foreach ($order->reviewProducts as $review)
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                <i class="fas fa-star{{ $i <= $review->rating ? '' : '-o' }}"
+                                                                    style="color: gold;"></i>
+                                                            @endfor
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#ratingModal{{ $order->id }}">
+                                                    Rating Produk
+                                                </button>
+                                            @endif
+                                        @endif
+
+                                    @endif
+
                                     @if ($order->tracking_url)
                                         <a href="{{ $order->tracking_url }}" target="_blank"
                                             class="btn btn-sm btn-outline-primary btn-track" style="display: none;">
@@ -62,25 +92,19 @@
 
                             <div class="th-transaction-header">
                                 <div class="th-meta-group">
-                                    <h3 class="th-transaction-id">
-                                        {{ $order->unique_order_id }}
-                                    </h3>
+                                    <h3 class="th-transaction-id">{{ $order->unique_order_id }}</h3>
                                     <p class="th-transaction-date">
                                         <i class="fas fa-calendar-alt mr-2"></i>
                                         {{ $order->order_date->format('d F Y, H:i') }}
                                     </p>
                                 </div>
-
                                 <div class="th-status-group">
-                                    <p class="th-total-amount">
-                                        Total: Rp {{ number_format($order->amount, 0, ',', '.') }}
+                                    <p class="th-total-amount">Total: Rp {{ number_format($order->amount, 0, ',', '.') }}
                                     </p>
-                                    <p class="th-shipping-cost text-muted">
-                                        Shipping: Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}
-                                    </p>
-                                    <p class="th-voucher-cost text-muted">
-                                        Voucher Used: {{ $order->checkouts->first()->voucher_code ?? '-' }}
-                                    </p>
+                                    <p class="th-shipping-cost text-muted">Shipping: Rp
+                                        {{ number_format($order->shipping_cost, 0, ',', '.') }}</p>
+                                    <p class="th-voucher-cost text-muted">Voucher Used:
+                                        {{ $order->checkouts->first()->voucher_code ?? '-' }}</p>
                                 </div>
                             </div>
 
@@ -113,37 +137,26 @@
                                             </div>
 
                                             <div class="th-product-info">
-                                                <h4 class="th-product-name">
-                                                    {{ $productName }}
-                                                </h4>
-
+                                                <h4 class="th-product-name">{{ $productName }}</h4>
                                                 <div class="th-product-meta">
-                                                    <span class="th-product-category">
-                                                        <i class="fas fa-tag"></i> {{ $categoryName }}
-                                                    </span>
-                                                    <span class="th-product-brand">
-                                                        <i class="fas fa-copyright"></i> {{ $brandName }}
-                                                    </span>
+                                                    <span class="th-product-category"><i class="fas fa-tag"></i>
+                                                        {{ $categoryName }}</span>
+                                                    <span class="th-product-brand"><i class="fas fa-copyright"></i>
+                                                        {{ $brandName }}</span>
                                                 </div>
-
                                                 @if ($product && $product->description)
                                                     <p class="th-product-description">
-                                                        {{ Str::limit($product->description, 100) }}
-                                                    </p>
+                                                        {{ Str::limit($product->description, 100) }}</p>
                                                 @endif
                                             </div>
                                         </div>
 
                                         <div class="th-order-details">
                                             <div class="th-price-info">
-                                                <p class="th-unit-price">
-                                                    Rp {{ number_format($productPrice, 0, ',', '.') }}
+                                                <p class="th-unit-price">Rp {{ number_format($productPrice, 0, ',', '.') }}
                                                 </p>
-                                                <p class="th-product-quantity">
-                                                    x{{ $checkout->quantity }}
-                                                </p>
+                                                <p class="th-product-quantity">x{{ $checkout->quantity }}</p>
                                             </div>
-
                                             <div class="th-total-price">
                                                 Rp {{ number_format($checkout->quantity * $productPrice, 0, ',', '.') }}
                                             </div>
@@ -167,6 +180,7 @@
                         </div>
                     @endforelse
                 </div>
+
                 @if ($orders->hasPages())
                     <div class="th-pagination-wrapper mt-5">
                         {{ $orders->links('components.pagination') }}
@@ -176,6 +190,13 @@
         </div>
     </div>
 
+    {{-- Rating Modals --}}
+    @foreach ($orders as $order)
+        @if ($order->is_confirmed)
+            @include('components.ratingPorductListOrder')
+        @endif
+    @endforeach
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterButtons = document.querySelectorAll('.th-filter-btn');
@@ -184,7 +205,6 @@
             function updateTrackingVisibility() {
                 transactionCards.forEach(card => {
                     const orderStatus = card.dataset.orderStatus;
-
                     const btnTrack = card.querySelector('.btn-track');
                     const resiInfo = card.querySelector('.resi-info');
 
@@ -202,24 +222,18 @@
             }
 
             transactionCards.forEach(card => card.style.display = 'block');
-
             updateTrackingVisibility();
 
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const status = this.dataset.status;
-
                     filterButtons.forEach(btn => btn.classList.remove('filter-active'));
                     this.classList.add('filter-active');
 
                     transactionCards.forEach(card => {
                         const orderStatus = card.dataset.orderStatus;
-
-                        if (status === 'all') {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = orderStatus === status ? 'block' : 'none';
-                        }
+                        card.style.display = (status === 'all' || orderStatus === status) ?
+                            'block' : 'none';
                     });
 
                     updateTrackingVisibility();

@@ -79,6 +79,10 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
 
     Route::get('/orders/history', [ListOrderController::class, 'history'])->name('orders.history');
+    Route::post('/orders/{order}/confirm', [ListOrderController::class, 'confirm'])->name('orders.confirm');
+    Route::post('/orders/{order}/rate', [ListOrderController::class, 'rate'])->name('orders.rate');
+
+
     Route::get('/orders/pending', [WaitingPaymentController::class, 'pending'])->name('orders.pending');
     Route::delete('/orders/{order}/cancel', [WaitingPaymentController::class, 'cancel'])->name('orders.cancel');
     Route::post('/order/{order}/pay', [WaitingPaymentController::class, 'triggerPayment'])->name('orders.triggerPayment');

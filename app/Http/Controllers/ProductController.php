@@ -100,7 +100,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with(['subCategory', 'brand', 'subVariant', 'images', 'markupPercentage', 'ppnAmount'])->findOrFail($id);
+        $product = Product::with(['subCategory', 'brand', 'subVariant', 'images', 'markup'])->findOrFail($id);
 
         return view('products.show', compact('product'));
     }
@@ -122,6 +122,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
+            'markup' => 'required|numeric|min:0|max:100',   
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'sub_category_product_id' => 'required|exists:sub_category_products,id',
             'brand_id' => 'required|exists:brands,id',

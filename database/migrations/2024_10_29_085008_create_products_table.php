@@ -19,8 +19,8 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->decimal('old_price', 10, 2)->nullable();
             $table->longText('description');
-            $table->float('rating', 2, 1)->default(0); // ⬅️ rating rata-rata
-            $table->unsignedInteger('rating_count')->default(0); // ⬅️ jumlah ulasan
+            $table->float('rating', 2, 1)->default(0);
+            $table->unsignedInteger('rating_count')->default(0);
             $table->bigInteger('sales')->default(0);
             $table->timestamps();
         });
