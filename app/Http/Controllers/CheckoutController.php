@@ -229,19 +229,13 @@ class CheckoutController extends Controller
 
                     $itemBasePrice = round($cart->product->price * $cart->quantity);
 
-                    $itemDiscountAllocation = 0;
-                    if ($rawProductTotal > 0) {
-                        $itemDiscountAllocation = ($discountAmount * ($itemBasePrice / $rawProductTotal));
-                    }
-                    $itemDiscountAllocation = round($itemDiscountAllocation);
-
                     $itemShippingAllocation = 0;
                     if ($totalQuantity > 0) {
                         $itemShippingAllocation = ($shippingCost * ($cart->quantity / $totalQuantity));
                     }
                     $itemShippingAllocation = round($itemShippingAllocation);
 
-                    $itemAmountForCheckout = max(0, $itemBasePrice - $itemDiscountAllocation);
+                    $itemAmountForCheckout = max(0, $itemBasePrice);
                     $itemAmountForCheckout = round($itemAmountForCheckout);
 
                     $checkout = Checkout::create([
@@ -280,7 +274,7 @@ class CheckoutController extends Controller
 
                 $itemBasePrice = round($product->price * $sourceItem->quantity);
 
-                $itemAmountForCheckout = max(0, $itemBasePrice - $discountAmount);
+                $itemAmountForCheckout = max(0, $itemBasePrice);
                 $itemAmountForCheckout = round($itemAmountForCheckout);
 
                 $checkout = Checkout::create([

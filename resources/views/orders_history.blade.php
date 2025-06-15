@@ -72,6 +72,26 @@
                                 </div>
 
                                 <div class="th-status-group">
+                                    @php
+                                        $voucher = null;
+                                        $totalBeforeDiscount = 0;
+                                        $totalVoucherDiscount = 0;
+
+                                        foreach ($order->checkouts as $checkout) {
+                                            $totalBeforeDiscount += $checkout->amount * $checkout->quantity;
+                                        }
+
+                                        $voucher = $order->checkouts->firstWhere('voucher_code', '!=', null)?->voucher;
+
+                                        if ($voucher) {
+                                            if ($voucher->type === 'percentage') {
+                                                $totalVoucherDiscount =
+                                                    ($voucher->discount_value / 100) * $totalBeforeDiscount;
+                                            } else {
+                                                $totalVoucherDiscount = $voucher->discount_value;
+                                            }
+                                        }
+                                    @endphp
                                     <p class="th-total-amount">
                                         Total: Rp {{ number_format($order->amount, 0, ',', '.') }}
                                     </p>
@@ -79,7 +99,14 @@
                                         Shipping: Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}
                                     </p>
                                     <p class="th-voucher-cost text-muted">
-                                        Voucher Used: {{ $order->checkouts->first()->voucher_code ?? '-' }}
+                                        <span>Voucher: </span>
+                                        <span>
+                                            @if ($totalVoucherDiscount > 0)
+                                                -Rp{{ number_format($totalVoucherDiscount, 0, ',', '.') }}
+                                            @else
+                                                Not applied
+                                            @endif
+                                        </span>
                                     </p>
                                 </div>
                             </div>
