@@ -51,7 +51,7 @@ class CartController extends Controller
         $size = $request->size;
         $color = $request->color;
 
-        $product = Product::findOrFail($productId);
+        Product::findOrFail($productId);
 
         if ($size || $color) {
             $variant = SubVariant::where('product_id', $productId)
@@ -69,6 +69,12 @@ class CartController extends Controller
             ->where('size', $size)
             ->where('color', $color)
             ->first();
+
+        $currentQTY = $cart ? $cart->quantity : 0;
+
+        if ($currentQTY + $quantity > $variant->stock) {
+            return redirect()->back()->with('error', 'Cannot add more than available stock. Your cart quantity for this product variant ' . ($currentQTY));
+        }
 
         if ($cart) {
             $cart->quantity += $quantity;
