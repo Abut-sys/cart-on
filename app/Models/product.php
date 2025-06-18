@@ -10,7 +10,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sub_category_product_id', 'brand_id', 'name', 'price', 'description', 'sales', 'color', 'size', 'old_price'];
+    protected $fillable = ['sub_category_product_id', 'brand_id', 'name', 'price', 'description', 'sales', 'color', 'size', 'old_price', 'rating', 'rating_count',];
 
     protected $casts = [
         'color' => 'array',
@@ -57,8 +57,8 @@ class Product extends Model
         return $this->hasOne(ProductImage::class)->orderBy('id');
     }
 
-    public function reviews()
+    public function reviewProducts()
     {
-        return $this->morphMany(Review::class, 'reviewable');
+        return $this->hasMany(ReviewProduct::class);
     }
 }

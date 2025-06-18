@@ -39,6 +39,7 @@ class LoginController extends Controller
 
         // Coba login
         if (Auth::attempt($attributes)) {
+            session(['login_time' => now()]);
             $this->storeWishlistToSession(Auth::user());
 
             return $this->redirectUserByRole();
@@ -71,6 +72,7 @@ class LoginController extends Controller
         if ($existingUser) {
             // Jika pengguna sudah ada, login
             Auth::login($existingUser);
+            session(['login_time' => now()]);
         } else {
             // Jika pengguna baru, buat akun
             $newUser = User::create([
@@ -83,6 +85,7 @@ class LoginController extends Controller
                 'google_id' => $user->getId(), // Simpan Google ID jika diperlukan
             ]);
             Auth::login($newUser);
+            session(['login_time' => now()]);
             return redirect()->route('password.create');
         }
 

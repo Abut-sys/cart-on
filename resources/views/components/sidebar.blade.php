@@ -51,11 +51,6 @@
                 <i class="fas fa-users icon"></i> Account
             </a>
         </div>
-        <div class="nav-item">
-            <a href="{{ route('informations.index') }}" class="{{ request()->is('settings') ? 'active' : '' }}">
-                <i class="fas fa-cog icon"></i> Information Web
-            </a>
-        </div>
         <div class="logout-container">
             <a href="{{ route('logout') }}" class="logout-link"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
