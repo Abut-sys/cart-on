@@ -103,4 +103,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(ReviewProduct::class);
     }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Chat::class, 'from_user_id');
+    }
+
+    public function receivedMessages()
+    {
+        return $this->hasMany(Chat::class, 'to_user_id');
+    }
 }

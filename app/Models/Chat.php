@@ -2,24 +2,29 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Chat extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'from_user_id',
+        'to_user_id',
         'message',
-        'sender',
+        'is_read',
     ];
 
-    /**
-     * Relasi ke user (pengguna yang berkomunikasi dengan admin)
-     */
-    public function user()
+    // Pengirim pesan
+    public function fromUser()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'from_user_id');
+    }
+
+    // Penerima pesan
+    public function toUser()
+    {
+        return $this->belongsTo(User::class, 'to_user_id');
     }
 }

@@ -22,18 +22,23 @@ class HomeController extends Controller
 
         // Fetch chat messages for authenticated users
         $messages = auth()->check()
-            ? Chat::where('user_id', auth()->id())->get()
-            : collect(); // Empty collection for guests
+            ? Chat::where('from_user_id', auth()->id())
+                ->orWhere('to_user_id', auth()->id())
+                ->get()
+            : collect();
 
         // Get all products
         $products = Product::all();
 
-        return view('home_user.home', compact(
-            'categories',
-            'products',
-            'userCartIds',
-            'userWishlistIds',
-            'messages' // Include messages in the view data
-        ));
+        return view(
+            'home_user.home',
+            compact(
+                'categories',
+                'products',
+                'userCartIds',
+                'userWishlistIds',
+                'messages', // Include messages in the view data
+            ),
+        );
     }
 }

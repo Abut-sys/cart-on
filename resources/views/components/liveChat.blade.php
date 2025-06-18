@@ -242,6 +242,7 @@
                     opacity: 0;
                     transform: translateY(15px);
                 }
+
                 to {
                     opacity: 1;
                     transform: translateY(0);
@@ -252,9 +253,11 @@
                 0% {
                     transform: translateY(0px);
                 }
+
                 50% {
                     transform: translateY(-8px);
                 }
+
                 100% {
                     transform: translateY(0px);
                 }
@@ -313,14 +316,19 @@
             }
 
             @keyframes bounce {
-                0%, 60%, 100% {
+
+                0%,
+                60%,
+                100% {
                     transform: translateY(0);
                 }
+
                 30% {
                     transform: translateY(-5px);
                 }
             }
         </style>
+
 
         <div class="chat-wrapper">
             <div class="chatbox" id="chatbox">
@@ -334,13 +342,20 @@
                 </div>
 
                 <div class="chat-messages" id="chatMessages">
-                    <div class="message bot-message">Hello! How can I help you today? 😊</div>
-                    <div class="message bot-message">We're here to answer your questions. Feel free to ask anything!</div>
+                    @foreach ($messages as $message)
+                        @if ($message->from_user_id === auth()->id())
+                            <div class="message user-message">{{ $message->message }}</div>
+                        @else
+                            <div class="message admin-message">{{ $message->message }}</div>
+                        @endif
+                    @endforeach
                 </div>
 
                 <div class="chat-input">
-                    <input type="text" id="messageInput" placeholder="Type a message..."
-                        onkeypress="handleKeyPress(event)">
+                    {{-- Hidden to_user_id, misalnya admin id = 1 --}}
+                    <input type="hidden" id="toUserId" value="1">
+
+                    <input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
                     <button onclick="sendMessage()" aria-label="Send message">
                         <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
@@ -366,6 +381,7 @@
             </button>
         </div>
 
+
         <script>
             function toggleChat() {
                 const chatbox = document.getElementById('chatbox');
@@ -384,38 +400,62 @@
             function sendMessage() {
                 const input = document.getElementById('messageInput');
                 const message = input.value.trim();
+                const toUserId = document.getElementById('toUserId').value;
                 const chatMessages = document.getElementById('chatMessages');
 
                 if (message) {
-                    // Add user message
+                    // Tampilkan pesan user langsung
                     const userMessage = document.createElement('div');
                     userMessage.className = 'message user-message';
                     userMessage.textContent = message;
                     chatMessages.appendChild(userMessage);
-
                     input.value = '';
-
-                    // Show typing indicator
-                    const typingIndicator = document.createElement('div');
-                    typingIndicator.className = 'typing-indicator';
-                    typingIndicator.innerHTML = '<span></span><span></span><span></span>';
-                    chatMessages.appendChild(typingIndicator);
-
-                    // Auto-scroll to bottom
                     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                    // Simulate bot response
-                    setTimeout(() => {
-                        typingIndicator.remove();
+                    // Kirim ke backend
+                    fetch("{{ route('chat.send') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            to_user_id: toUserId
+                        })
+                    }).then(response => {
+                        if (!response.ok) {
+                            alert("Gagal mengirim pesan");
+                        } else {
+                            // Bot response setelah pengiriman sukses
+                            setTimeout(() => {
+                                const botResponse = document.createElement('div');
+                                botResponse.className = 'message admin-message';
 
-                        const botResponse = document.createElement('div');
-                        botResponse.className = 'message bot-message';
-                        botResponse.textContent = 'Thanks for your message! Our team will respond shortly.';
-                        chatMessages.appendChild(botResponse);
+                                // Bot logic: ubah sesuai kebutuhan
+                                if (message.toLowerCase().includes("refund")) {
+                                    botResponse.textContent =
+                                        "Mohon tunggu, kami akan bantu proses refund Anda segera.";
+                                } else if (message.toLowerCase().includes("produk")) {
+                                    botResponse.textContent =
+                                        "Silakan sebutkan nama produk yang Anda maksud 😊";
+                                } else {
+                                    if (!sessionStorage.getItem('hasThanksResponse')) {
+                                        botResponse.textContent =
+                                            "Terima kasih! Admin kami akan segera menghubungi Anda.";
+                                        sessionStorage.setItem('hasThanksResponse', 'true');
+                                    } else {
+                                        return; // Jangan tampilkan respon bot lagi
+                                    }
+                                }
 
-                        // Auto-scroll to bottom
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }, 2000);
+                                chatMessages.appendChild(botResponse);
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }, 1000);
+                        }
+                    }).catch(error => {
+                        console.error("Error:", error);
+                    });
                 }
             }
         </script>
