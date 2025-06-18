@@ -60,10 +60,7 @@ class VoucherController extends Controller
             'usage_limit' => 'required|integer|min:1',
         ]);
 
-        $voucher = Voucher::create($validatedData);
-        $voucher->updateStatus();
-
-        event(new VoucherStatusChanged($voucher));
+        Voucher::create($validatedData);
 
         return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully!');
     }
@@ -129,6 +126,11 @@ class VoucherController extends Controller
                 $query->where('status', 'active')
                     ->where('start_date', '<=', Carbon::now())
                     ->where('end_date', '>=', Carbon::now());
+            })
+            ->whereNotIn('voucher_id', function ($query) {
+                $query->select('voucher_id')
+                    ->from('user_voucher')
+                    ->where('user_id', Auth::id());
             })
             ->get();
 

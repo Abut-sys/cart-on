@@ -49,6 +49,12 @@ class Voucher extends Model
         return $this->hasMany(ClaimVoucher::class);
     }
 
+    public function claimedUsers()
+    {
+        return $this->belongsToMany(User::class, 'claim_voucher');
+    }
+
+
     public function scopeActive($query)
     {
         return $query->whereDate('start_date', '<=', Carbon::today())
@@ -77,8 +83,8 @@ class Voucher extends Model
 
     public function isActive()
     {
-        return $this->status === 'active'
-            && Carbon::today()->between($this->start_date, $this->end_date) && $this->usage_limit > 0;
+        return Carbon::today()->between($this->start_date, $this->end_date)
+            && $this->used_count < $this->usage_limit;
     }
 
     public function updateStatus()

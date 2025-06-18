@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Voucher;
-use Carbon\Carbon;
-use App\Events\VoucherStatusChanged;
+use App\Models\User;
+use App\Notifications\VoucherNotification;
 
 class UpdateVoucherStatus extends Command
 {
@@ -14,35 +14,35 @@ class UpdateVoucherStatus extends Command
 
     public function handle()
     {
-        $today = Carbon::today();
+        $this->info('Updating voucher statuses...');
 
-        $activeVouchers = Voucher::where('status', 'inactive')
-            ->where('start_date', '<=', $today)
-            ->where('end_date', '>=', $today)
-            ->pluck('id');
+        $count = 0;
 
-        if ($activeVouchers->isNotEmpty()) {
-            Voucher::whereIn('id', $activeVouchers)
-                ->update(['status' => 'active']);
+        Voucher::all()->each(function ($voucher) use (&$count) {
+            $oldStatus = $voucher->status;
+            $voucher->updateStatus();
 
-            foreach ($activeVouchers as $voucherId) {
-                event(new VoucherStatusChanged(Voucher::find($voucherId)));
+            if ($voucher->status !== $oldStatus) {
+                $this->info("Voucher [{$voucher->code}] status changed: {$oldStatus} -> {$voucher->status}");
+                $count++;
+
+                if ($voucher->status === 'inactive') {
+                    foreach ($voucher->claimedUsers as $user) {
+                        $user->notify(new VoucherNotification(
+                            "Your voucher {$voucher->code} has expired."
+                        ));
+                    }
+
+                    $admins = User::where('role', 'admin')->get();
+                    foreach ($admins as $admin) {
+                        $admin->notify(new VoucherNotification(
+                            "Voucher {$voucher->code} has expired."
+                        ));
+                    }
+                }
             }
-        }
+        });
 
-        $inactiveVouchers = Voucher::where('status', 'active')
-            ->where('end_date', '<', $today)
-            ->pluck('id');
-
-        if ($inactiveVouchers->isNotEmpty()) {
-            Voucher::whereIn('id', $inactiveVouchers)
-                ->update(['status' => 'inactive']);
-
-            foreach ($inactiveVouchers as $voucherId) {
-                event(new VoucherStatusChanged(Voucher::find($voucherId)));
-            }
-        }
-
-        $this->info('Voucher statuses updated successfully.');
+        $this->info("Finished! {$count} voucher(s) updated.");
     }
 }
