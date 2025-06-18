@@ -21,9 +21,12 @@
                             <i class="fas fa-filter costumers-index-icon"></i>
                         </button>
                         <div class="costumers-index-filter-menu" id="filterMenu">
-                            <button type="submit" name="role" value="all" {{ request()->role == 'all' ? 'class=active' : '' }}>All Users</button>
-                            <button type="submit" name="role" value="admin" {{ request()->role == 'admin' ? 'class=active' : '' }}>Admin</button>
-                            <button type="submit" name="role" value="user" {{ request()->role == 'user' ? 'class=active' : '' }}>User</button>
+                            <button type="submit" name="role" value="all"
+                                {{ request()->role == 'all' ? 'class=active' : '' }}>All Users</button>
+                            <button type="submit" name="role" value="admin"
+                                {{ request()->role == 'admin' ? 'class=active' : '' }}>Admin</button>
+                            <button type="submit" name="role" value="user"
+                                {{ request()->role == 'user' ? 'class=active' : '' }}>User</button>
                         </div>
                     </div>
                     <div class="col-md-4 d-flex justify-content-end">
@@ -68,10 +71,17 @@
                                 <form action="{{ route('costumers.destroy', $user) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger costumers-index-btn-delete-costumers">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-danger costumers-index-btn-delete-costumers">
                                         <i class="fas fa-trash costumers-index-icon"></i>
                                     </button>
                                 </form>
+
+                                <button class="btn btn-sm btn-primary costumers-index-btn-chat"
+                                    onclick="openChatModal({{ $user->id }}, '{{ $user->name }}')">
+                                    <i class="fas fa-comment-dots"></i>
+                                </button>
+
                             </td>
                         </tr>
                     @endforeach
@@ -95,9 +105,12 @@
         document.addEventListener('click', function(event) {
             const filterMenu = document.getElementById('filterMenu');
             const filterBtn = document.querySelector('.costumers-index-filter-btn');
-            if (filterMenu.style.display === 'block' && !filterBtn.contains(event.target) && !filterMenu.contains(event.target)) {
+            if (filterMenu.style.display === 'block' && !filterBtn.contains(event.target) && !filterMenu.contains(
+                    event.target)) {
                 filterMenu.style.display = 'none';
             }
         });
     </script>
 @endsection
+
+@include('components.adminChat')

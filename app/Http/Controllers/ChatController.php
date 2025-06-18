@@ -6,55 +6,54 @@ use App\Models\Chat;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\MessageSent;
 
 class ChatController extends Controller
 {
+    // Tampilkan halaman chat & riwayat pesan user login
     public function index()
     {
-        if (Auth::user()->role === 'admin') {
-            $users = User::where('role', 'user')->get();
-            return view('costumers.index', compact('users'));
-        }
+        $userId = auth()->id();
 
-        // Chat user hanya dengan admin
-        $messages = Chat::where('user_id', Auth::id())->get();
+        $messages = Chat::where('from_user_id', $userId)->orWhere('to_user_id', $userId)->orderBy('created_at')->get();
 
-        return view('home_user.home', compact('messages'));
+        return view('components.liveChat', compact('messages'));
     }
 
-    public function fetchMessages($userId)
-    {
-        // Untuk admin: ambil chat dengan user tertentu
-        // Untuk user: hanya ambil chat milik sendiri
-        $query = Chat::query();
-
-        if (Auth::user()->role === 'admin') {
-            $query->where('user_id', $userId);
-        } else {
-            $query->where('user_id', Auth::id());
-        }
-
-        $messages = $query->orderBy('created_at')->get();
-
-        return response()->json($messages);
-    }
-
+    // Simpan pesan ke database
     public function send(Request $request)
     {
-        $validated = $request->validate([
-            'message' => 'required|string',
-            'user_id' => 'required|exists:users,id'
+        $request->validate([
+            'message' => 'required|string|max:1000',
+            'to_user_id' => 'required|exists:users,id',
         ]);
 
         $chat = Chat::create([
-            'user_id' => Auth::user()->role === 'admin' ? $request->user_id : Auth::id(),
+            'from_user_id' => auth()->id(),
+            'to_user_id' => $request->to_user_id,
             'message' => $request->message,
-            'sender' => Auth::user()->role,
+            'is_read' => false,
         ]);
 
-        // Jika kamu sudah membuat Event MessageSent, bisa seperti ini:
-        // broadcast(new MessageSent($chat))->toOthers();
+        // Trigger event broadcast jika ingin (opsional)
+        broadcast(new \App\Events\MessageSent($chat))->toOthers();
 
-        return response()->json($chat);
+        return response()->json(['message' => 'sent']);
+    }
+
+    public function getChatWithUser($userId)
+    {
+        $adminId = auth()->id();
+
+        $messages = Chat::where(function ($query) use ($adminId, $userId) {
+            $query->where('from_user_id', $adminId)->where('to_user_id', $userId);
+        })
+            ->orWhere(function ($query) use ($adminId, $userId) {
+                $query->where('from_user_id', $userId)->where('to_user_id', $adminId);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json($messages);
     }
 }

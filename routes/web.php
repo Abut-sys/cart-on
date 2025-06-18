@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
     Route::get('/autocomplete/address', [ProfileController::class, 'autocompleteAddress'])->name('autocomplete.address');
 
-    Route::get('/chat', [ChatController::class, 'index']);
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
 
     Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
@@ -72,8 +72,6 @@ Route::middleware('auth')->group(function () {
 // Route untuk user
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/search', [SearchController::class, 'search'])->name('search');
-
-    Route::get('/chat/messages/{userId}', [ChatController::class, 'fetchMessages']);
 
     Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
@@ -160,7 +158,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
     Route::resource('costumers', CostumersController::class);
-    Route::get('/costumers/chat/admin', [ChatController::class, 'adminIndex'])->name('chat.admin');
+    Route::post('/admin/chat/send', [CostumersController::class, 'sendChat'])->name('admin.chat.send');
+
 
     Route::resource('informations', InformationController::class);
 
