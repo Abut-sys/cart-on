@@ -17,7 +17,6 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('vouchers:update-status')->dailyAt('00:00');
         $schedule->command('app:delete-unverified-users')->hourly();
-        $schedule->command('orders:expire-pending')->everyMinute();
 
         $schedule->call(function () {
             $tomorrow = Carbon::tomorrow()->toDateString();
@@ -35,25 +34,7 @@ class Kernel extends ConsoleKernel
                     }
                 }
             }
-        })->daily();
-
-        $schedule->call(function () {
-            $yesterday = Carbon::yesterday()->toDateString();
-
-            $vouchers = Voucher::whereDate('end_date', '<=', $yesterday)->get();
-
-            foreach ($vouchers as $voucher) {
-                foreach ($voucher->claimVoucher as $claim) {
-                    $user = $claim->user;
-                    if ($user) {
-                        $user->notify(new VoucherNotification(
-                            "Voucher {$voucher->code} has expired!",
-                            route('your-vouchers')
-                        ));
-                    }
-                }
-            }
-        })->daily();
+        })->dailyAt('00.00');
     }
 
     /**

@@ -193,10 +193,56 @@
                                                     </div>
                                                     <div class="details-section">
                                                         <h4>Payment Information</h4>
+                                                        @php
+                                                            $voucher = null;
+                                                            $totalBeforeDiscount = 0;
+                                                            $totalVoucherDiscount = 0;
+
+                                                            foreach ($order->checkouts as $checkout) {
+                                                                $totalBeforeDiscount +=
+                                                                    $checkout->amount * $checkout->quantity;
+                                                            }
+
+                                                            $voucher = $order->checkouts->firstWhere(
+                                                                'voucher_code',
+                                                                '!=',
+                                                                null,
+                                                            )?->voucher;
+
+                                                            if ($voucher) {
+                                                                if ($voucher->type === 'percentage') {
+                                                                    $totalVoucherDiscount =
+                                                                        ($voucher->discount_value / 100) *
+                                                                        $totalBeforeDiscount;
+                                                                } else {
+                                                                    $totalVoucherDiscount = $voucher->discount_value;
+                                                                }
+                                                            }
+                                                        @endphp
                                                         <div class="payment-info">
                                                             <div class="info-row">
-                                                                <span>Payment Method:</span>
-                                                                <span>{{ $order->payment_method ?? 'Not specified' }}</span>
+                                                                <span>Shipping:</span>
+                                                                <span>Rp{{ $order->shipping_cost ?? 'Not specified' }}</span>
+                                                            </div>
+                                                            <div class="info-row">
+                                                                <span>Voucher:</span>
+                                                                <span>
+                                                                    @if ($totalVoucherDiscount > 0)
+                                                                        -Rp{{ number_format($totalVoucherDiscount, 0, ',', '.') }}
+                                                                    @else
+                                                                        Not applied
+                                                                    @endif
+
+                                                                    {{-- @if ($voucher)
+                                                                        @if ($voucher->type === 'percentage')
+                                                                            {{ $voucher->discount_value }}%
+                                                                        @else
+                                                                            Rp{{ number_format($voucher->discount_value, 0, ',', '.') }}
+                                                                        @endif
+                                                                    @else
+                                                                        Not applied
+                                                                    @endif --}}
+                                                                </span>
                                                             </div>
                                                             <div class="info-row">
                                                                 <span>Total Amount:</span>
@@ -233,11 +279,16 @@
             document.querySelectorAll('.btn-pay').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
+                    showCustomSpinner();
 
                     const orderId = this.dataset.id;
                     const payUrl = this.dataset.url;
 
-                    if (!orderId || !payUrl) return alert('Order ID or URL not found');
+                    if (!orderId || !payUrl) {
+                        alert('Order ID or URL not found');
+                        hideCustomSpinner();
+                        return;
+                    }
 
                     fetch(payUrl, {
                             method: 'POST',
@@ -279,32 +330,41 @@
                                                 window.location.href =
                                                     "{{ route('orders.history') }}";
                                             })
-                                            .catch(() => alert(
-                                                'Failed to update payment status.'
-                                            ));
+                                            .catch(() => {
+                                                alert(
+                                                    'Failed to update payment status.'
+                                                    );
+                                                hideCustomSpinner();
+                                            });
                                     },
                                     onPending: function() {
                                         window.location.href =
                                             "{{ route('orders.pending') }}";
+                                        hideCustomSpinner();
                                     },
                                     onError: function() {
                                         alert('Payment error occurred.');
+                                        hideCustomSpinner();
                                     },
                                     onClose: function() {
-                                        "{{ route('orders.pending') }}";
+                                        hideCustomSpinner();
                                     }
                                 });
                             } else if (data.message) {
                                 alert(data.message);
+                                hideCustomSpinner();
                             } else if (data.error) {
                                 alert(data.error);
+                                hideCustomSpinner();
                             } else {
                                 alert('Failed to get payment token.');
+                                hideCustomSpinner();
                             }
                         })
                         .catch(error => {
                             console.error(error);
                             alert('Network error occurred.');
+                            hideCustomSpinner();
                         });
                 });
             });

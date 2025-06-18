@@ -54,6 +54,13 @@
                     </div>
                 </div>
 
+                @if (session('error'))
+                    <div id="error-alert-show-user" class="custom-alert-show-user custom-alert-error-show-user">
+                        <strong>Error:</strong> {{ session('error') }}
+                        <button type="button" class="close-btn-show-user" onclick="closeAlert()">&times;</button>
+                    </div>
+                @endif
+
                 <div class="product-user-show-quantity-section d-flex align-items-center mb-4" style="margin-left: -10px;">
                     <strong>Quantity</strong>
                     <div class="input-group ms-3" style="width: 120px;">
@@ -93,7 +100,6 @@
                         <button type="submit" class="btn btn-primary product-user-show-btn-buy-now">Buy Now</button>
                     </form>
                 </div>
-
             </div>
         </div>
         @if (auth()->check())
@@ -179,6 +185,36 @@
             border-color: #99bc85 !important;
             color: #fff !important;
             font-weight: bold;
+        }
+
+        .custom-alert-show-user {
+            width: 100%;
+            margin-left: -10px;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            position: relative;
+            transition: opacity 0.5s ease;
+            opacity: 1;
+        }
+
+        .custom-alert-error-show-user {
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        .close-btn-show-user {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 1;
+            color: inherit;
+            cursor: pointer;
         }
 
         .product-user-show-description {
@@ -469,5 +505,28 @@
         $('#product-user-show-btn-see-more').on('click', function() {
             toggleDescription();
         });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const errorAlert = document.getElementById('error-alert-show-user');
+
+            if (errorAlert) {
+                setTimeout(() => {
+                    errorAlert.style.opacity = '0';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                }, 2000);
+            }
+        });
+
+        function closeAlert() {
+            const errorAlert = document.getElementById('error-alert-show-user');
+            if (errorAlert) {
+                errorAlert.style.opacity = '0';
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            }
+        }
     </script>
 @endsection
