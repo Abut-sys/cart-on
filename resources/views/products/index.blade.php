@@ -1,126 +1,145 @@
 @extends('layouts.index')
 
-@section('title', 'Product')
+@section('title', 'Products')
 
 @section('content')
     <div class="container-fluid mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
-            <h2 class="text-center w-100 fw-bold product-index-title">List of Products</h2>
-            <a href="{{ route('products.create') }}" class="btn btn-success product-index-btn-add">
+        <div class="product-index-head-row mb-4 position-relative">
+            <h2 class="text-center w-100 fw-bold">List of Products</h2>
+            <a href="{{ route('products.create') }}" class="product-index-btn-add">
                 <i class="fas fa-plus"></i> Add Product
             </a>
         </div>
 
-        <div class="product-index-form">
-            <form method="GET" action="{{ route('products.index') }}" class="mb-4">
-                <div class="product-index-head-row d-flex justify-content-between align-items-center">
-                    <div class="product-index-left-col d-flex">
-                        <div class="product-index-col-md-4 me-2">
-                            <input type="text" name="search" class="form-control product-index-search pe-5"
-                                placeholder="Search by ID or Product Name" value="{{ request('search') }}">
-                        </div>
-                        <div class="product-index-col-md-2 me-2">
-                            <div class="d-flex align-items-center position-relative">
-                                <select name="sort_id" class="form-select product-index-select pe-3">
-                                    <option value disabled selected ="">Sort ID</option>
-                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>ASC</option>
-                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>DESC
-                                    </option>
-                                </select>
-                                <i class="fas fa-sort-down position-absolute end-0 me-2 product-index-sort-icon"></i>
-                            </div>
-                        </div>
-                        <div class="product-index-col-md-2">
-                            <div class="d-flex align-items-center position-relative">
-                                <select name="sort_name" class="form-select product-index-select pe-5">
-                                    <option value disabled selected ="">Sort Name</option>
-                                    <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z
-                                    </option>
-                                    <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A
-                                    </option>
-                                </select>
-                                <i class="fas fa-sort-alpha-down position-absolute end-0 me-2 product-index-sort-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-index-right-col">
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn product-index-btn-filter">Search</button>
-                            <a href="{{ route('products.index') }}" class="btn product-index-btn-reset ms-2">Reset</a>
-                        </div>
-                    </div>
+        <form method="GET" action="{{ route('products.index') }}" class="mb-4">
+            <div class="product-index-head-row">
+                <div class="product-index-left-col col-md-4 me-2">
+                    <input type="text" name="search" class="product-index-search"
+                        placeholder="Search by ID, Name, Category, Brand, Variant..." value="{{ request('search') }}">
                 </div>
-            </form>
-        </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="product-index-btn-filter">Search</button>
+                    <a href="{{ route('products.index') }}" class="product-index-btn-reset">Reset</a>
+                </div>
+            </div>
+        </form>
 
         <div class="table-responsive mt-4">
-            <table class="table product-index-table">
+            <table class="product-index-table text-center align-middle">
                 <thead class="product-index-thead-light">
                     <tr>
-                        <th class="product-index-th">ID</th>
-                        <th class="product-index-th">Image</th>
-                        <th class="product-index-th">Name</th>
-                        <th class="product-index-th">SubCategory</th>
-                        <th class="product-index-th">Brand</th>
-                        <th class="product-index-th">Old Price</th>
-                        <th class="product-index-th">Price with Markup & PPN</th>
-                         <th class="product-index-th">Action</th>
+                        @php
+                            $sortableColumns = [
+                                'id' => 'ID',
+                                'name' => 'Name',
+                                'old_price' => 'Old Price',
+                                'price' => 'Price',
+                                'sales' => 'Sales',
+                                'sub_category' => 'SubCategory',
+                                'brand' => 'Brand',
+                                'rating' => 'Rating',
+                            ];
+                        @endphp
+
+                        @foreach ($sortableColumns as $key => $label)
+                            @php
+                                $isSorted = request('sort_column') === $key;
+                                $currentDir = request('sort_direction');
+                                $dir = $isSorted ? ($currentDir === 'asc' ? 'desc' : 'asc') : 'desc';
+                                $icon = $isSorted
+                                    ? 'fas fa-sort-' . ($currentDir === 'asc' ? 'up' : 'down')
+                                    : 'fas fa-sort';
+                            @endphp
+
+                            <th>
+                                <a href="{{ route('products.index', array_merge(request()->query(), ['sort_column' => $key, 'sort_direction' => $dir])) }}"
+                                    class="text-decoration-none text-white">
+                                    {{ $label }} <i class="{{ $icon }}"></i>
+                                </a>
+                            </th>
+                        @endforeach
+
+                        <th>Color</th>
+                        <th>Size</th>
+                        <th>Stock</th>
+                        <th>Image</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @foreach ($products as $product)
+                    @forelse ($products as $product)
                         <tr class="product-index-row">
-                            <td class="product-index-td">{{ $product->id }}</td>
-                            <td class="product-index-td">
-                                @if ($product->images->isNotEmpty())
-                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
-                                        alt="{{ $product->name }}" width="50" class="img-fluid product-index-img">
-                                @else
-                                    <span class="product-index-no-image">No Image</span>
-                                @endif
-                            </td>
-                            <td class="product-index-td">{{ $product->name }}</td>
-                            <td class="product-index-td">{{ $product->subCategory->name ?? 'N/A' }}</td>
-                            <td class="product-index-td">{{ $product->brand->name ?? 'N/A' }}</td>
-                            <td class="product-index-td">Rp {{ number_format($product->old_price, 0, ',', '.') }}</td>
-                            <td class="product-index-td">
-                                Rp
-                                {{ number_format(
-                                    $product->price + ($product->price * $product->markup) / 100 + ($product->price * $product->ppn) / 100,
-                                    0,
-                                    ',',
-                                    '.',
-                                ) }}
+                            <td>{{ $product->id }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>Rp {{ number_format($product->old_price, 0, ',', '.') }}</td>
+                            <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+                            <td>{{ $product->sales }}</td>
+                            <td>{{ $product->subCategory->name ?? 'N/A' }}</td>
+                            <td>{{ $product->brand->name ?? 'N/A' }}</td>
+                            <td>{{ $product->rating }}</td>
+
+                            <td>
+                                <ul class="list-unstyled mb-0">
+                                    @foreach ($product->subVariant as $variant)
+                                        <li>{{ $variant->color }}</li>
+                                    @endforeach
+                                </ul>
                             </td>
 
-                            <td class="product-index-td">
-                                <a href="{{ route('products.edit', $product->id) }}"
-                                    class="btn btn-sm btn-warning product-index-btn-edit">
+                            <td>
+                                <ul class="list-unstyled mb-0">
+                                    @foreach ($product->subVariant as $variant)
+                                        <li>{{ $variant->size }}</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+
+                            <td>
+                                <ul class="list-unstyled mb-0">
+                                    @foreach ($product->subVariant as $variant)
+                                        <li>{{ $variant->stock }}</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+
+                            <td>
+                                @if ($product->images->isNotEmpty())
+                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                                        alt="{{ $product->name }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                @else
+                                    <span>No Image</span>
+                                @endif
+                            </td>
+
+                            <td class="d-flex flex-column gap-1">
+                                <a href="{{ route('products.edit', $product->id) }}" class="product-index-btn-edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST"
-                                    class="d-inline product-index-form-delete">
+                                    onsubmit="return confirm('Are you sure?')" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger product-index-btn-delete">
+                                    <button type="submit" class="product-index-btn-delete">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
-                                <a href="{{ route('products.show', $product->id) }}"
-                                    class="btn btn-sm btn-info product-index-btn-details">
+                                <a href="{{ route('products.show', $product->id) }}" class="product-index-btn-details">
                                     <i class="fas fa-eye"></i> Details
                                 </a>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr class="product-index-row">
+                            <td colspan="14">No products found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         <div class="mt-3">
-            <nav class="product-index-pagination">
-                {{ $products->links('pagination::bootstrap-4') }}
-            </nav>
+            {{ $products->withQueryString()->links('pagination::bootstrap-4') }}
         </div>
     </div>
 @endsection

@@ -12,33 +12,49 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil nilai dari query string
-        $search = $request->input('search');
-        $sortId = $request->input('sort_id');
-        $sortName = $request->input('sort_name');
+        $searchable = ['id', 'name', 'price', 'old_price', 'sales', 'rating'];
+        $variantSearchable = ['color', 'size', 'stock'];
 
-        // Query dasar dengan relasi
         $query = Product::with(['subCategory', 'brand', 'subVariant', 'images']);
 
-        // Filter pencarian berdasarkan ID atau nama produk
-        if ($search) {
-            $query->where('id', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%");
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request, $variantSearchable) {
+                $q->where('id', $request->search)
+                    ->orWhere('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('price', 'like', '%' . $request->search . '%')
+                    ->orWhere('old_price', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('subCategory', fn($sub) => $sub->where('name', 'like', '%' . $request->search . '%'))
+                    ->orWhereHas('brand', fn($brand) => $brand->where('name', 'like', '%' . $request->search . '%'));
+
+                foreach ($variantSearchable as $field) {
+                    $q->orWhereHas('subVariant', fn($variant) => $variant->where($field, 'like', '%' . $request->search . '%'));
+                }
+            });
         }
 
-        // Filter pengurutan berdasarkan ID
-        if ($sortId) {
-            $query->orderBy('id', $sortId);
+        $sortColumn = $request->input('sort_column', 'id');
+        $sortDirection = $request->input('sort_direction', 'asc');
+
+        if (in_array($sortDirection, ['asc', 'desc'])) {
+            if (in_array($sortColumn, $searchable)) {
+                $query->orderBy("products.$sortColumn", $sortDirection);
+            } elseif ($sortColumn === 'sub_category') {
+                $query->leftJoin('sub_category_products', 'products.sub_category_product_id', '=', 'sub_category_products.id')
+                    ->orderBy('sub_category_products.name', $sortDirection)
+                    ->select('products.*');
+            } elseif ($sortColumn === 'brand') {
+                $query->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+                    ->orderBy('brands.name', $sortDirection)
+                    ->select('products.*');
+            } elseif (in_array($sortColumn, $variantSearchable)) {
+                $query->leftJoin('sub_variants', 'products.id', '=', 'sub_variants.product_id')
+                    ->orderBy("sub_variants.$sortColumn", $sortDirection)
+                    ->select('products.*');
+            }
         }
 
-        // Filter pengurutan berdasarkan nama
-        if ($sortName) {
-            $query->orderBy('name', $sortName);
-        }
+        $products = $query->paginate(10)->withQueryString();
 
-        // Ambil hasil dengan pagination
-        $products = $query->paginate(10);
-
-        // Kirim data ke view
         return view('products.index', compact('products'));
     }
 
@@ -100,7 +116,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with(['subCategory', 'brand', 'subVariant', 'images', 'markup'])->findOrFail($id);
+        $product = Product::with(['subCategory', 'brand', 'subVariant', 'images'])->findOrFail($id);
 
         return view('products.show', compact('product'));
     }
@@ -122,7 +138,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'markup' => 'required|numeric|min:0|max:100',   
+            'markup' => 'required|numeric|min:0|max:100',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'sub_category_product_id' => 'required|exists:sub_category_products,id',
             'brand_id' => 'required|exists:brands,id',

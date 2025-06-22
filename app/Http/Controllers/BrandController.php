@@ -14,36 +14,36 @@ class BrandController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil input dari form
-        $search = $request->input('search');
-        $sortId = $request->input('sort_id');
-        $sortName = $request->input('sort_name');
-
-        // Query dasar dengan relasi categoryProduct
+        $searchable = ['id', 'name', 'category'];
+        
         $query = Brand::with('categoryProduct');
 
-        // Filter pencarian berdasarkan ID atau Nama
-        if ($search) {
-            $query->where('id', 'like', "%{$search}%")
-                ->orWhere('name', 'like', "%{$search}%");
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('id', $request->search)
+                    ->orWhere('name', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('categoryProduct', function ($cat) use ($request) {
+                        $cat->where('name', 'like', '%' . $request->search . '%');
+                    });
+            });
         }
 
-        // Sorting berdasarkan ID
-        if ($sortId) {
-            $query->orderBy('id', $sortId);
+        $sortColumn = $request->input('sort_column', 'id');
+        $sortDirection = $request->input('sort_direction', 'asc');
+
+        if (in_array($sortColumn, ['id', 'name']) && in_array($sortDirection, ['asc', 'desc'])) {
+            $query->orderBy($sortColumn, $sortDirection);
+        } elseif ($sortColumn === 'category' && in_array($sortDirection, ['asc', 'desc'])) {
+            $query->join('category_products', 'brands.category_product_id', '=', 'category_products.id')
+                ->orderBy('category_products.name', $sortDirection)
+                ->select('brands.*');
         }
 
-        // Sorting berdasarkan Nama
-        if ($sortName) {
-            $query->orderBy('name', $sortName);
-        }
+        $brands = $query->paginate(5)->withQueryString();
 
-        // Paginate hasilnya
-        $brands = $query->paginate(5);
-
-        // Return ke view dengan data
         return view('brands.index', compact('brands'));
     }
+
 
     /**
      * Show the form for creating a new resource.

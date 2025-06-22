@@ -8,11 +8,11 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    server: {
-        host: "192.168.0.112",
-        port: 5173,
-        hmr: {
-            host: "192.168.0.112",
-        },
-    },
+    // server: {
+    //     host: "192.168.0.112",
+    //     port: 5173,
+    //     hmr: {
+    //         host: "192.168.0.112",
+    //     },
+    // },
 });

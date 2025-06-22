@@ -10,22 +10,32 @@ class CategoryProductController extends Controller
 {
     public function index(Request $request)
     {
+        $searchable = ['id', 'name'];
+        
         $query = CategoryProduct::with('subCategories');
 
-        if ($request->search) {
-            $query->where('id', $request->search)
-                ->orWhere('name', 'like', '%' . $request->search . '%');
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('id', $request->search)
+                    ->orWhere('name', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('subCategories', function ($sub) use ($request) {
+                        $sub->where('name', 'like', '%' . $request->search . '%');
+                    });
+            });
         }
 
-        if ($request->sort_id) {
-            $query->orderBy('id', $request->sort_id);
+        $sortColumn = $request->input('sort_column', 'id');
+        $sortDirection = $request->input('sort_direction', 'asc');
+
+        if (in_array($sortColumn, $searchable) && in_array($sortDirection, ['asc', 'desc'])) {
+            $query->orderBy($sortColumn, $sortDirection);
+        } elseif ($sortColumn === 'sub_category' && in_array($sortDirection, ['asc', 'desc'])) {
+            $query->with(['subCategories' => function ($q) use ($sortDirection) {
+                $q->orderBy('name', $sortDirection);
+            }]);
         }
 
-        if ($request->sort_name) {
-            $query->orderBy('name', $request->sort_name);
-        }
-
-        $categories = $query->paginate(5);
+        $categories = $query->paginate(5)->withQueryString();
 
         return view('categories.index', compact('categories'));
     }
