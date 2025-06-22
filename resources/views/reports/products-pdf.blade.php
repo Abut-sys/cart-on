@@ -47,7 +47,7 @@
                 <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
                 <td>{{ $product->sales }}</td>
                 <td>{{ $product->wishlists_count }}</td>
-                <td>{{ number_format($product->rating, 1) }}</td>
+                <td>{{ $product->rating }}</td>
                 <td>{{ $product->review_products_count }}</td>
             </tr>
             @endforeach
