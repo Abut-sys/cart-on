@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
-        
+
         Schema::table('chats', function (Blueprint $table) {
             $table->index(['from_user_id', 'to_user_id']);
         });

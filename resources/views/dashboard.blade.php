@@ -247,7 +247,7 @@
                 </div>
             </div>
 
-             <!-- Brands Card -->
+            <!-- Brands Card -->
             <div class="stat-card brands-card" data-aos="fade-up" data-aos-delay="300">
                 <a href="{{ route('brands.index') }}" class="card-link">
                     <div class="stat-card-header">
@@ -465,3 +465,4 @@
             }
         </script>
     @endsection
+

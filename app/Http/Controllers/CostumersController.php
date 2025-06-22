@@ -91,38 +91,4 @@ class CostumersController extends Controller
 
         return redirect()->route('costumers.index')->with('success', 'User deleted successfully.');
     }
-
-    public function sendChat(Request $request)
-    {
-        $request->validate([
-            'to_user_id' => 'required|exists:users,id',
-            'message' => 'required|string|max:1000',
-        ]);
-
-        $message = Chat::create([
-            'from_user_id' => auth()->id(),
-            'to_user_id' => $request->to_user_id,
-            'message' => $request->message,
-        ]);
-
-        broadcast(new MessageSent($message))->toOthers();
-
-        return response()->json(['status' => 'Message sent']);
-    }
-
-    public function getChat(User $user)
-    {
-        $authId = auth()->id();
-
-        $messages = Chat::where(function ($q) use ($authId, $user) {
-            $q->where('from_user_id', $authId)->where('to_user_id', $user->id);
-        })
-            ->orWhere(function ($q) use ($authId, $user) {
-                $q->where('from_user_id', $user->id)->where('to_user_id', $authId);
-            })
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return response()->json($messages);
-    }
 }

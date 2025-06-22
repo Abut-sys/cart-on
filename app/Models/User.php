@@ -104,13 +104,39 @@ class User extends Authenticatable
         return $this->hasMany(ReviewProduct::class);
     }
 
-    public function sentMessages()
+    public function chatsFrom()
     {
         return $this->hasMany(Chat::class, 'from_user_id');
     }
 
-    public function receivedMessages()
+    /**
+     * Chat yang diterima oleh user ini
+     */
+    public function chatsTo()
     {
         return $this->hasMany(Chat::class, 'to_user_id');
+    }
+
+    /**
+     * Semua chat yang melibatkan user ini
+     */
+    public function allChats()
+    {
+        return Chat::where('from_user_id', $this->id)->orWhere('to_user_id', $this->id);
+    }
+
+    /**
+     * Dapatkan pesan terakhir dengan user tertentu
+     */
+    public function lastMessageWith($userId)
+    {
+        return Chat::where(function ($q) use ($userId) {
+            $q->where('from_user_id', $this->id)->where('to_user_id', $userId);
+        })
+            ->orWhere(function ($q) use ($userId) {
+                $q->where('from_user_id', $userId)->where('to_user_id', $this->id);
+            })
+            ->latest()
+            ->first();
     }
 }
