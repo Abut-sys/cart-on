@@ -28,6 +28,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\WaitingPaymentController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\ProductReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,6 +146,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('brands', BrandController::class);
 
     Route::resource('products', ProductController::class);
+    Route::get('reports/products', [ProductReportController::class, 'index'])->name('reports.products.index');
+    Route::get('reports/products/export/pdf', [ProductReportController::class, 'exportPdf'])->name('reports.products.export.pdf');
+    Route::get('reports/products/export/excel', [ProductReportController::class, 'exportExcel'])->name('reports.products.export.excel');
 
     Route::resource('categories', CategoryProductController::class);
 
