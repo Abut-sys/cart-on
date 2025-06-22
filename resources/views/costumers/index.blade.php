@@ -76,12 +76,6 @@
                                         <i class="fas fa-trash costumers-index-icon"></i>
                                     </button>
                                 </form>
-
-                                <button class="btn btn-sm btn-primary costumers-index-btn-chat"
-                                    onclick="openChatModal({{ $user->id }}, '{{ $user->name }}')">
-                                    <i class="fas fa-comment-dots"></i>
-                                </button>
-
                             </td>
                         </tr>
                     @endforeach
@@ -111,6 +105,10 @@
             }
         });
     </script>
+
+        @include('components.adminChat')
 @endsection
 
-@include('components.adminChat')
+
+
+

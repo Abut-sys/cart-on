@@ -391,10 +391,10 @@
             const diffMs = now - loginTime;
             const diffMinutes = diffMs / 1000 / 60;
 
-            if (diffMinutes >= 5) {
+            if (diffMinutes >= 2) {
                 showRatingModal();
             } else {
-                const waitMs = (5 - diffMinutes) * 60 * 1000;
+                const waitMs = (2 - diffMinutes) * 60 * 1000;
                 setTimeout(() => {
                     showRatingModal();
                 }, waitMs);
