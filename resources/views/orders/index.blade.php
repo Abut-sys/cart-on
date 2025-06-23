@@ -4,8 +4,8 @@
 
 @section('content')
     <div class="container-fluid mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
-            <h2 class="text-center w-100 fw-bold">Order List</h2>
+        <div class="order-index-head-row mb-4">
+            <h2 class="text-center w-100">Order List</h2>
         </div>
 
         @if (session('success'))
@@ -14,59 +14,51 @@
             </div>
         @endif
 
-        <div class="order-index-form">
-            <form method="GET" action="{{ route('orders.index') }}" class="mb-4">
-                <div class="order-index-head-row d-flex justify-content-between align-items-center">
-                    <div class="order-index-left-col d-flex">
-                        <div class="order-index-col-md-4 me-2">
-                            <input type="text" name="search" class="form-control order-index-search pe-5"
-                                placeholder="Search by ID or Status" value="{{ request('search') }}">
-                        </div>
-                        <div class="order-index-col-md-2 me-2">
-                            <div class="d-flex align-items-center position-relative">
-                                <select name="sort_id" class="form-select order-index-select pe-3">
-                                    <option value disabled selected>Sort ID</option>
-                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>ASC</option>
-                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>DESC
-                                    </option>
-                                </select>
-                                <i class="fas fa-sort-down position-absolute end-0 me-2 order-index-sort-icon"></i>
-                            </div>
-                        </div>
-                        <div class="order-index-col-md-2">
-                            <div class="d-flex align-items-center position-relative">
-                                <select name="sort_date" class="form-select order-index-select pe-5">
-                                    <option value disabled selected>Sort Date</option>
-                                    <option value="asc" {{ request('sort_date') == 'asc' ? 'selected' : '' }}>Oldest
-                                    </option>
-                                    <option value="desc" {{ request('sort_date') == 'desc' ? 'selected' : '' }}>Newest
-                                    </option>
-                                </select>
-                                <i class="fas fa-sort-numeric-down position-absolute end-0 me-2 order-index-sort-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="order-index-right-col">
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn order-index-btn-filter">Search</button>
-                            <a href="{{ route('orders.index') }}" class="btn order-index-btn-reset ms-2">Reset</a>
-                        </div>
-                    </div>
+        <form method="GET" action="{{ route('orders.index') }}" class="mb-4">
+            <div class="order-index-head-row">
+                <div class="order-index-left-col col-md-4 me-2">
+                    <input type="text" name="search" class="order-index-search"
+                        placeholder="Search by ID, Date, Status, etc" value="{{ request('search') }}">
                 </div>
-            </form>
-        </div>
+                <div class="order-index-right-col d-flex gap-2">
+                    <button type="submit" class="order-index-btn-filter">Search</button>
+                    <a href="{{ route('orders.index') }}" class="order-index-btn-reset">Reset</a>
+                </div>
+            </div>
+        </form>
 
         <div class="table-responsive mt-4">
-            <table class="table order-index-table">
+            <table class="order-index-table text-center">
                 <thead class="order-index-thead-light">
                     <tr>
-                        <th>No</th>
-                        <th>Order ID</th>
-                        <th>Order Date</th>
-                        <th>Amount</th>
-                        <th>Payment Status</th>
-                        <th>Order Status</th>
-                        <th>Resi</th>
+                        @php
+                            $columns = [
+                                'id' => 'No',
+                                'unique_order_id' => 'Order ID',
+                                'order_date' => 'Order Date',
+                                'amount' => 'Amount',
+                                'payment_status' => 'Payment Status',
+                                'order_status' => 'Order Status',
+                                'tracking_number' => 'Resi',
+                            ];
+                        @endphp
+
+                        @foreach ($columns as $col => $label)
+                            @php
+                                $isSorted = request('sort_column') === $col;
+                                $dir = $isSorted ? (request('sort_direction') === 'asc' ? 'desc' : 'asc') : 'desc';
+                                $icon = $isSorted
+                                    ? 'fas fa-sort-' . (request('sort_direction') === 'asc' ? 'up' : 'down')
+                                    : 'fas fa-sort';
+                            @endphp
+                            <th>
+                                <a href="{{ route('orders.index', array_merge(request()->query(), ['sort_column' => $col, 'sort_direction' => $dir])) }}"
+                                    class="text-decoration-none text-white">
+                                    {{ $label }} <i class="{{ $icon }}"></i>
+                                </a>
+                            </th>
+                        @endforeach
+
                         <th>Total Orders</th>
                         <th>Action</th>
                     </tr>
@@ -74,34 +66,30 @@
                 <tbody>
                     @foreach ($orders as $order)
                         <tr class="order-index-row">
-                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $order->id }}</td>
                             <td>{{ $order->unique_order_id }}</td>
                             <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y, H:i') }}</td>
                             <td>{{ number_format($order->amount, 2) }}</td>
                             <td>
-                                @php
-                                    $paymentColor = match ($order->payment_status->value) {
+                                <span
+                                    class="badge bg-{{ match ($order->payment_status->value) {
                                         \App\Enums\PaymentStatusEnum::Completed => 'success',
                                         \App\Enums\PaymentStatusEnum::Pending => 'warning',
                                         \App\Enums\PaymentStatusEnum::Failed => 'danger',
                                         default => 'secondary',
-                                    };
-                                @endphp
-                                <span class="badge bg-{{ $paymentColor }}">
+                                    } }}">
                                     {{ $order->payment_status->description }}
                                 </span>
                             </td>
                             <td>
-                                @php
-                                    $orderColor = match ($order->order_status->value) {
+                                <span
+                                    class="badge bg-{{ match ($order->order_status->value) {
                                         \App\Enums\OrderStatusEnum::Delivered => 'success',
                                         \App\Enums\OrderStatusEnum::Shipped => 'info',
                                         \App\Enums\OrderStatusEnum::Pending => 'warning',
                                         \App\Enums\OrderStatusEnum::Canceled => 'danger',
                                         default => 'secondary',
-                                    };
-                                @endphp
-                                <span class="badge bg-{{ $orderColor }}">
+                                    } }}">
                                     {{ $order->order_status->description }}
                                 </span>
                             </td>
@@ -119,7 +107,8 @@
                                     @csrf
                                     @method('PUT')
 
-                                    <select name="payment_status" class="form-select form-select-sm mb-1">
+                                    <select name="payment_status"
+                                        class="form-select form-select-sm mb-1 order-index-select">
                                         @foreach (\App\Enums\PaymentStatusEnum::asSelectArray() as $key => $label)
                                             <option value="{{ $key }}"
                                                 {{ $order->payment_status->value === $key ? 'selected' : '' }}>
@@ -128,7 +117,8 @@
                                         @endforeach
                                     </select>
 
-                                    <select name="order_status" class="form-select form-select-sm mb-1 order-status-select">
+                                    <select name="order_status"
+                                        class="form-select form-select-sm mb-1 order-status-select order-index-select">
                                         @foreach (\App\Enums\OrderStatusEnum::asSelectArray() as $key => $label)
                                             <option value="{{ $key }}"
                                                 {{ $order->order_status->value === $key ? 'selected' : '' }}>
@@ -138,12 +128,12 @@
                                     </select>
 
                                     <input type="text" name="tracking_number"
-                                        class="form-control form-control-sm tracking-number-input mb-1"
+                                        class="form-control form-control-sm tracking-number-input mb-1 order-index-search"
                                         placeholder="Tracking Number"
                                         style="display: {{ $order->order_status->value === 'shipped' ? 'block' : 'none' }};"
                                         value="{{ $order->tracking_number }}">
 
-                                    <button type="submit" class="btn btn-sm btn-success">
+                                    <button type="submit" class="order-index-btn-edit-order">
                                         <i class="fas fa-save"></i>
                                     </button>
                                 </form>

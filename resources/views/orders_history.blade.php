@@ -135,10 +135,6 @@
                                             @endif
                                         </span>
                                     </p>
-                                    <p class="th-shipping-cost text-muted">Shipping: Rp
-                                        {{ number_format($order->shipping_cost, 0, ',', '.') }}</p>
-                                    <p class="th-voucher-cost text-muted">Voucher Used:
-                                        {{ $order->checkouts->first()->voucher_code ?? '-' }}</p>
                                 </div>
                             </div>
 

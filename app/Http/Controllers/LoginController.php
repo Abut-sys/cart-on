@@ -47,7 +47,7 @@ class LoginController extends Controller
 
         // Jika login gagal, kembalikan pesan kesalahan
         throw ValidationException::withMessages([
-            'email' => 'Your credentials do not match our records.',
+            'email' => 'Email or password you entered is incorrect.',
         ]);
     }
 

@@ -15,18 +15,19 @@
             </a>
         </div>
         <div class="nav-dropdown-item category-container">
-            <a href="#" class="category-link {{ request()->is('categories/*') ? 'active' : '' }}"
+            <a href="#"
+                class="category-link d-flex justify-content-between align-items-center {{ request()->is('categories/*') ? 'active' : '' }}"
                 onclick="toggleCategoryDropdown(event)">
-                <i class="fas fa-shapes icon"></i> Category
-                <!-- Ikon dropdown, misalnya panah ke bawah -->
-                <i class="fas fa-chevron-down dropdown-icon"></i>
+                <span><i class="fas fa-shapes me-2"></i> Category</span>
+                <i id="categoryArrow" class="fas fa-chevron-down transition-transform"></i>
             </a>
-            <div class="dropdown" id="categoryDropdown" style="display: none;">
-                <a href="{{ route('categories.index') }}" class="dropdown-item">
-                    <i class="fas fa-tag"></i> Product Category
+
+            <div id="categoryDropdown" class="dropdown flex-column mt-1" style="display: none;">
+                <a href="{{ route('categories.index') }}" class="dropdown-item ps-4">
+                    <i class="fas fa-tag me-2"></i> Product Category
                 </a>
-                <a href="{{ route('brands.index') }}" class="dropdown-item">
-                    <i class="fas fa-star"></i> Brand Category
+                <a href="{{ route('brands.index') }}" class="dropdown-item ps-4">
+                    <i class="fas fa-star me-2"></i> Brand Category
                 </a>
             </div>
         </div>
@@ -39,6 +40,20 @@
             <a href="{{ route('orders.index') }}" class="{{ request()->is('orders') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart icon"></i> Orders
             </a>
+        </div>
+        <div class="nav-dropdown-item report-container">
+            <a href="#"
+                class="report-link d-flex justify-content-between align-items-center {{ request()->is('report/*') ? 'active' : '' }}"
+                onclick="toggleReportDropdown(event)">
+                <span><i class="fas fa-file-alt me-2"></i> Report</span>
+                <i id="reportArrow" class="fas fa-chevron-down transition-transform"></i>
+            </a>
+
+            <div id="reportDropdown" class="dropdown flex-column mt-1" style="display: none;">
+                <a href="{{ route('reports.products.index') }}" class="dropdown-item ps-4">
+                    <i class="fas fa-box me-2"></i> Product Report
+                </a>
+            </div>
         </div>
         <div class="nav-item">
             <a href="{{ route('report.orders') }}" class="{{ request()->is('report/orders') ? 'active' : '' }}">
@@ -67,17 +82,32 @@
 <!-- Script untuk toggle dropdown pada menu Category -->
 <script>
     function toggleCategoryDropdown(event) {
-        event.preventDefault(); // Menghentikan perilaku default link
-        var dropdown = document.getElementById('categoryDropdown');
-        var arrow = document.getElementById('dropdownArrow');
+        event.preventDefault();
+        const dropdown = document.getElementById('categoryDropdown');
+        const arrow = document.getElementById('categoryArrow');
 
-        // Toggle tampilan dropdown dengan animasi
-        if (dropdown.style.display === "none" || dropdown.style.display === "") {
-            dropdown.style.display = "flex";
-            arrow.classList.add('rotate');
-        } else {
-            dropdown.style.display = "none";
-            arrow.classList.remove('rotate');
-        }
+        const isVisible = dropdown.style.display === 'flex';
+        dropdown.style.display = isVisible ? 'none' : 'flex';
+        arrow.classList.toggle('rotate', !isVisible);
+    }
+
+    function toggleReportDropdown(event) {
+        event.preventDefault();
+        const dropdown = document.getElementById('reportDropdown');
+        const arrow = document.getElementById('reportArrow');
+
+        const isVisible = dropdown.style.display === 'flex';
+        dropdown.style.display = isVisible ? 'none' : 'flex';
+        arrow.classList.toggle('rotate', !isVisible);
     }
 </script>
+
+<style>
+    .transition-transform {
+        transition: transform 0.3s ease;
+    }
+
+    .rotate {
+        transform: rotate(180deg);
+    }
+</style>

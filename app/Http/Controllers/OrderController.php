@@ -13,13 +13,32 @@ use Illuminate\Support\Facades\Notification;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Paginate orders (10 orders per page)
-        $orders = Order::paginate(10);
+        $searchable = ['id', 'unique_order_id', 'order_date', 'amount', 'payment_status', 'order_status', 'tracking_number'];
 
-        // Retrieve order counts
-        $orderCounts = Order::selectRaw('unique_order_id, COUNT(*) as total')->groupBy('unique_order_id')->pluck('total', 'unique_order_id');
+        $query = Order::query();
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request, $searchable) {
+                foreach ($searchable as $column) {
+                    $q->orWhere($column, 'like', '%' . $request->search . '%');
+                }
+            });
+        }
+
+        $sortColumn = $request->input('sort_column', 'id');
+        $sortDirection = $request->input('sort_direction', 'asc');
+
+        if (in_array($sortColumn, $searchable) && in_array($sortDirection, ['asc', 'desc'])) {
+            $query->orderBy($sortColumn, $sortDirection);
+        }
+
+        $orders = $query->paginate(10)->withQueryString();
+
+        $orderCounts = Order::selectRaw('unique_order_id, COUNT(*) as total')
+            ->groupBy('unique_order_id')
+            ->pluck('total', 'unique_order_id');
 
         return view('orders.index', compact('orders', 'orderCounts'));
     }

@@ -34,7 +34,7 @@
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    position: sticky;
+    position: center;
     top: 0;
     z-index: 1;
     border-bottom: 3px solid #388e3c;

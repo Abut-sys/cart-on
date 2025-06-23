@@ -1,71 +1,66 @@
 @extends('layouts.index')
 
-@section('title', 'Categories Product')
+@section('title', 'Product Categories')
 
 @section('content')
     <div class="container-fluid mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+        <div class="category-index-head-row mb-4 position-relative">
             <h2 class="text-center w-100 fw-bold">Product Categories</h2>
-            <a href="{{ route('categories.create') }}" class="btn category-index-btn-add-category">
+            <a href="{{ route('categories.create') }}" class="category-index-btn-add-category">
                 <i class="fas fa-plus"></i> Add Category
             </a>
         </div>
 
-        <div class="category-index-form">
-            <form method="GET" action="{{ route('categories.index') }}" class="mb-4">
-                <div class="category-index-head-row d-flex justify-content-between align-items-center">
-                    <div class="category-index-left-col d-flex">
-                        <div class="category-index-col-md-4 me-2">
-                            <input type="text" name="search" class="form-control category-index-search pe-5" placeholder="Search by ID or Main Category" value="{{ request('search') }}">
-                        </div>
-                        <div class="category-index-col-md-2 me-2">
-                            <div class="d-flex align-items-center position-relative">
-                                <select name="sort_id" class="form-select category-index-select pe-3">
-                                    <option value disabled selected ="">Sort ID</option>
-                                    <option value="asc" {{ request('sort_id') == 'asc' ? 'selected' : '' }}>Ascending</option>
-                                    <option value="desc" {{ request('sort_id') == 'desc' ? 'selected' : '' }}>Descending</option>
-                                </select>
-                                <i class="fas fa-sort-down position-absolute end-0 me-2 category-index-sort-icon"></i>
-                            </div>
-                        </div>
-                        <div class="category-index-col-md-2">
-                            <div class="d-flex align-items-center position-relative">
-                                <select name="sort_name" class="form-select category-index-select pe-5">
-                                    <option value disabled selected ="">Sort Name</option>
-                                    <option value="asc" {{ request('sort_name') == 'asc' ? 'selected' : '' }}>A-Z</option>
-                                    <option value="desc" {{ request('sort_name') == 'desc' ? 'selected' : '' }}>Z-A</option>
-                                </select>
-                                <i class="fas fa-sort-alpha-down position-absolute end-0 me-2 category-index-sort-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="category-index-right-col">
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn category-index-btn-filter">Search</button>
-                            <a href="{{ route('categories.index') }}" class="btn category-index-btn-reset ms-2">Reset</a>
-                        </div>
-                    </div>
+        <form method="GET" action="{{ route('categories.index') }}" class="mb-4">
+            <div class="category-index-head-row">
+                <div class="category-index-left-col col-md-4 me-2">
+                    <input type="text" name="search" class="category-index-search"
+                        placeholder="Search by ID, Name, or Sub-category" value="{{ request('search') }}">
                 </div>
-            </form>
-        </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="category-index-btn-filter">Search</button>
+                    <a href="{{ route('categories.index') }}" class="category-index-btn-reset">Reset</a>
+                </div>
+            </div>
+        </form>
 
         <div class="table-responsive mt-4">
-            <table class="table category-index-table">
+            <table class="category-index-table text-center align-middle">
                 <thead class="category-index-thead-light">
                     <tr>
-                        <th>ID</th>
-                        <th>Main Category</th>
-                        <th>Sub-Category</th>
+                        @php
+                            $columns = [
+                                'id' => 'ID',
+                                'name' => 'Main Category',
+                                'sub_category' => 'Sub-Category',
+                            ];
+                        @endphp
+
+                        @foreach ($columns as $col => $label)
+                            @php
+                                $isSorted = request('sort_column') === $col;
+                                $dir = $isSorted ? (request('sort_direction') === 'asc' ? 'desc' : 'asc') : 'desc';
+                                $icon = $isSorted
+                                    ? 'fas fa-sort-' . (request('sort_direction') === 'asc' ? 'up' : 'down')
+                                    : 'fas fa-sort';
+                            @endphp
+                            <th>
+                                <a href="{{ route('categories.index', array_merge(request()->query(), ['sort_column' => $col, 'sort_direction' => $dir])) }}"
+                                    class="text-decoration-none text-white">
+                                    {{ $label }} <i class="{{ $icon }}"></i>
+                                </a>
+                            </th>
+                        @endforeach
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($categories as $category)
+                    @forelse ($categories as $category)
                         <tr class="category-index-row">
                             <td>{{ $category->id }}</td>
                             <td>{{ $category->name }}</td>
                             <td>
-                                <ul class="list-unstyled category-index-list mb-0">
+                                <ul class="category-index-list">
                                     @foreach ($category->subCategories as $subCategory)
                                         <li>{{ $subCategory->name }}</li>
                                     @endforeach
@@ -73,25 +68,30 @@
                             </td>
                             <td>
                                 <a href="{{ route('categories.edit', $category->id) }}"
-                                    class="btn btn-sm btn-warning category-index-btn-edit-category">
+                                    class="category-index-btn-edit-category">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
-                                    class="d-inline">
+                                    class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to delete this category?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger category-index-btn-delete-category">
+                                    <button type="submit" class="category-index-btn-delete-category">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr class="category-index-row">
+                            <td colspan="4">No categories found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="mt-3">
+        <div class="mt-3 category-index-pagination">
             <nav>
                 {{ $categories->withQueryString()->links('pagination::bootstrap-4') }}
             </nav>
