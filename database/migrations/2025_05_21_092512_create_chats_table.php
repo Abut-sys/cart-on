@@ -12,17 +12,21 @@ return new class extends Migration {
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('from_user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('to_user_id')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('from_user_id');
+            $table->unsignedBigInteger('to_user_id');
             $table->text('message');
             $table->boolean('is_read')->default(false);
             $table->timestamps();
-        });
 
-        Schema::table('chats', function (Blueprint $table) {
+            // Foreign key constraints
+            $table->foreign('from_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('to_user_id')->references('id')->on('users')->onDelete('cascade');
+
+            // Indexes for better performance
             $table->index(['from_user_id', 'to_user_id']);
+            $table->index(['created_at']);
+            $table->index(['is_read']);
         });
-
     }
 
     /**

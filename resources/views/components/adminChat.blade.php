@@ -33,7 +33,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.5s;
         }
 
@@ -66,9 +66,20 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .admin-chat-modal {
@@ -80,8 +91,8 @@
             background: white;
             border-radius: 24px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15),
-                       0 0 0 1px rgba(0, 0, 0, 0.05),
-                       0 0 100px rgba(153, 188, 133, 0.1);
+                0 0 0 1px rgba(0, 0, 0, 0.05),
+                0 0 100px rgba(153, 188, 133, 0.1);
             display: none;
             flex-direction: column;
             overflow: hidden;
@@ -121,13 +132,18 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
             animation: shimmer 4s infinite;
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         .chat-header button {
@@ -176,7 +192,7 @@
             outline: none;
             border-color: #99bc85;
             box-shadow: 0 0 0 4px rgba(153, 188, 133, 0.1),
-                       0 4px 20px rgba(153, 188, 133, 0.15);
+                0 4px 20px rgba(153, 188, 133, 0.15);
             transform: translateY(-2px);
         }
 
@@ -273,7 +289,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transform: rotate(45deg);
             transition: all 0.5s ease;
             opacity: 0;
@@ -285,8 +301,13 @@
         }
 
         @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
         }
 
         .user-info {
@@ -318,8 +339,15 @@
         }
 
         @keyframes pulse-status {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
         .message-bubble {
@@ -339,6 +367,7 @@
                 opacity: 0;
                 transform: translateY(15px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -394,7 +423,7 @@
             border-color: #99bc85;
             background: white;
             box-shadow: 0 0 0 4px rgba(153, 188, 133, 0.1),
-                       0 4px 20px rgba(153, 188, 133, 0.1);
+                0 4px 20px rgba(153, 188, 133, 0.1);
         }
 
         .send-btn {
@@ -485,8 +514,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .loading-text {
@@ -496,8 +530,15 @@
         }
 
         @keyframes pulse-text {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         .empty-state {
@@ -538,6 +579,7 @@
                 transform: translateX(100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -553,6 +595,7 @@
                 transform: translateX(0);
                 opacity: 1;
             }
+
             to {
                 transform: translateX(-100%);
                 opacity: 0;
@@ -602,6 +645,7 @@
     <div class="admin-chat-wrapper">
         <button class="admin-chat-btn" onclick="toggleAdminChatModal()">
             💬
+            <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
         </button>
 
         <div class="admin-chat-modal" id="adminChatModal">
@@ -625,7 +669,13 @@
                             </div>
                             <div class="user-info">
                                 <div class="user-name">{{ $user->name }}</div>
-                                <div class="user-status">Online</div>
+                                <div class="user-status">
+                                    <span class="status-indicator online"></span>
+                                    Online
+                                </div>
+                            </div>
+                            <div class="unread-badge" id="unread-{{ $user->id }}" style="display: none;">
+                                <span class="unread-count">0</span>
                             </div>
                         </div>
                     @endforeach
@@ -657,7 +707,101 @@
         </div>
     </div>
 
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
+        // Initialize Pusher
+        const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+            cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+            encrypted: true,
+            authEndpoint: '/broadcasting/auth',
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            }
+        });
+
+        // Subscribe to admin's private channel
+        const adminChannel = pusher.subscribe('private-chat.{{ auth()->id() }}');
+        let currentChatUserId = null;
+        let unreadCounts = {};
+
+        // Listen for new messages
+        adminChannel.bind('message.sent', function(data) {
+            console.log('New message received:', data);
+
+            // If we're currently chatting with this user, display the message
+            if (currentChatUserId && (data.from_user_id == currentChatUserId || data.to_user_id ==
+                    currentChatUserId)) {
+                displayNewMessage(data);
+            } else {
+                // Update unread count for the user
+                updateUnreadCount(data.from_user_id);
+                showNotificationBadge();
+            }
+        });
+
+        function displayNewMessage(data) {
+            const chatContainer = document.getElementById('chatBox');
+            const messageDiv = document.createElement('div');
+
+            messageDiv.className = 'message-bubble ' +
+                (data.from_user_id == {{ auth()->id() }} ? 'message-sent' : 'message-received');
+
+            messageDiv.innerHTML = `
+                <div class="message-content">${data.message}</div>
+                <div class="message-time">${data.timestamp}</div>
+            `;
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Add smooth animation
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(20px)';
+
+            requestAnimationFrame(() => {
+                messageDiv.style.transition = 'all 0.3s ease';
+                messageDiv.style.opacity = '1';
+                messageDiv.style.transform = 'translateY(0)';
+            });
+        }
+
+        function updateUnreadCount(userId) {
+            if (!unreadCounts[userId]) {
+                unreadCounts[userId] = 0;
+            }
+            unreadCounts[userId]++;
+
+            const unreadBadge = document.getElementById(`unread-${userId}`);
+            if (unreadBadge) {
+                const countSpan = unreadBadge.querySelector('.unread-count');
+                countSpan.textContent = unreadCounts[userId];
+                unreadBadge.style.display = 'block';
+            }
+        }
+
+        function showNotificationBadge() {
+            const badge = document.getElementById('notificationBadge');
+            const totalUnread = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0);
+
+            if (totalUnread > 0) {
+                badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                badge.style.display = 'block';
+            }
+        }
+
+        function clearUnreadCount(userId) {
+            unreadCounts[userId] = 0;
+            const unreadBadge = document.getElementById(`unread-${userId}`);
+            if (unreadBadge) {
+                unreadBadge.style.display = 'none';
+            }
+
+            // Update main notification badge
+            showNotificationBadge();
+        }
+
         function toggleAdminChatModal() {
             const modal = document.getElementById('adminChatModal');
             modal.classList.toggle('active');
@@ -669,6 +813,9 @@
 
         function loadMessages(userId, userName) {
             console.log('Loading messages for userId:', userId, 'userName:', userName);
+
+            currentChatUserId = userId;
+            clearUnreadCount(userId);
 
             document.getElementById('chatHeaderTitle').innerText = 'Chat with ' + userName;
             document.getElementById('toUserId').value = userId;
@@ -687,61 +834,72 @@
             }, 400);
 
             const chatContainer = document.getElementById('chatBox');
-            chatContainer.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><div class="loading-text">Loading messages...</div></div>';
+            chatContainer.innerHTML =
+                '<div class="loading-spinner"><div class="spinner"></div><div class="loading-text">Loading messages...</div></div>';
 
             const url = "{{ url('admin/chat/messages') }}/" + userId;
             console.log('Fetching URL:', url);
 
             fetch(url, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(res => {
-                console.log('Response status:', res.status);
-                console.log('Response headers:', res.headers);
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(res => {
+                    console.log('Response status:', res.status);
 
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then(data => {
-                console.log('Messages data received:', data);
-                chatContainer.innerHTML = '';
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Messages data received:', data);
+                    chatContainer.innerHTML = '';
 
-                if (!data || data.length === 0) {
-                    chatContainer.innerHTML = `
+                    if (!data || data.length === 0) {
+                        chatContainer.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">💬</div>
                             <h3>No messages yet</h3>
                             <p>Start the conversation!</p>
                         </div>
                     `;
-                } else {
-                    data.forEach((msg, index) => {
-                        console.log('Processing message', index, ':', msg);
-                        const div = document.createElement('div');
-                        div.className = 'message-bubble ' +
-                            (msg.from_user_id == {{ auth()->id() }} ? 'message-sent' : 'message-received');
-                        div.textContent = msg.message;
-                        chatContainer.appendChild(div);
-                    });
-                }
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            })
-            .catch(error => {
-                console.error('Error loading messages:', error);
-                chatContainer.innerHTML = `
+                    } else {
+                        data.forEach((msg, index) => {
+                            console.log('Processing message', index, ':', msg);
+                            const div = document.createElement('div');
+                            div.className = 'message-bubble ' +
+                                (msg.from_user_id == {{ auth()->id() }} ? 'message-sent' :
+                                    'message-received');
+
+                            const messageTime = new Date(msg.created_at).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+
+                            div.innerHTML = `
+                            <div class="message-content">${msg.message}</div>
+                            <div class="message-time">${messageTime}</div>
+                        `;
+
+                            chatContainer.appendChild(div);
+                        });
+                    }
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error loading messages:', error);
+                    chatContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">❌</div>
                         <h3>Error loading messages</h3>
                         <p>${error.message}</p>
                     </div>
                 `;
-            });
+                });
         }
 
         function sendAdminMessage() {
@@ -749,7 +907,10 @@
             const input = document.getElementById('adminMessage');
             const message = input.value.trim();
 
-            console.log('Sending message:', { userId, message });
+            console.log('Sending message:', {
+                userId,
+                message
+            });
 
             if (!message || !userId) {
                 console.log('Message or userId is empty');
@@ -761,51 +922,77 @@
             sendBtn.style.transform = 'scale(0.9) rotate(360deg)';
             sendBtn.disabled = true;
 
+            // Show typing indicator
+            const chatContainer = document.getElementById('chatBox');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            chatContainer.appendChild(typingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
             setTimeout(() => {
                 sendBtn.style.transform = '';
             }, 400);
 
             fetch(`{{ route('admin.chat.send') }}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    to_user_id: parseInt(userId),
-                    message: message
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        to_user_id: parseInt(userId),
+                        message: message
+                    })
                 })
-            })
-            .then(res => {
-                console.log('Send response status:', res.status);
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then(data => {
-                console.log('Send response data:', data);
-                if (data.success) {
-                    loadMessages(userId, document.getElementById('chatHeaderTitle').innerText.replace('Chat with ', ''));
-                    input.value = '';
-                    input.style.height = '48px';
-                } else {
-                    console.error('Send failed:', data.message);
-                    alert('Gagal mengirim pesan: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error sending message:', error);
-                alert('Terjadi kesalahan saat mengirim pesan');
-            })
-            .finally(() => {
-                sendBtn.disabled = false;
-            });
+                .then(res => {
+                    console.log('Send response status:', res.status);
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Send response data:', data);
+
+                    // Remove typing indicator
+                    const indicator = document.getElementById('typingIndicator');
+                    if (indicator) {
+                        indicator.remove();
+                    }
+
+                    if (data.success) {
+                        input.value = '';
+                        input.style.height = '48px';
+
+                        // The message will be displayed via real-time event
+                        // No need to manually add it here since we broadcast it
+                    } else {
+                        console.error('Send failed:', data.message);
+                        alert('Gagal mengirim pesan: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+
+                    // Remove typing indicator on error
+                    const indicator = document.getElementById('typingIndicator');
+                    if (indicator) {
+                        indicator.remove();
+                    }
+
+                    alert('Terjadi kesalahan saat mengirim pesan');
+                })
+                .finally(() => {
+                    sendBtn.disabled = false;
+                });
         }
 
         function backToUserList() {
+            currentChatUserId = null;
             document.getElementById('chatHeaderTitle').innerText = 'User List';
 
             const userList = document.getElementById('adminChatUserList');
@@ -850,12 +1037,22 @@
             textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
         }
 
-        // Enhanced notification badge simulation
+        // Connection status handling
+        pusher.connection.bind('connected', function() {
+            console.log('Connected to Pusher');
+        });
+
+        pusher.connection.bind('disconnected', function() {
+            console.log('Disconnected from Pusher');
+        });
+
+        pusher.connection.bind('error', function(error) {
+            console.error('Pusher connection error:', error);
+        });
+
+        // Enhanced notification badge simulation - removed since we have real-time now
         document.addEventListener('DOMContentLoaded', function() {
-            // Simulate new message notification
-            setTimeout(() => {
-                document.querySelector('.admin-chat-btn').classList.add('has-notification');
-            }, 3000);
+            console.log('Admin chat initialized with real-time messaging');
         });
     </script>
 @endsection

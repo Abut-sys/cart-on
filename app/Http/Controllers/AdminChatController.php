@@ -2,56 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Chat;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use App\Models\Chat;
+use App\Events\MessageSent;
+use Illuminate\Support\Facades\Auth;
 
 class AdminChatController extends Controller
 {
     public function index()
     {
-        try {
-            // Ambil semua user kecuali admin yang sedang login
-            $users = User::where('id', '!=', auth()->id())
-                ->orderBy('name', 'asc')
-                ->get();
+        // Get all users except admin
+        $users = User::where('role', 'user')
+                    ->orderBy('name')
+                    ->get();
 
-            return view('components.adminChat', compact('users'));
-        } catch (\Exception $e) {
-            Log::error('Error in AdminChatController@index: ' . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat memuat chat');
-        }
+        return view('components.adminChat', compact('users'));
     }
 
     public function getMessages($userId)
     {
         try {
-            $adminId = auth()->id();
+            // Validate that the user exists and is not an admin
+            $user = User::where('id', $userId)
+                       ->where('role', 'user')
+                       ->first();
 
-            // Validasi user exists
-            $user = User::findOrFail($userId);
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
 
-            $messages = Chat::where(function ($q) use ($userId, $adminId) {
-                $q->where('from_user_id', $adminId)->where('to_user_id', $userId);
+            // Get messages between admin and user
+            $messages = Chat::where(function ($query) use ($userId) {
+                $query->where('from_user_id', Auth::id())
+                      ->where('to_user_id', $userId);
+            })->orWhere(function ($query) use ($userId) {
+                $query->where('from_user_id', $userId)
+                      ->where('to_user_id', Auth::id());
             })
-                ->orWhere(function ($q) use ($userId, $adminId) {
-                    $q->where('from_user_id', $userId)->where('to_user_id', $adminId);
-                })
-                ->orderBy('created_at', 'asc')
-                ->select('id', 'from_user_id', 'to_user_id', 'message', 'created_at')
-                ->get();
-
-            // Mark messages as read
-            Chat::where('from_user_id', $userId)
-                ->where('to_user_id', $adminId)
-                ->where('is_read', false)
-                ->update(['is_read' => true]);
+            ->orderBy('created_at', 'asc')
+            ->get();
 
             return response()->json($messages);
         } catch (\Exception $e) {
-            Log::error('Error in AdminChatController@getMessages: ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal memuat pesan'], 500);
+            return response()->json(['error' => 'Failed to load messages'], 500);
         }
     }
 
@@ -59,40 +53,52 @@ class AdminChatController extends Controller
     {
         try {
             $request->validate([
+                'to_user_id' => 'required|integer|exists:users,id',
                 'message' => 'required|string|max:1000',
-                'to_user_id' => 'required|exists:users,id',
             ]);
 
-            $chat = Chat::create([
-                'from_user_id' => auth()->id(),
+            // Validate that the recipient is a user (not admin)
+            $recipient = User::where('id', $request->to_user_id)
+                           ->where('role', 'user')
+                           ->first();
+
+            if (!$recipient) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid recipient'
+                ], 400);
+            }
+
+            // Create the message
+            $chatMessage = Chat::create([
+                'from_user_id' => Auth::id(),
                 'to_user_id' => $request->to_user_id,
-                'message' => trim($request->message),
-                'is_read' => false,
+                'message' => $request->message,
             ]);
+
+            // Load the message with user relationship
+            $chatMessage->load(['fromUser', 'toUser']);
+
+            // Broadcast the message to both admin and user
+            broadcast(new MessageSent($chatMessage))->toOthers();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pesan berhasil dikirim',
-                'data' => $chat,
+                'message' => 'Message sent successfully',
+                'data' => $chatMessage
             ]);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Data tidak valid',
-                    'errors' => $e->errors(),
-                ],
-                422,
-            );
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            Log::error('Error in AdminChatController@sendMessage: ' . $e->getMessage());
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Gagal mengirim pesan',
-                ],
-                500,
-            );
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send message'
+            ], 500);
         }
     }
 }

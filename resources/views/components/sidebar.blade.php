@@ -86,9 +86,9 @@
         const dropdown = document.getElementById('categoryDropdown');
         const arrow = document.getElementById('categoryArrow');
 
-        const isVisible = dropdown.style.display === 'flex';
-        dropdown.style.display = isVisible ? 'none' : 'flex';
+        const isVisible = dropdown.style.display === 'block';
         arrow.classList.toggle('rotate', !isVisible);
+
     }
 
     function toggleReportDropdown(event) {

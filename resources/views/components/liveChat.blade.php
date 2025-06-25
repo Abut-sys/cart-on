@@ -409,6 +409,10 @@
             <div class="chatbox" id="chatbox">
                 <div class="chat-header">
                     <span>Live Chat Support</span>
+                    <div class="connection-status" id="connectionStatus">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">Connecting...</span>
+                    </div>
                     <button onclick="toggleChat()" style="background: transparent; border: none; cursor: pointer;">
                         <svg width="20" height="20" fill="white" viewBox="0 0 20 20">
                             <path d="M2 2L18 18M18 2L2 18" stroke="white" stroke-width="2" />
@@ -420,22 +424,26 @@
                     @foreach ($messages as $message)
                         @if ($message->from_user_id === auth()->id())
                             <div class="message user-message">
-                                {{ $message->message }}
+                                <div class="message-content">{{ $message->message }}</div>
+                                <div class="message-time">{{ $message->created_at->format('H:i') }}</div>
                                 <div class="message-status">Sent</div>
                             </div>
                         @else
-                            <div class="message admin-message">{{ $message->message }}</div>
+                            <div class="message admin-message">
+                                <div class="message-content">{{ $message->message }}</div>
+                                <div class="message-time">{{ $message->created_at->format('H:i') }}</div>
+                            </div>
                         @endif
                     @endforeach
                 </div>
 
                 <div class="chat-input">
-                    {{-- Hidden to_user_id, misalnya admin id = 1 --}}
-                    <input type="hidden" id="toUserId" value="1">
+                    {{-- Admin user ID --}}
+                    <input type="hidden" id="toUserId" value="{{ $admin->id ?? 1 }}">
 
                     <input type="text" id="messageInput" placeholder="Type your message..."
                         onkeypress="handleKeyPress(event)">
-                    <button onclick="sendMessage()" aria-label="Send message">
+                    <button onclick="sendMessage()" aria-label="Send message" id="sendButton">
                         <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
                         </svg>
@@ -457,10 +465,85 @@
                         <path d="M2 2L18 18M18 2L2 18" stroke="white" stroke-width="2" />
                     </svg>
                 </span>
+                <span class="notification-dot" id="notificationDot" style="display: none;"></span>
             </button>
         </div>
 
+        <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
         <script>
+            // Initialize Pusher
+            const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+                cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+                encrypted: true,
+                authEndpoint: '/broadcasting/auth',
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                }
+            });
+
+            // Subscribe to user's private channel
+            const userChannel = pusher.subscribe('private-chat.{{ auth()->id() }}');
+            let isTyping = false;
+            let typingTimeout;
+
+            // Listen for new messages
+            userChannel.bind('message.sent', function(data) {
+                console.log('New message received:', data);
+                displayNewMessage(data);
+
+                // Show notification if chat is closed
+                const chatbox = document.getElementById('chatbox');
+                if (!chatbox.classList.contains('active')) {
+                    showNotification();
+                }
+            });
+
+            function displayNewMessage(data) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+
+                const isCurrentUser = data.from_user_id == {{ auth()->id() }};
+                messageDiv.className = 'message ' + (isCurrentUser ? 'user-message' : 'admin-message');
+
+                messageDiv.innerHTML = `
+                    <div class="message-content">${data.message}</div>
+                    <div class="message-time">${data.timestamp}</div>
+                    ${isCurrentUser ? '<div class="message-status">Sent</div>' : ''}
+                `;
+
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Add smooth animation
+                messageDiv.style.opacity = '0';
+                messageDiv.style.transform = 'translateY(20px)';
+
+                requestAnimationFrame(() => {
+                    messageDiv.style.transition = 'all 0.3s ease';
+                    messageDiv.style.opacity = '1';
+                    messageDiv.style.transform = 'translateY(0)';
+                });
+
+                // Remove typing indicator if it exists
+                removeTypingIndicator();
+            }
+
+            function showNotification() {
+                const notificationDot = document.getElementById('notificationDot');
+                notificationDot.style.display = 'block';
+
+                // Add pulse animation
+                notificationDot.style.animation = 'pulse 2s infinite';
+            }
+
+            function hideNotification() {
+                const notificationDot = document.getElementById('notificationDot');
+                notificationDot.style.display = 'none';
+                notificationDot.style.animation = '';
+            }
+
             function toggleChat() {
                 const chatbox = document.getElementById('chatbox');
                 const toggleBtn = document.getElementById('chatToggleBtn');
@@ -469,6 +552,7 @@
 
                 // Auto scroll to bottom when opened
                 if (chatbox.classList.contains('active')) {
+                    hideNotification();
                     setTimeout(() => {
                         const chatMessages = document.getElementById('chatMessages');
                         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -488,25 +572,20 @@
                 const message = input.value.trim();
                 const toUserId = document.getElementById('toUserId').value;
                 const chatMessages = document.getElementById('chatMessages');
+                const sendButton = document.getElementById('sendButton');
 
                 if (message) {
-                    // Tampilkan pesan user langsung
-                    const userMessage = document.createElement('div');
-                    userMessage.className = 'message user-message';
-                    userMessage.innerHTML = `${message}<div class="message-status">Sending...</div>`;
-                    chatMessages.appendChild(userMessage);
+                    // Disable send button temporarily
+                    sendButton.disabled = true;
+                    sendButton.style.opacity = '0.6';
+
+                    // Clear input immediately
                     input.value = '';
 
-                    // Smooth scroll to bottom
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    // Show typing indicator for admin
+                    showTypingIndicator();
 
-                    // Show typing indicator
-                    const typingIndicator = document.createElement('div');
-                    typingIndicator.className = 'typing-indicator';
-                    typingIndicator.innerHTML = '<span></span><span></span><span></span>';
-                    typingIndicator.id = 'typingIndicator';
-
-                    // Kirim ke backend
+                    // Send to backend
                     fetch("{{ route('chat.send') }}", {
                         method: "POST",
                         headers: {
@@ -518,74 +597,89 @@
                             to_user_id: toUserId
                         })
                     }).then(response => {
-                        // Update message status
-                        const statusElement = userMessage.querySelector('.message-status');
-                        if (response.ok) {
-                            statusElement.textContent = 'Sent';
-                        } else {
-                            statusElement.textContent = 'Failed';
-                            statusElement.style.color = '#ff6b6b';
-                        }
-
                         if (!response.ok) {
-                            alert("Gagal mengirim pesan");
-                        } else {
-                            // Show typing indicator
-                            chatMessages.appendChild(typingIndicator);
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                            // Bot response setelah pengiriman sukses
-                            setTimeout(() => {
-                                // Remove typing indicator
-                                const indicator = document.getElementById('typingIndicator');
-                                if (indicator) {
-                                    indicator.remove();
-                                }
-
-                                const botResponse = document.createElement('div');
-                                botResponse.className = 'message bot-message';
-
-                                // Enhanced bot logic
-                                if (message.toLowerCase().includes("refund")) {
-                                    botResponse.textContent =
-                                        "Mohon tunggu, kami akan bantu proses refund Anda segera. Tim support kami akan menghubungi Anda dalam 1x24 jam.";
-                                } else if (message.toLowerCase().includes("produk")) {
-                                    botResponse.textContent =
-                                        "Silakan sebutkan nama produk yang Anda maksud 😊 Kami akan berikan informasi lengkap untuk Anda.";
-                                } else if (message.toLowerCase().includes("harga")) {
-                                    botResponse.textContent =
-                                        "Untuk informasi harga terbaru, silakan hubungi tim sales kami atau kunjungi halaman produk di website.";
-                                } else if (message.toLowerCase().includes("bantuan") || message.toLowerCase()
-                                    .includes("help")) {
-                                    botResponse.textContent =
-                                        "Kami siap membantu Anda! Silakan jelaskan kendala yang Anda alami, dan tim support kami akan segera merespon.";
-                                } else {
-                                    if (!sessionStorage.getItem('hasThanksResponse')) {
-                                        botResponse.textContent =
-                                            "Terima kasih atas pesan Anda! Admin kami akan segera menghubungi Anda. Mohon tunggu sebentar ya 😊";
-                                        sessionStorage.setItem('hasThanksResponse', 'true');
-                                    } else {
-                                        return; // Jangan tampilkan respon bot lagi
-                                    }
-                                }
-
-                                chatMessages.appendChild(botResponse);
-                                chatMessages.scrollTop = chatMessages.scrollHeight;
-                            }, 2000);
+                            throw new Error('Network response was not ok');
                         }
+                        return response.json();
+                    }).then(data => {
+                        console.log('Message sent successfully:', data);
+                        // Message will be displayed via real-time event
                     }).catch(error => {
                         console.error("Error:", error);
-                        const indicator = document.getElementById('typingIndicator');
-                        if (indicator) {
-                            indicator.remove();
-                        }
 
-                        // Update message status to failed
-                        const statusElement = userMessage.querySelector('.message-status');
-                        statusElement.textContent = 'Failed';
-                        statusElement.style.color = '#ff6b6b';
+                        // Show error message
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'message error-message';
+                        errorDiv.innerHTML = `
+                            <div class="message-content">Failed to send message. Please try again.</div>
+                        `;
+                        chatMessages.appendChild(errorDiv);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                        // Restore the message to input
+                        input.value = message;
+                    }).finally(() => {
+                        // Re-enable send button
+                        sendButton.disabled = false;
+                        sendButton.style.opacity = '1';
+                        removeTypingIndicator();
                     });
                 }
+            }
+
+            function showTypingIndicator() {
+                removeTypingIndicator(); // Remove existing one first
+
+                const chatMessages = document.getElementById('chatMessages');
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typingIndicator';
+                typingDiv.innerHTML = `
+                    <div class="typing-text">Sending your message</div>
+                    <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                `;
+
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function removeTypingIndicator() {
+                const indicator = document.getElementById('typingIndicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+            }
+
+            // Connection status handling
+            pusher.connection.bind('connected', function() {
+                console.log('Connected to Pusher');
+                updateConnectionStatus('connected', 'Connected');
+            });
+
+            pusher.connection.bind('disconnected', function() {
+                console.log('Disconnected from Pusher');
+                updateConnectionStatus('disconnected', 'Disconnected');
+            });
+
+            pusher.connection.bind('connecting', function() {
+                updateConnectionStatus('connecting', 'Connecting...');
+            });
+
+            pusher.connection.bind('error', function(error) {
+                console.error('Pusher connection error:', error);
+                updateConnectionStatus('error', 'Connection Error');
+            });
+
+            function updateConnectionStatus(status, text) {
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+
+                // Remove all status classes
+                statusDot.className = 'status-dot';
+                statusDot.classList.add(status);
+                statusText.textContent = text;
             }
 
             // Auto-resize input on focus
@@ -597,17 +691,25 @@
                 this.style.transform = 'scale(1)';
             });
 
-            // Initialize chat with welcome message (optional)
+            // Initialize chat
             document.addEventListener('DOMContentLoaded', function() {
                 const chatMessages = document.getElementById('chatMessages');
+
+                // Add welcome message if no messages exist
                 if (chatMessages.children.length === 0) {
                     const welcomeMessage = document.createElement('div');
-                    welcomeMessage.className = 'message bot-message';
-                    welcomeMessage.textContent =
-                        'Halo! Selamat datang di Live Chat Support. Ada yang bisa kami bantu hari ini? 😊';
+                    welcomeMessage.className = 'message admin-message';
+                    welcomeMessage.innerHTML = `
+                        <div class="message-content">Halo! Selamat datang di Live Chat Support. Ada yang bisa kami bantu hari ini? 😊</div>
+                        <div class="message-time">${new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</div>
+                    `;
                     chatMessages.appendChild(welcomeMessage);
                 }
+
+                console.log('User chat initialized with real-time messaging');
             });
         </script>
+
+
     @endauth
 @endsection

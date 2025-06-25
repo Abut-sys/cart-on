@@ -53,8 +53,8 @@
                     <!-- Price -->
                     <div class="product-edit-form-group mb-4">
                         <label for="price" class="product-edit-label">Price</label>
-                        <input type="number" name="price" id="price" class="product-edit-input"
-                            value="{{ old('price', $product->price) }}" required placeholder="Price">
+                        <input type="text" name="price" id="price" class="product-edit-input"
+                            value="{{ old('price', $product->price) }}" placeholder="Price">
                         @error('price')
                             <div class="product-edit-alert-danger">{{ $message }}</div>
                         @enderror
@@ -138,11 +138,9 @@
 
                     <button type="button" class="product-edit-btn product-edit-btn-add w-100">More Variant</button>
 
-                    <div class="mt-4">
-                        <button type="submit" class="product-edit-btn product-edit-btn-confirm w-100">
-                            Save Product
-                        </button>
-                    </div>
+                    <button type="submit" class="mt-4 product-edit-btn product-edit-btn-confirm w-100">
+                        Save Product
+                    </button>
                 </form>
             </div>
         </div>

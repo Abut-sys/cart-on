@@ -138,7 +138,6 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'markup' => 'required|numeric|min:0|max:100',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'sub_category_product_id' => 'required|exists:sub_category_products,id',
             'brand_id' => 'required|exists:brands,id',
@@ -148,22 +147,21 @@ class ProductController extends Controller
             'variants.*.stock' => 'required|integer|min:0',
         ]);
 
-        $markupPercentage = $request->markup;
-        $markupAmount = ($request->price * $markupPercentage) / 100;
-        $oldPrice = $request->price + $markupAmount;
-
-        $ppnAmount = ($oldPrice * 11) / 100;
-        $finalPrice = $oldPrice + $ppnAmount;
+        $oldPrice = $product->price;
+        $finalPrice = $request->price;
 
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
-            'markup' => $markupPercentage,
             'old_price' => $oldPrice,
             'price' => $finalPrice,
             'sub_category_product_id' => $request->sub_category_product_id,
             'brand_id' => $request->brand_id,
         ]);
+
+        foreach ($request->variants as $variant) {
+            $product->subVariant()->update($variant);
+        }
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
