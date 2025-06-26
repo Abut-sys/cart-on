@@ -15,7 +15,7 @@ class ProductReportController extends Controller
     public function index(Request $request)
     {
         $searchable = ['id', 'name', 'price'];
-        $query = Product::with(['brand', 'subCategory'])
+        $query = Product::with(['brand', 'subCategory', 'subVariant'])
             ->withCount(['wishlists', 'reviewProducts']);
 
         if ($request->filled('search')) {
@@ -25,7 +25,12 @@ class ProductReportController extends Controller
                     ->orWhere('name', 'like', "%$search%")
                     ->orWhere('price', 'like', "%$search%")
                     ->orWhereHas('subCategory', fn($q) => $q->where('name', 'like', "%$search%"))
-                    ->orWhereHas('brand', fn($q) => $q->where('name', 'like', "%$search%"));
+                    ->orWhereHas('brand', fn($q) => $q->where('name', 'like', "%$search%"))
+                    ->orWhereHas('subVariant', function ($q) use ($search) {
+                        $q->where('color', 'like', "%$search%")
+                            ->orWhere('size', 'like', "%$search%")
+                            ->orWhere('stock', 'like', "%$search%");
+                    });
             });
         }
 
@@ -37,12 +42,14 @@ class ProductReportController extends Controller
                 $query->orderBy("products.$sortColumn", $sortDirection);
             } elseif ($sortColumn === 'sub_category') {
                 $query->orderBy(
-                    SubCategoryProduct::select('name')->whereColumn('sub_category_products.id', 'products.sub_category_product_id'),
+                    SubCategoryProduct::select('name')
+                        ->whereColumn('sub_category_products.id', 'products.sub_category_product_id'),
                     $sortDirection
                 );
             } elseif ($sortColumn === 'brand') {
                 $query->orderBy(
-                    Brand::select('name')->whereColumn('brands.id', 'products.brand_id'),
+                    Brand::select('name')
+                        ->whereColumn('brands.id', 'products.brand_id'),
                     $sortDirection
                 );
             } elseif (in_array($sortColumn, ['sales', 'rating', 'wishlists_count', 'review_products_count'])) {
@@ -66,7 +73,7 @@ class ProductReportController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $query = Product::with(['brand', 'subCategory'])
+        $query = Product::with(['brand', 'subCategory', 'subVariant'])
             ->withCount(['wishlists', 'reviewProducts']);
 
         if ($request->filled('search')) {
@@ -76,9 +83,15 @@ class ProductReportController extends Controller
                     ->orWhere('name', 'like', "%$search%")
                     ->orWhere('price', 'like', "%$search%")
                     ->orWhereHas('subCategory', fn($q) => $q->where('name', 'like', "%$search%"))
-                    ->orWhereHas('brand', fn($q) => $q->where('name', 'like', "%$search%"));
+                    ->orWhereHas('brand', fn($q) => $q->where('name', 'like', "%$search%"))
+                    ->orWhereHas('subVariant', function ($q) use ($search) {
+                        $q->where('color', 'like', "%$search%")
+                            ->orWhere('size', 'like', "%$search%")
+                            ->orWhere('stock', 'like', "%$search%");
+                    });
             });
         }
+
 
         $sortColumn = $request->input('sort_column', 'id');
         $sortDirection = $request->input('sort_direction') ?? ($request->filled('search') ? 'desc' : 'asc');

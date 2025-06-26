@@ -20,6 +20,7 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AdminChatController;
+use App\Http\Controllers\BrandReportController;
 use App\Http\Controllers\CostumersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListOrderController;
@@ -30,7 +31,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\WaitingPaymentController;
 use App\Http\Controllers\CategoryProductController;
+use App\Http\Controllers\CategoryReportController;
 use App\Http\Controllers\ProductReportController;
+use App\Http\Controllers\VoucherReportController;
+use PhpOffice\PhpSpreadsheet\Calculation\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,7 +147,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/chat', [AdminChatController::class, 'index'])->name('admin.chat');
     Route::get('/admin/chat/messages/{userId}', [AdminChatController::class, 'getMessages']);
     Route::post('/admin/chat/send', [AdminChatController::class, 'sendMessage'])->name('admin.chat.send');
-    
+
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/dashboard/filter', [DashboardController::class, 'filterData']);
 
@@ -151,6 +155,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
     Route::resource('brands', BrandController::class);
+    Route::get('reports/brands', [BrandReportController::class, 'index'])->name('reports.brands.index');
+    Route::get('reports/brands/export/pdf', [BrandReportController::class, 'exportPdf'])->name('reports.brands.export.pdf');
+    Route::get('reports/brands/export/excel', [BrandReportController::class, 'exportExcel'])->name('reports.brands.export.excel');
 
     Route::resource('products', ProductController::class);
     Route::get('reports/products', [ProductReportController::class, 'index'])->name('reports.products.index');
@@ -158,8 +165,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('reports/products/export/excel', [ProductReportController::class, 'exportExcel'])->name('reports.products.export.excel');
 
     Route::resource('categories', CategoryProductController::class);
+    Route::get('reports/categories', [CategoryReportController::class, 'index'])->name('reports.categories.index');
+    Route::get('reports/categories/export/pdf', [CategoryReportController::class, 'exportPdf'])->name('reports.categories.export.pdf');
+    Route::get('reports/categories/export/excel', [CategoryReportController::class, 'exportExcel'])->name('reports.categories.export.excel');
 
     Route::resource('vouchers', VoucherController::class);
+    Route::get('reports/vouchers', [VoucherReportController::class, 'index'])->name('reports.vouchers.index');
+    Route::get('reports/vouchers/export/pdf', [VoucherReportController::class, 'exportPdf'])->name('reports.vouchers.export.pdf');
+    Route::get('reports/vouchers/export/excel', [VoucherReportController::class, 'exportExcel'])->name('reports.vouchers.export.excel');
 
     Route::resource('orders', OrderController::class);
     Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');

@@ -19,7 +19,7 @@
                 class="category-link d-flex justify-content-between align-items-center {{ request()->is('categories/*') ? 'active' : '' }}"
                 onclick="toggleCategoryDropdown(event)">
                 <span><i class="fas fa-shapes me-2"></i> Category</span>
-                <i id="categoryArrow" class="fas fa-chevron-down transition-transform"></i>
+                <i id="categoryArrow" class="bi bi-caret-down-fill transition-transform"></i>
             </a>
 
             <div id="categoryDropdown" class="dropdown flex-column mt-1" style="display: none;">
@@ -46,19 +46,26 @@
                 class="report-link d-flex justify-content-between align-items-center {{ request()->is('report/*') ? 'active' : '' }}"
                 onclick="toggleReportDropdown(event)">
                 <span><i class="fas fa-file-alt me-2"></i> Report</span>
-                <i id="reportArrow" class="fas fa-chevron-down transition-transform"></i>
+                <i id="reportArrow" class="bi bi-caret-down-fill transition-transform"></i>
             </a>
 
             <div id="reportDropdown" class="dropdown flex-column mt-1" style="display: none;">
                 <a href="{{ route('reports.products.index') }}" class="dropdown-item ps-4">
                     <i class="fas fa-box me-2"></i> Product Report
                 </a>
+                 <a href="{{ route('reports.categories.index') }}" class="dropdown-item ps-4">
+                    <i class="bi bi-tags-fill me-2"></i> Category Report
+                </a>
+                <a href="{{ route('reports.brands.index') }}" class="dropdown-item ps-4">
+                    <i class="bi bi-bag-fill me-2"></i> Brand Report
+                </a>
+                <a href="{{ route('reports.vouchers.index') }}" class="dropdown-item ps-4">
+                    <i class="bi bi-percent me-2"></i> Voucher Report
+                </a>
+                <a href="{{ route('report.orders') }}" class="dropdown-item ps-4">
+                    <i class="bi bi-cart-check-fill me-2"></i> Order Report
+                </a>
             </div>
-        </div>
-        <div class="nav-item">
-            <a href="{{ route('report.orders') }}" class="{{ request()->is('report/orders') ? 'active' : '' }}">
-                <i class="fas fa-file-alt icon"></i> Report Management
-            </a>
         </div>
 
         <div class="nav-item">

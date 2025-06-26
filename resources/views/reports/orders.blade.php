@@ -96,7 +96,6 @@
                                     <td class="text-muted">{{ $index + 1 }}</td>
                                     <td>
                                         <span class="badge bg-light text-dark border">{{ $report->unique_order_id }}</span>
-                                        <span class="badge bg-light text-dark border">{{ $report->unique_order_id }}</span>
                                     </td>
                                     <td>{{ $report->customer_name }}</td>
                                     <td class="text-nowrap">

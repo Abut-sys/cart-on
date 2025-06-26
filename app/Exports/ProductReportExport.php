@@ -24,7 +24,7 @@ class ProductReportExport implements FromCollection, WithHeadings, WithColumnFor
 
     public function collection(): Collection
     {
-        $query = Product::with(['subCategory', 'brand'])
+        $query = Product::with(['subCategory', 'brand', 'subVariant'])
             ->withCount(['wishlists', 'reviewProducts']);
 
         if ($this->search) {
@@ -40,24 +40,50 @@ class ProductReportExport implements FromCollection, WithHeadings, WithColumnFor
         }
 
         $products = $query->get();
+        $rows = collect();
 
-        return $products->map(function ($product) {
-            return [
-                'Name' => $product->name,
-                'Category' => $product->subCategory->name ?? '-',
-                'Brand' => $product->brand->name ?? '-',
-                'Price' => (float) $product->price,
-                'Sales' => (int) $product->sales,
-                'Wishlist' => (int) $product->wishlists_count,
-                'Rating' => (float) $product->rating,
-                'Review' => (int) $product->review_products_count,
-            ];
-        });
+        foreach ($products as $product) {
+            $first = true;
+            foreach ($product->subVariant as $variant) {
+                $rows->push([
+                    'Name'     => $first ? $product->name : '',
+                    'Category' => $first ? ($product->subCategory->name ?? '-') : '',
+                    'Brand'    => $first ? ($product->brand->name ?? '-') : '',
+                    'Price'    => $first ? $product->price : '',
+                    'Sales'    => $first ? $product->sales : '',
+                    'Wishlist' => $first ? $product->wishlists_count : '',
+                    'Rating'   => $first ? $product->rating : '',
+                    'Review'   => $first ? $product->review_products_count : '',
+                    'Color'    => $variant->color,
+                    'Size'     => $variant->size,
+                    'Stock'    => $variant->stock,
+                ]);
+                $first = false;
+            }
+
+            if ($product->subVariant->isEmpty()) {
+                $rows->push([
+                    'Name'     => $product->name,
+                    'Category' => $product->subCategory->name ?? '-',
+                    'Brand'    => $product->brand->name ?? '-',
+                    'Price'    => $product->price,
+                    'Sales'    => $product->sales,
+                    'Wishlist' => $product->wishlists_count,
+                    'Rating'   => $product->rating,
+                    'Review'   => $product->review_products_count,
+                    'Color'    => '-',
+                    'Size'     => '-',
+                    'Stock'    => '-',
+                ]);
+            }
+        }
+
+        return $rows;
     }
 
     public function headings(): array
     {
-        return ['Name', 'Category', 'Brand', 'Price', 'Sales', 'Wishlist', 'Rating', 'Review'];
+        return ['Name', 'Category', 'Brand', 'Price', 'Sales', 'Wishlist', 'Rating', 'Review', 'Color', 'Size', 'Stock'];
     }
 
     public function columnFormats(): array
@@ -68,6 +94,7 @@ class ProductReportExport implements FromCollection, WithHeadings, WithColumnFor
             'F' => NumberFormat::FORMAT_NUMBER,
             'G' => NumberFormat::FORMAT_NUMBER_00,
             'H' => NumberFormat::FORMAT_NUMBER,
+            'K' => NumberFormat::FORMAT_NUMBER,
         ];
     }
 }
