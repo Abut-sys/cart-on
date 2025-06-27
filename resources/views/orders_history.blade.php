@@ -100,15 +100,13 @@
                                 </div>
                                 <div class="th-status-group">
                                     @php
-                                        $voucher = null;
-                                        $totalBeforeDiscount = 0;
-                                        $totalVoucherDiscount = 0;
-
-                                        foreach ($order->checkouts as $checkout) {
-                                            $totalBeforeDiscount += $checkout->amount * $checkout->quantity;
-                                        }
+                                        $totalBeforeDiscount = $order->checkouts->sum(
+                                            fn($c) => $c->product->price * $c->quantity,
+                                        );
 
                                         $voucher = $order->checkouts->firstWhere('voucher_code', '!=', null)?->voucher;
+
+                                        $totalVoucherDiscount = 0;
 
                                         if ($voucher) {
                                             if ($voucher->type === 'percentage') {
@@ -128,8 +126,11 @@
                                     <p class="th-voucher-cost text-muted">
                                         <span>Voucher: </span>
                                         <span>
-                                            @if ($totalVoucherDiscount > 0)
+                                            @if ($voucher)
                                                 -Rp{{ number_format($totalVoucherDiscount, 0, ',', '.') }}
+                                                @if ($voucher->type === 'percentage')
+                                                    ({{ $voucher->discount_value }}%)
+                                                @endif
                                             @else
                                                 Not applied
                                             @endif

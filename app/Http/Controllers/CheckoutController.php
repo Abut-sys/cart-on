@@ -392,21 +392,28 @@ class CheckoutController extends Controller
             throw new Exception('Voucher sudah kadaluarsa.');
         }
 
-        $isClaimed = DB::table('claim_voucher')
-            ->where('user_id', auth()->id())
-            ->where('voucher_id', $voucher->id)
-            ->exists();
+        $userId = auth()->id();
 
-        if (!$isClaimed) {
-            throw new Exception('Voucher belum diklaim oleh Anda.');
-        }
-
-        $userUsedVoucher = UserVoucher::where('user_id', auth()->id())
+        $userUsedVoucher = UserVoucher::where('user_id', $userId)
             ->where('voucher_id', $voucher->id)
             ->exists();
 
         if ($userUsedVoucher) {
             throw new Exception('Anda sudah menggunakan voucher ini.');
+        }
+
+        $isClaimed = DB::table('claim_voucher')
+            ->where('user_id', $userId)
+            ->where('voucher_id', $voucher->id)
+            ->exists();
+
+        if (!$isClaimed) {
+            DB::table('claim_voucher')->insert([
+                'user_id' => $userId,
+                'voucher_id' => $voucher->id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
 
         return $voucher;

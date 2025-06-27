@@ -184,7 +184,7 @@
                                                                     <div class="product-info">
                                                                         <h5>{{ $checkout->product->name }}</h5>
                                                                         <p>Qty: {{ $checkout->quantity }} ×
-                                                                            Rp{{ number_format($checkout->amount, 0, ',', '.') }}
+                                                                            Rp{{ number_format($checkout->product->price, 0, ',', '.') }}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -194,20 +194,17 @@
                                                     <div class="details-section">
                                                         <h4>Payment Information</h4>
                                                         @php
-                                                            $voucher = null;
-                                                            $totalBeforeDiscount = 0;
-                                                            $totalVoucherDiscount = 0;
-
-                                                            foreach ($order->checkouts as $checkout) {
-                                                                $totalBeforeDiscount +=
-                                                                    $checkout->amount * $checkout->quantity;
-                                                            }
+                                                            $totalBeforeDiscount = $order->checkouts->sum(
+                                                                fn($c) => $c->product->price * $c->quantity,
+                                                            );
 
                                                             $voucher = $order->checkouts->firstWhere(
                                                                 'voucher_code',
                                                                 '!=',
                                                                 null,
                                                             )?->voucher;
+
+                                                            $totalVoucherDiscount = 0;
 
                                                             if ($voucher) {
                                                                 if ($voucher->type === 'percentage') {
@@ -220,28 +217,33 @@
                                                             }
                                                         @endphp
                                                         <div class="payment-info">
+                                                            @php
+                                                                $totalProductAmount = $order->checkouts->sum(function (
+                                                                    $checkout,
+                                                                ) {
+                                                                    return $checkout->product->price *
+                                                                        $checkout->quantity;
+                                                                });
+                                                            @endphp
+                                                            <div class="info-row">
+                                                                <span>Product_Price:</span>
+                                                                <span>Rp{{ number_format($totalProductAmount, 0, ',', '.') }}</span>
+                                                            </div>
                                                             <div class="info-row">
                                                                 <span>Shipping:</span>
-                                                                <span>Rp{{ $order->shipping_cost ?? 'Not specified' }}</span>
+                                                                <span>Rp{{ number_format($order->shipping_cost, 0, ',', '.' ?? 'Not specified') }}</span>
                                                             </div>
                                                             <div class="info-row">
                                                                 <span>Voucher:</span>
                                                                 <span>
-                                                                    @if ($totalVoucherDiscount > 0)
+                                                                    @if ($voucher)
                                                                         -Rp{{ number_format($totalVoucherDiscount, 0, ',', '.') }}
-                                                                    @else
-                                                                        Not applied
-                                                                    @endif
-
-                                                                    {{-- @if ($voucher)
                                                                         @if ($voucher->type === 'percentage')
-                                                                            {{ $voucher->discount_value }}%
-                                                                        @else
-                                                                            Rp{{ number_format($voucher->discount_value, 0, ',', '.') }}
+                                                                            ({{ $voucher->discount_value }}%)
                                                                         @endif
                                                                     @else
                                                                         Not applied
-                                                                    @endif --}}
+                                                                    @endif
                                                                 </span>
                                                             </div>
                                                             <div class="info-row">
@@ -333,7 +335,7 @@
                                             .catch(() => {
                                                 alert(
                                                     'Failed to update payment status.'
-                                                    );
+                                                );
                                                 hideCustomSpinner();
                                             });
                                     },

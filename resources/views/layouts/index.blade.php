@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/navbar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/footer.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/spinner.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
@@ -75,7 +76,19 @@
 
     @yield('admin_chat')
 
-    {{-- Include Footer --}}
+    {{-- loader --}}
+    <div id="customSpinnerLoader"Add commentMore actions
+        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+        style="background: rgba(0,0,0,0.5); z-index: 9999;">
+        <div class="spinner">
+            <div class="outer">
+                <div class="inner tl"></div>
+                <div class="inner tr"></div>
+                <div class="inner br"></div>
+                <div class="inner bl"></div>
+            </div>
+        </div>
+    </div>
 
     {{-- Include Sidebar --}}
     @auth
