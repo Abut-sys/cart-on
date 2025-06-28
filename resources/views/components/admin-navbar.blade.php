@@ -7,11 +7,6 @@
                 </div>
             @endif
         @endauth
-        <div class="logo-container" oncontextmenu="return false;">
-            <a href="{{ url('/dashboard') }}">
-                <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo-user">
-            </a>
-        </div>
     </div>
 
     <div class="nav-right" style="display: flex; align-items: center;">

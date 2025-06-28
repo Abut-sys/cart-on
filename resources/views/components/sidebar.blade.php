@@ -100,6 +100,14 @@
         dropdown.style.display = isVisible ? 'none' : 'flex';
         arrow.classList.toggle('rotate', !isVisible);
     }
+
+    @if (Auth::check() && Auth::user()->role == 'admin')
+        // Set flag bahwa ini adalah login baru
+        sessionStorage.setItem("isNewLogin", "true");
+
+        // Tambahkan class ke body untuk menandai user sudah login dan admin
+        document.body.classList.add("logged-in", "admin");
+    @endif
 </script>
 
 <style>

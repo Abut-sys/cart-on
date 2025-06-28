@@ -14,25 +14,51 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Fungsi untuk membuka sidebar
+    function openSidebar() {
+        if (sidebar) {
+            sidebar.classList.add("active");
+            document.body.style.marginLeft = "200px";
+            saveSidebarState();
+        }
+    }
+
+    // Fungsi untuk menutup sidebar
+    function closeSidebar() {
+        if (sidebar) {
+            sidebar.classList.remove("active");
+            document.body.style.marginLeft = "0";
+            saveSidebarState();
+        }
+    }
+
     // Fungsi untuk memuat status sidebar dan kategori dari localStorage
     function loadState() {
         // Cek status login dan role admin
         const isLoggedIn = document.body.classList.contains("logged-in");
         const isAdmin = document.body.classList.contains("admin");
-        
-        // Sidebar hanya tampil jika sudah login dan admin
+
+        // Jika user adalah admin yang sudah login
         if (isLoggedIn && isAdmin) {
+            // Cek apakah ini adalah session login baru
+            const isNewLogin = sessionStorage.getItem("isNewLogin");
             const sidebarActive = JSON.parse(localStorage.getItem("sidebarActive"));
-            if (sidebarActive && sidebar) {
-                sidebar.classList.add("active");
-                document.body.style.marginLeft = "200px"; // Atur margin untuk sidebar
+
+            // Jika login baru atau belum pernah set, buka sidebar otomatis
+            if (isNewLogin === "true" || sidebarActive === null) {
+                openSidebar();
+                // Hapus flag login baru setelah sidebar dibuka
+                sessionStorage.removeItem("isNewLogin");
+            } else if (sidebarActive) {
+                // Jika sebelumnya sidebar aktif, buka sidebar
+                openSidebar();
+            } else {
+                // Jika sebelumnya sidebar tidak aktif, tutup sidebar
+                closeSidebar();
             }
         } else {
             // Sembunyikan sidebar jika bukan admin atau belum login
-            if (sidebar) {
-                sidebar.classList.remove("active");
-                document.body.style.marginLeft = "0"; // Reset margin
-            }
+            closeSidebar();
         }
 
         // Muat kategori yang aktif jika ada
@@ -43,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 activeLink.classList.add("active");
                 const dropdown = activeLink.nextElementSibling;
                 if (dropdown && dropdown.classList.contains("dropdown")) {
-                    dropdown.style.display = "block"; // Tampilkan dropdown jika aktif
+                    dropdown.style.display = "block";
                 }
             }
         }
@@ -54,7 +80,8 @@ document.addEventListener("DOMContentLoaded", function () {
         menuToggle.addEventListener("click", function () {
             if (sidebar) {
                 sidebar.classList.toggle("active");
-                document.body.style.marginLeft = sidebar.classList.contains("active") ? "200px" : "0";
+                const isActive = sidebar.classList.contains("active");
+                document.body.style.marginLeft = isActive ? "200px" : "0";
                 saveSidebarState();
             }
         });
@@ -91,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Toggle dropdown user info saat diklik
     if (userInfo) {
         userInfo.addEventListener("click", function (e) {
-            e.stopPropagation(); // Mencegah dropdown langsung tertutup
+            e.stopPropagation();
             this.classList.toggle("active");
             const userDropdown = document.getElementById("userDropdown");
             if (userDropdown) {
