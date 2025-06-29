@@ -19,6 +19,12 @@
         @else
             <div class="voucher-claim-row d-flex flex-wrap">
                 @foreach ($vouchers as $voucher)
+                    @php
+                        $userClaim = $voucher->claimVoucher->where('user_id', auth()->id())->first();
+                        $userQuantity = $userClaim ? $userClaim->quantity : 0;
+                        $slotsLeft = $voucher->max_per_user - $userQuantity;
+                    @endphp
+
                     <div class="voucher-claim-col">
                         <div class="voucher-claim-card card shadow-lg border-0 rounded-lg position-relative">
                             <div class="voucher-claim-card-body card-body">
@@ -38,11 +44,21 @@
                                     <em>{{ $voucher->terms_and_conditions ?? 'No specific terms apply. Enjoy your savings!' }}</em>
                                 </p>
 
+                                <p class="text-center mb-2">
+                                    <strong>Claimed:</strong> {{ $userQuantity }} /
+                                    {{ $voucher->max_per_user }}
+                                </p>
+
                                 <form action="{{ route('claim', $voucher->id) }}" method="POST">
                                     @csrf
                                     <button type="submit"
-                                        class="voucher-claim-btn voucher-claim-btn-success w-100 py-3 font-weight-bold mt-3 voucher-claim-shadow-sm">
-                                        Claim This Voucher
+                                        class="voucher-claim-btn voucher-claim-btn-success w-100 py-3 font-weight-bold mt-2 voucher-claim-shadow-sm"
+                                        @if ($slotsLeft <= 0) disabled @endif>
+                                        @if ($slotsLeft <= 0)
+                                            Reached Max Claims
+                                        @else
+                                            Claim This Voucher ({{ $slotsLeft }} left)
+                                        @endif
                                     </button>
                                 </form>
 

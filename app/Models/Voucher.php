@@ -20,6 +20,7 @@ class Voucher extends Model
         'terms_and_conditions',
         'usage_limit',
         'used_count',
+        'max_per_user',
         'status',
     ];
 

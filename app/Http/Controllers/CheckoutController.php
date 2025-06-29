@@ -45,13 +45,10 @@ class CheckoutController extends Controller
         // voucher claimed & not used
         $vouchers = DB::table('claim_voucher')
             ->join('vouchers', 'claim_voucher.voucher_id', '=', 'vouchers.id')
-            ->leftJoin('user_voucher', function ($join) use ($user) {
-                $join->on('vouchers.id', '=', 'user_voucher.voucher_id')
-                    ->where('user_voucher.user_id', '=', $user->id);
-            })
             ->where('claim_voucher.user_id', $user->id)
-            ->whereNull('user_voucher.id')
+            ->where('claim_voucher.quantity', '>', 0)
             ->where('vouchers.status', 'active')
+            ->whereColumn('vouchers.used_count', '<', 'vouchers.usage_limit')
             ->where(function ($query) {
                 $query->whereNull('vouchers.end_date')
                     ->orWhere('vouchers.end_date', '>', now());
@@ -394,26 +391,33 @@ class CheckoutController extends Controller
 
         $userId = auth()->id();
 
-        $userUsedVoucher = UserVoucher::where('user_id', $userId)
-            ->where('voucher_id', $voucher->id)
-            ->exists();
-
-        if ($userUsedVoucher) {
-            throw new Exception('Anda sudah menggunakan voucher ini.');
-        }
-
         $isClaimed = DB::table('claim_voucher')
             ->where('user_id', $userId)
             ->where('voucher_id', $voucher->id)
-            ->exists();
+            ->first();
+
+        $usedCount = DB::table('user_voucher')
+            ->where('user_id', $userId)
+            ->where('voucher_id', $voucher->id)
+            ->count();
 
         if (!$isClaimed) {
+            $remainingSlot = $voucher->max_per_user - $usedCount;
+            if ($remainingSlot <= 0) {
+                throw new Exception('Slot max per user sudah habis.');
+            }
+
             DB::table('claim_voucher')->insert([
                 'user_id' => $userId,
                 'voucher_id' => $voucher->id,
+                'quantity' => $remainingSlot,
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
+        } else {
+            if ($usedCount >= $isClaimed->quantity) {
+                throw new Exception('Slot voucher sudah habis dipakai.');
+            }
         }
 
         return $voucher;

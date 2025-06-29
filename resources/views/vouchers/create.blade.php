@@ -84,6 +84,18 @@
                         @enderror
                     </div>
 
+                    <div class="voucher-create-form-group mb-4">
+                        <label for="max_per_user" class="voucher-create-form-label">Max Per User</label>
+                        <input type="number" name="max_per_user" id="max_per_user" class="voucher-create-form-control"
+                            min="1" required>
+                        <small class="voucher-create-form-text">
+                            Maximum times a single user can claim this voucher.
+                        </small>
+                        @error('max_per_user')
+                            <div class="voucher-create-alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <button type="submit" class="voucher-create-btn voucher-create-btn-success w-100">
                         Create Voucher
                     </button>

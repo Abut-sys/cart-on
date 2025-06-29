@@ -20,10 +20,13 @@
                 @foreach ($claimedVouchers as $claimedVoucher)
                     @php
                         $voucher = $claimedVoucher->voucher;
-                        $isExpired = \Carbon\Carbon::now()->gt($voucher->end_date);
-                        $discountLabel = $voucher->type === 'percentage'
-                            ? $voucher->discount_value . '% OFF'
-                            : 'Discount Rp ' . number_format($voucher->discount_value, 0, ',', '.');
+                        $quantity = $claimedVoucher->quantity ?? 1;
+                        $slotsLeft = $voucher->max_per_user - $quantity;
+
+                        $discountLabel =
+                            $voucher->type === 'percentage'
+                                ? $voucher->discount_value . '% OFF'
+                                : 'Discount Rp ' . number_format($voucher->discount_value, 0, ',', '.');
                     @endphp
 
                     <div class="voucher-claimed-col">
@@ -40,12 +43,23 @@
 
                                 <p class="voucher-claimed-validity card-text text-center mb-2">
                                     <span class="text-muted">Validity:</span>
-                                    <strong>{{ $voucher->start_date->format('M d, Y') }}</strong>
+                                    <strong>{{ \Carbon\Carbon::parse($voucher->start_date)->format('M d, Y') }}</strong>
                                     <span> to </span>
-                                    <strong>{{ $voucher->end_date->format('M d, Y') }}</strong>
+                                    <strong>{{ \Carbon\Carbon::parse($voucher->end_date)->format('M d, Y') }}</strong>
                                 </p>
 
-                                <div class="voucher-claimed-discount position-absolute top-0 end-0 bg-danger text-white px-3 py-2 rounded-bottom-start">
+                                <p class="voucher-claimed-quantity card-text text-center mb-2">
+                                    <strong>Claimed Slots:</strong> {{ $quantity }} / {{ $voucher->max_per_user }}
+                                </p>
+
+                                @if ($slotsLeft <= 0)
+                                    <p class="text-center text-danger fw-bold">
+                                        Max Claims Reached
+                                    </p>
+                                @endif
+
+                                <div
+                                    class="voucher-claimed-discount position-absolute top-0 end-0 bg-danger text-white px-3 py-2 rounded-bottom-start">
                                     {{ $discountLabel }}
                                 </div>
                             </div>

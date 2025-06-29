@@ -14,6 +14,7 @@ class ClaimVoucher extends Model
     protected $fillable = [
         'user_id',
         'voucher_id',
+        'quantity',
     ];
 
     public function user()

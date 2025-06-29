@@ -28,8 +28,10 @@
                     <div class="voucher-edit-form-group mb-4">
                         <label for="type" class="voucher-edit-form-label">Discount Type</label>
                         <select name="type" id="type" class="voucher-edit-form-control" required>
-                            <option value="percentage" {{ old('type', $voucher->type) == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
-                            <option value="fixed" {{ old('type', $voucher->type) == 'fixed' ? 'selected' : '' }}>Fixed Amount (Rp)</option>
+                            <option value="percentage" {{ old('type', $voucher->type) == 'percentage' ? 'selected' : '' }}>
+                                Percentage (%)</option>
+                            <option value="fixed" {{ old('type', $voucher->type) == 'fixed' ? 'selected' : '' }}>Fixed
+                                Amount (Rp)</option>
                         </select>
                         @error('type')
                             <div class="voucher-edit-alert-danger">{{ $message }}</div>
@@ -87,6 +89,15 @@
                         @enderror
                     </div>
 
+                    <div class="voucher-edit-form-group mb-4">
+                        <label for="max_per_user" class="voucher-edit-form-label">Max Per User</label>
+                        <input type="number" name="max_per_user" id="max_per_user" class="voucher-edit-form-control"
+                            value="{{ old('max_per_user', $voucher->max_per_user) }}" min="1" required>
+                        @error('max_per_user')
+                            <div class="voucher-create-alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <button type="submit" class="voucher-edit-btn voucher-edit-btn-success w-100">Save Changes</button>
                 </form>
             </div>
@@ -106,7 +117,7 @@
             const discountHelp = document.getElementById('discountHelp');
 
             function updateDiscountHelp() {
-                if(typeSelect.value === 'percentage') {
+                if (typeSelect.value === 'percentage') {
                     discountInput.min = 0;
                     discountInput.max = 100;
                     discountHelp.textContent = 'Enter a value between 0 and 100.';

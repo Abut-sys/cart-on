@@ -87,6 +87,7 @@ class VoucherController extends Controller
             'end_date' => 'required|date|after:start_date',
             'terms_and_conditions' => 'nullable|string',
             'usage_limit' => 'required|integer|min:1',
+            'max_per_user' => 'required|integer|min:1',
         ]);
 
         Voucher::create($validatedData);
@@ -119,6 +120,7 @@ class VoucherController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'terms_and_conditions' => 'nullable|string',
             'usage_limit' => 'required|integer|min:1',
+            'max_per_user' => 'required|integer|min:1',
         ]);
 
         $voucher->update($validatedData);
@@ -136,13 +138,26 @@ class VoucherController extends Controller
 
     public function claim()
     {
-        $claimedVoucherIds = ClaimVoucher::where('user_id', Auth::id())->pluck('voucher_id')->toArray();
+        $userId = Auth::id();
 
         $vouchers = Voucher::where('status', 'active')
             ->where('start_date', '<=', Carbon::now())
             ->where('end_date', '>=', Carbon::now())
-            ->whereNotIn('id', $claimedVoucherIds)
             ->whereColumn('used_count', '<', 'usage_limit')
+            ->where(function ($query) use ($userId) {
+                $query
+                    ->whereDoesntHave('claimVoucher', function ($q) use ($userId) {
+                        $q->where('user_id', $userId);
+                    })
+                    ->orWhereHas('claimVoucher', function ($q) use ($userId) {
+                        $q->where('user_id', $userId)
+                            ->whereColumn(DB::raw('quantity'), '>', DB::raw('(
+            SELECT COUNT(*) FROM user_voucher 
+            WHERE user_voucher.user_id = ' . $userId . '
+            AND user_voucher.voucher_id = vouchers.id
+        )'));
+                    });
+            })
             ->get();
 
         return view('vouchers.claim', compact('vouchers'));
@@ -150,17 +165,18 @@ class VoucherController extends Controller
 
     public function claimedVouchers()
     {
-        $claimedVouchers = ClaimVoucher::where('user_id', Auth::id())
+        $userId = Auth::id();
+
+        $claimedVouchers = ClaimVoucher::with('voucher')
+            ->where('user_id', $userId)
             ->whereHas('voucher', function ($query) {
                 $query->where('status', 'active')
                     ->where('start_date', '<=', Carbon::now())
                     ->where('end_date', '>=', Carbon::now());
             })
-            ->whereNotIn('voucher_id', function ($query) {
-                $query->select('voucher_id')
-                    ->from('user_voucher')
-                    ->where('user_id', Auth::id());
-            })
+            ->whereRaw('quantity > (SELECT COUNT(*) FROM user_voucher 
+        WHERE user_voucher.user_id = claim_voucher.user_id
+        AND user_voucher.voucher_id = claim_voucher.voucher_id)')
             ->get();
 
         return view('vouchers.claimed', compact('claimedVouchers'));
@@ -179,23 +195,38 @@ class VoucherController extends Controller
             return back()->withErrors(['msg' => 'Voucher usage limit reached.']);
         }
 
-        $alreadyClaimed = ClaimVoucher::where('user_id', $user->id)
+        $usedCount = DB::table('user_voucher')
+            ->where('user_id', $user->id)
             ->where('voucher_id', $voucherId)
-            ->exists();
+            ->count();
 
-        if ($alreadyClaimed) {
-            return back()->withErrors(['msg' => 'You have already claimed this voucher.']);
+        $claim = ClaimVoucher::where('user_id', $user->id)
+            ->where('voucher_id', $voucherId)
+            ->first();
+
+        $currentQty = $claim ? $claim->quantity : 0;
+        $slotToClaim = 1;
+
+        $newTotalQty = $currentQty + $slotToClaim;
+
+        if (($usedCount + $slotToClaim) > $voucher->max_per_user) {
+            return back()->withErrors(['msg' => 'Max slot per user exceeded.']);
         }
 
-        ClaimVoucher::create([
-            'user_id' => $user->id,
-            'voucher_id' => $voucher->id,
-        ]);
+        if ($claim) {
+            $claim->increment('quantity', $slotToClaim);
+        } else {
+            ClaimVoucher::create([
+                'user_id' => $user->id,
+                'voucher_id' => $voucher->id,
+                'quantity' => $slotToClaim,
+            ]);
+        }
 
-        $voucher->increment('used_count');
+        $voucher->increment('used_count', $slotToClaim);
 
         $user->notify(new VoucherNotification(
-            "You have successfully claimed a voucher {$voucher->code} 🎉",
+            "You have successfully claimed additional slot(s) of voucher {$voucher->code} 🎉",
             route('your-vouchers')
         ));
 
