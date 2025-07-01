@@ -35,19 +35,11 @@
 
         <div class="user-wrapper" style="position: relative;">
             @auth
-                <a href="#" id="adminToggle">
-                    @php
-                        $profile = Auth::user()->profile;
-                        $profilePicture = $profile->profile_picture ?? null;
-                        $initial = strtoupper(substr(Auth::user()->name, 0, 1));
-                    @endphp
-
-                    @if ($profilePicture)
-                        <img src="{{ Storage::url('profile_pictures/' . $profilePicture) }}" alt="User Avatar"
-                            class="user-pp">
-                    @else
-                        <div class="user-pp-initial">{{ $initial }}</div>
-                    @endif
+                <a href="#" id="adminToggle"
+                    style="display: flex; align-items: center; text-decoration: none; color: #666;">
+                    <span class="user-name" style="color: #666; font-weight: bold;">{{ Auth::user()->name }}</span>
+                    <i class="fas fa-chevron-down" id="dropdownArrow"
+                        style="margin-left: 8px; font-size: 12px; color: #666; transition: transform 0.3s ease;"></i>
                 </a>
                 <div class="user-dropdown" id="userDropdown">
                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
@@ -58,3 +50,35 @@
         </div>
     </div>
 </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const adminToggle = document.getElementById('adminToggle');
+        const userDropdown = document.getElementById('userDropdown');
+        const dropdownArrow = document.getElementById('dropdownArrow');
+
+        if (adminToggle && userDropdown && dropdownArrow) {
+            adminToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Toggle dropdown visibility
+                userDropdown.classList.toggle('show');
+
+                // Rotate arrow
+                if (userDropdown.classList.contains('show')) {
+                    dropdownArrow.style.transform = 'rotate(180deg)';
+                } else {
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!adminToggle.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+    });
+</script>
