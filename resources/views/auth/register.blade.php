@@ -219,7 +219,7 @@
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
                         <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
-                            required>
+                            id="phoneNumber">
                     </div>
                 </div>
             </div>
@@ -260,60 +260,6 @@
         </form>
     </div>
 
-    <div id="customSpinnerLoader"
-        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-        style="background: rgba(0,0,0,0.5); z-index: 9999;">
-        <div class="spinner">
-            <div class="outer">
-                <div class="inner tl"></div>
-                <div class="inner tr"></div>
-                <div class="inner br"></div>
-                <div class="inner bl"></div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
-    <script>
-        function showCustomSpinner() {
-            document.getElementById('customSpinnerLoader').classList.remove('d-none');
-        }
-
-        function hideCustomSpinner() {
-            document.getElementById('customSpinnerLoader').classList.add('d-none');
-        }
-
-        window.addEventListener('beforeunload', function() {
-            showCustomSpinner();
-        });
-    </script>
-
-    @if (session('msg'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Success!',
-                    text: "{{ session('msg') }}",
-                    icon: 'success',
-                    confirmButtonText: 'Return'
-                });
-            });
-        </script>
-    @endif
-    @if ($errors->any())
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Error!',
-                    text: "{{ $errors->first() }}",
-                    icon: 'error',
-                    confirmButtonText: 'Try Again'
-                });
-            });
-        </script>
-    @endif
-
     <script>
         document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
@@ -329,6 +275,37 @@
             const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             confirmPasswordInput.setAttribute('type', type);
             eyeConfirmIcon.classList.toggle('fa-eye-slash');
+        });
+
+        // Phone number functionality
+        const phoneNumberInput = document.getElementById('phoneNumber');
+
+        phoneNumberInput.addEventListener('click', function() {
+            if (this.value === '') {
+                this.value = '+62 ';
+                this.setSelectionRange(4, 4); // Set cursor after +62
+            }
+        });
+
+        phoneNumberInput.addEventListener('focus', function() {
+            if (this.value === '') {
+                this.value = '+62 ';
+                this.setSelectionRange(4, 4);
+            }
+        });
+
+        phoneNumberInput.addEventListener('keydown', function(e) {
+            // Prevent deletion of +62 prefix
+            if ((e.key === 'Backspace' || e.key === 'Delete') && this.selectionStart <= 4) {
+                e.preventDefault();
+            }
+        });
+
+        phoneNumberInput.addEventListener('input', function() {
+            // Ensure +62 prefix is always present
+            if (!this.value.startsWith('+62 ')) {
+                this.value = '+62 ' + this.value.replace(/^\+62\s*/, '');
+            }
         });
     </script>
 </body>

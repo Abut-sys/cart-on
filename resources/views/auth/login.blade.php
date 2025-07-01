@@ -220,7 +220,6 @@
             /* Maintain space between icon and text */
         }
 
-
         .btn-google:hover {
             background-color: rgb(238, 238, 238);
             /* Latar belakang putih */
@@ -278,7 +277,6 @@
             box-shadow: 0 0 5px rgba(102, 163, 161, 0.5);
         }
 
-
         .input-group .form-control {
             border-radius: 30px;
             padding: 10px 15px;
@@ -292,6 +290,232 @@
 
             .title {
                 font-size: 28px;
+            }
+        }
+
+        /* ========== MODAL LOADER STYLES ========== */
+        /* Modal Styles */
+        .lgn-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .lgn-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lgn-modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+        }
+
+        .lgn-modal-overlay.active .lgn-modal-content {
+            transform: scale(1);
+        }
+
+        /* Login Animation */
+        .lgn-login-animation {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .lgn-person-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #99bc85, #66a3a1);
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            animation: lgn-bounce 2s ease-in-out infinite;
+        }
+
+        .lgn-person-icon::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.9;
+        }
+
+        .lgn-person-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 35px;
+            height: 25px;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            opacity: 0.9;
+        }
+
+        .lgn-login-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .lgn-dot {
+            width: 8px;
+            height: 8px;
+            background: #99bc85;
+            border-radius: 50%;
+            animation: lgn-pulse 1.5s ease-in-out infinite;
+        }
+
+        .lgn-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .lgn-dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .lgn-dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .lgn-loading-text {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .lgn-loading-subtext {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Progress Bar */
+        .lgn-progress-container {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .lgn-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #99bc85, #66a3a1);
+            border-radius: 3px;
+            width: 0%;
+            animation: lgn-progress 3s ease-in-out infinite;
+        }
+
+        /* Keyframe Animations */
+        @keyframes lgn-bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes lgn-pulse {
+
+            0%,
+            100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        @keyframes lgn-progress {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 70%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Close Button */
+        .lgn-close-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .lgn-close-btn:hover {
+            background: #ff3742;
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .lgn-modal-content {
+                padding: 30px 20px;
+            }
+
+            .lgn-login-animation {
+                width: 100px;
+                height: 100px;
+            }
+
+            .lgn-person-icon {
+                width: 70px;
+                height: 70px;
             }
         }
     </style>
@@ -314,7 +538,7 @@
     <div class="login-card">
         <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo">
         <h3 class="title">Sign In</h3>
-        <form action="{{ route('login') }}" method="POST">
+        <form action="{{ route('login') }}" method="POST" id="loginForm">
             @csrf
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -332,7 +556,7 @@
                 <button type="submit" class="btn btn-login">Sign In</button>
             </div>
             <div class="mb-3">
-                <a href="{{ route('google.redirect') }}" class="btn btn-google">
+                <a href="{{ route('google.redirect') }}" class="btn btn-google" id="googleLoginBtn">
                     <img src="{{ asset('image/google-icon.png') }}" alt="Google Icon"
                         style="width: 20px; height: 20px; margin-right: 10px;">
                     Sign in with Google
@@ -345,20 +569,27 @@
         </form>
     </div>
 
-    <div id="customSpinnerLoader"
-        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-        style="background: rgba(0,0,0,0.5); z-index: 9999;">
-        <div class="spinner">
-            <div class="outer">
-                <div class="inner tl"></div>
-                <div class="inner tr"></div>
-                <div class="inner br"></div>
-                <div class="inner bl"></div>
+    <!-- Modal Loader -->
+    <div id="lgnloaderModal" class="lgn-modal-overlay">
+        <div class="lgn-modal-content">
+            <div class="lgn-login-animation">
+                <div class="lgn-person-icon"></div>
+                <div class="lgn-login-dots">
+                    <div class="lgn-dot"></div>
+                    <div class="lgn-dot"></div>
+                    <div class="lgn-dot"></div>
+                </div>
+            </div>
+
+            <div class="lgn-loading-text">Sedang Login...</div>
+            <div class="lgn-loading-subtext">Mohon tunggu sebentar</div>
+
+            <div class="lgn-progress-container">
+                <div class="lgn-progress-bar"></div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -385,20 +616,7 @@
     @endif
 
     <script>
-        function showCustomSpinner() {
-            document.getElementById('customSpinnerLoader').classList.remove('d-none');
-        }
-
-        function hideCustomSpinner() {
-            document.getElementById('customSpinnerLoader').classList.add('d-none');
-        }
-
-        window.addEventListener('beforeunload', function() {
-            showCustomSpinner();
-        });
-    </script>
-
-    <script>
+        // Toggle Password Visibility
         const togglePassword = document.getElementById("togglePassword");
         const passwordField = document.getElementById("password");
         const eyeIcon = document.getElementById("eyeIcon");
@@ -413,6 +631,53 @@
                 eyeIcon.classList.remove("fa-eye-slash");
                 eyeIcon.classList.add("fa-eye");
             }
+        });
+
+        // ========== MODAL LOADER FUNCTIONS ==========
+        function lgnShowLoader() {
+            const modal = document.getElementById('lgnloaderModal');
+            modal.classList.add('active');
+        }
+
+        function lgnHideLoader() {
+            const modal = document.getElementById('lgnloaderModal');
+            modal.classList.remove('active');
+        }
+
+        function lgnShowLoaderWithDelay(seconds = 5) {
+            lgnShowLoader();
+            setTimeout(() => {
+                lgnHideLoader();
+            }, seconds * 1000);
+        }
+
+        // Show loader when form is submitted
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            lgnShowLoader();
+        });
+
+        // Show loader when Google login is clicked
+        document.getElementById('googleLoginBtn').addEventListener('click', function(e) {
+            lgnShowLoader();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('lgnloaderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                lgnHideLoader();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                lgnHideLoader();
+            }
+        });
+
+        // Hide loader if there's an error (page reload)
+        window.addEventListener('load', function() {
+            lgnHideLoader();
         });
     </script>
 </body>

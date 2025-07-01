@@ -125,19 +125,7 @@
     @vite('resources/js/bootstrap.js')
 
     {{-- Loader --}}
-    <script>
-        function showCustomSpinner() {
-            document.getElementById('customSpinnerLoader').classList.remove('d-none');
-        }
-
-        function hideCustomSpinner() {
-            document.getElementById('customSpinnerLoader').classList.add('d-none');
-        }
-
-        window.addEventListener('beforeunload', function() {
-            showCustomSpinner();
-        });
-    </script>
+    
 
     {{-- notif --}}
     <script>
