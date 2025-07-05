@@ -63,8 +63,8 @@ class ProfileController extends Controller
         }
 
         if ($request->filled('password')) {
-        $user->password = Hash::make($request->password);
-        $user->save();
+            $user->password = Hash::make($request->password);
+            $user->save();
         }
 
         $user->save();
@@ -114,13 +114,13 @@ class ProfileController extends Controller
             'state' => 'nullable|string|max:100',
             'postal_code' => 'required|string|max:20',
             'country' => 'required|string|max:100',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'city_id' => 'nullable|string',
         ]);
 
         $user = Auth::user()->load('profile');
         $profile = $user->profile;
-
-        $existingAddressCount = $profile->addresses()->count();
-        $cityId = $existingAddressCount + 1;
 
         $addressString = implode(', ', [
             $request->address_line1,
@@ -130,7 +130,12 @@ class ProfileController extends Controller
             $request->country
         ]);
 
-        [$latitude, $longitude] = $this->getCoordinatesFromAddress($addressString);
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+
+        if (!$latitude || !$longitude) {
+            [$latitude, $longitude] = $this->getCoordinatesFromAddress($addressString);
+        }
 
         $newAddress = $profile->addresses()->create([
             'address_line1' => $request->address_line1,
@@ -139,12 +144,12 @@ class ProfileController extends Controller
             'state' => $request->state,
             'postal_code' => $request->postal_code,
             'country' => $request->country,
-            'city_id' => $cityId,
+            'city_id' => $request->city_id ?: null,
             'latitude' => $latitude,
             'longitude' => $longitude,
         ]);
 
-        if ($existingAddressCount === 0) {
+        if ($profile->addresses()->count() === 1) {
             $profile->update(['address_id' => $newAddress->id]);
         }
 

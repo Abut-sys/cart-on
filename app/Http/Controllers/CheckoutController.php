@@ -535,49 +535,89 @@ class CheckoutController extends Controller
         $apiKey = config('rajaongkir.api_key');
         $originCity = config('rajaongkir.origin_city');
 
-        if (!$destinationCityId) {
-            return response()->json(['error' => 'ID kota tujuan tidak ditemukan untuk alamat ini.'], 400);
-        }
+        if ($destinationCityId) {
+            $costResponse = Http::withHeaders([
+                'key' => $apiKey,
+                'content-type' => 'application/x-www-form-urlencoded',
+            ])->asForm()->post('https://api.rajaongkir.com/starter/cost', [
+                'origin' => $originCity,
+                'destination' => $destinationCityId,
+                'weight' => $weight,
+                'courier' => $request->courier,
+            ]);
 
-        $costResponse = Http::withHeaders([
-            'key' => $apiKey,
-            'content-type' => 'application/x-www-form-urlencoded',
-        ])->asForm()->post('https://api.rajaongkir.com/starter/cost', [
-            'origin' => $originCity,
-            'destination' => $destinationCityId,
-            'weight' => $weight,
-            'courier' => $request->courier,
-        ]);
+            if ($costResponse->successful()) {
+                $results = $costResponse->json()['rajaongkir'];
 
-        if ($costResponse->successful()) {
-            $results = $costResponse->json()['rajaongkir'];
+                if ($results['status']['code'] == 200 && !empty($results['results'])) {
+                    if ($request->filled('service')) {
+                        $cost = collect($results['results'][0]['costs'])
+                            ->firstWhere('service', $request->service);
 
-            if ($results['status']['code'] == 200 && !empty($results['results'])) {
-                if ($request->filled('service')) {
-                    $cost = collect($results['results'][0]['costs'])
-                        ->firstWhere('service', $request->service);
-
-                    if ($cost) {
-                        return response()->json(['cost' => $cost['cost'][0]['value']]);
+                        if ($cost) {
+                            return response()->json(['cost' => $cost['cost'][0]['value']]);
+                        } else {
+                            return response()->json(['error' => 'Service tidak ditemukan untuk kurir ini'], 404);
+                        }
                     } else {
-                        return response()->json(['error' => 'Service tidak ditemukan untuk kurir ini'], 404);
+                        $formattedCosts = collect($results['results'][0]['costs'])->map(function ($item) {
+                            return [
+                                'service' => $item['service'],
+                                'description' => $item['description'],
+                                'cost' => $item['cost'][0]['value'],
+                            ];
+                        });
+                        return response()->json($formattedCosts);
                     }
                 } else {
-                    $formattedCosts = collect($results['results'][0]['costs'])->map(function ($item) {
-                        return [
-                            'service' => $item['service'],
-                            'description' => $item['description'],
-                            'cost' => $item['cost'][0]['value'],
-                        ];
-                    });
-                    return response()->json($formattedCosts);
+                    return response()->json(['error' => $results['status']['description']], $results['status']['code']);
                 }
             } else {
-                return response()->json(['error' => $results['status']['description']], $results['status']['code']);
+                return response()->json(['error' => 'Gagal mendapatkan biaya pengiriman dari API: ' . $costResponse->body()], $costResponse->status());
             }
         } else {
-            return response()->json(['error' => 'Gagal mendapatkan biaya pengiriman dari API: ' . $costResponse->body()], $costResponse->status());
+            $storeLat = config('shipping.origin_latitude');
+            $storeLng = config('shipping.origin_longitude');
+
+            if (!$address->latitude || !$address->longitude) {
+                return response()->json(['error' => 'Alamat belum punya koordinat, mohon update!'], 400);
+            }
+
+            $distance = $this->calculateHaversineDistance(
+                $storeLat,
+                $storeLng,
+                $address->latitude,
+                $address->longitude
+            );
+
+            $costPerKm = 3000;
+            $finalCost = ceil($distance) * $costPerKm;
+
+            return response()->json([
+                [
+                    'service' => strtoupper($request->courier) . '_CUSTOM',
+                    'description' => ' ' . round($distance, 2) . ' km',
+                    'cost' => $finalCost,
+                ]
+            ]);
         }
+    }
+
+    private function calculateHaversineDistance($lat1, $lng1, $lat2, $lng2)
+    {
+        $earthRadius = 6371; // Km
+
+        $latFrom = deg2rad($lat1);
+        $lngFrom = deg2rad($lng1);
+        $latTo = deg2rad($lat2);
+        $lngTo = deg2rad($lng2);
+
+        $latDelta = $latTo - $latFrom;
+        $lngDelta = $lngTo - $lngFrom;
+
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lngDelta / 2), 2)));
+        return $earthRadius * $angle;
     }
 
     public function cancelOrder(Request $request)
