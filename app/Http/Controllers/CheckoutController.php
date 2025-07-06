@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Checkout;
+use App\Models\ClaimVoucher;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SubVariant;
@@ -53,6 +54,14 @@ class CheckoutController extends Controller
                 $query->whereNull('vouchers.end_date')
                     ->orWhere('vouchers.end_date', '>', now());
             })
+            ->whereRaw('
+        claim_voucher.quantity > (
+            SELECT COUNT(*)
+            FROM user_voucher
+            WHERE user_voucher.user_id = claim_voucher.user_id
+            AND user_voucher.voucher_id = claim_voucher.voucher_id
+        )
+    ')
             ->select('vouchers.*')
             ->get();
 
@@ -391,7 +400,7 @@ class CheckoutController extends Controller
 
         $userId = auth()->id();
 
-        $isClaimed = DB::table('claim_voucher')
+        $claim = DB::table('claim_voucher')
             ->where('user_id', $userId)
             ->where('voucher_id', $voucher->id)
             ->first();
@@ -401,22 +410,9 @@ class CheckoutController extends Controller
             ->where('voucher_id', $voucher->id)
             ->count();
 
-        if (!$isClaimed) {
-            $remainingSlot = $voucher->max_per_user - $usedCount;
-            if ($remainingSlot <= 0) {
+        if ($claim) {
+            if ($usedCount >= $voucher->max_per_user) {
                 throw new Exception('Slot max per user sudah habis.');
-            }
-
-            DB::table('claim_voucher')->insert([
-                'user_id' => $userId,
-                'voucher_id' => $voucher->id,
-                'quantity' => $remainingSlot,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        } else {
-            if ($usedCount >= $isClaimed->quantity) {
-                throw new Exception('Slot voucher sudah habis dipakai.');
             }
         }
 
@@ -487,6 +483,26 @@ class CheckoutController extends Controller
             'voucher_id' => $voucher->id,
         ]);
         $voucher->decrementUsage();
+
+        $claim = ClaimVoucher::where('user_id', $user->id)
+            ->where('voucher_id', $voucher->id)
+            ->first();
+
+        $usedCount = UserVoucher::where('user_id', $user->id)
+            ->where('voucher_id', $voucher->id)
+            ->count();
+
+        if (!$claim) {
+            ClaimVoucher::create([
+                'user_id' => $user->id,
+                'voucher_id' => $voucher->id,
+                'quantity' => 1,
+            ]);
+        } else {
+            if ($usedCount > $claim->quantity && $claim->quantity < $voucher->max_per_user) {
+                $claim->increment('quantity', 1);
+            }
+        }
     }
 
     public function checkVoucher(Request $request)

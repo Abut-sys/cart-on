@@ -49,14 +49,8 @@
                                 </p>
 
                                 <p class="voucher-claimed-quantity card-text text-center mb-2">
-                                    <strong>Claimed Slots:</strong> {{ $quantity }} / {{ $voucher->max_per_user }}
+                                    <strong>Claimed:</strong> {{ $quantity }} / {{ $voucher->max_per_user }}
                                 </p>
-
-                                @if ($slotsLeft <= 0)
-                                    <p class="text-center text-danger fw-bold">
-                                        Max Claims Reached
-                                    </p>
-                                @endif
 
                                 <div
                                     class="voucher-claimed-discount position-absolute top-0 end-0 bg-danger text-white px-3 py-2 rounded-bottom-start">

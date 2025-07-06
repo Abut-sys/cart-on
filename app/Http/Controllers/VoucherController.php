@@ -141,22 +141,16 @@ class VoucherController extends Controller
         $userId = Auth::id();
 
         $vouchers = Voucher::where('status', 'active')
-            ->where('start_date', '<=', Carbon::now())
-            ->where('end_date', '>=', Carbon::now())
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
             ->whereColumn('used_count', '<', 'usage_limit')
             ->where(function ($query) use ($userId) {
-                $query
-                    ->whereDoesntHave('claimVoucher', function ($q) use ($userId) {
-                        $q->where('user_id', $userId);
-                    })
-                    ->orWhereHas('claimVoucher', function ($q) use ($userId) {
-                        $q->where('user_id', $userId)
-                            ->whereColumn(DB::raw('quantity'), '>', DB::raw('(
-            SELECT COUNT(*) FROM user_voucher 
-            WHERE user_voucher.user_id = ' . $userId . '
-            AND user_voucher.voucher_id = vouchers.id
-        )'));
-                    });
+                $query->whereDoesntHave('claimVoucher', function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                })->orWhereHas('claimVoucher', function ($q) use ($userId) {
+                    $q->where('user_id', $userId)
+                        ->whereColumn('quantity', '<', 'vouchers.max_per_user');
+                });
             })
             ->get();
 
@@ -171,12 +165,16 @@ class VoucherController extends Controller
             ->where('user_id', $userId)
             ->whereHas('voucher', function ($query) {
                 $query->where('status', 'active')
-                    ->where('start_date', '<=', Carbon::now())
-                    ->where('end_date', '>=', Carbon::now());
+                    ->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now());
             })
-            ->whereRaw('quantity > (SELECT COUNT(*) FROM user_voucher 
-        WHERE user_voucher.user_id = claim_voucher.user_id
-        AND user_voucher.voucher_id = claim_voucher.voucher_id)')
+            ->whereRaw('
+            quantity > (
+                SELECT COUNT(*) FROM user_voucher
+                WHERE user_voucher.user_id = claim_voucher.user_id
+                AND user_voucher.voucher_id = claim_voucher.voucher_id
+            )
+        ')
             ->get();
 
         return view('vouchers.claimed', compact('claimedVouchers'));
