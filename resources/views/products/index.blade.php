@@ -125,7 +125,7 @@
                                     </button>
                                 </form>
                                 <a href="{{ route('products.show', $product->id) }}" class="product-index-btn-details">
-                                    <i class="fas fa-eye"></i> Details
+                                    <i class="fas fa-eye"></i>
                                 </a>
                             </td>
                         </tr>

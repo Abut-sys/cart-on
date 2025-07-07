@@ -10,7 +10,21 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sub_category_product_id', 'brand_id', 'name', 'price', 'description', 'sales', 'color', 'size', 'old_price', 'rating', 'rating_count', 'markup'];
+    protected $fillable = [
+        'sub_category_product_id',
+        'brand_id',
+        'name',
+        'price',
+        'description',
+        'sales',
+        'color',
+        'size',
+        'old_price',
+        'rating',
+        'rating_count',
+        'markup',
+        'qr_code_path'
+    ];
 
     protected $casts = [
         'color' => 'array',
@@ -60,5 +74,10 @@ class Product extends Model
     public function reviewProducts()
     {
         return $this->hasMany(ReviewProduct::class);
+    }
+
+    public function getQrCodeUrlAttribute()
+    {
+        return $this->qr_code_path ? asset($this->qr_code_path) : null;
     }
 }

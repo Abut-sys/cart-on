@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Product;
-use App\Models\SubCategoryProduct;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Models\SubCategoryProduct;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProductController extends Controller
 {
@@ -100,11 +101,15 @@ class ProductController extends Controller
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
                 'markup' => $markupPercentage,
-                'old_price' => $basePrice, // Original price before PPN and markup
-                'price' => $finalPrice,    // Final price after PPN and markup
+                'old_price' => $basePrice,
+                'price' => $finalPrice,
                 'sub_category_product_id' => $validatedData['sub_category_product_id'],
                 'brand_id' => $validatedData['brand_id'],
+                'qr_code_path' => null,
             ]);
+
+            // Generate QR Code
+            $this->generateQRCodeForProduct($product);
 
             // Create variants (only if provided and contain valid data)
             if (!empty($validatedData['variants'])) {
@@ -118,12 +123,12 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return redirect()->route('products.index')->with('success', 'Produk berhasil disimpan.');
+            return redirect()->route('products.index')->with('msg', 'Produk berhasil disimpan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()
                 ->withInput()
-                ->withErrors(['error' => 'Terjadi kesalahan saat menyimpan produk.']);
+                ->withErrors(['msg' => 'Terjadi kesalahan saat menyimpan produk.']);
         }
     }
 
@@ -184,11 +189,16 @@ class ProductController extends Controller
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
                 'markup' => $markupPercentage,
-                'old_price' => $basePrice, // Original price before PPN and markup
-                'price' => $finalPrice,    // Final price after PPN and markup
+                'old_price' => $basePrice,
+                'price' => $finalPrice,
                 'sub_category_product_id' => $validatedData['sub_category_product_id'],
                 'brand_id' => $validatedData['brand_id'],
             ]);
+
+            // Generate ulang QR Code jika nama produk berubah
+            if ($product->wasChanged('name')) {
+                $this->generateQRCodeForProduct($product, true);
+            }
 
             // Handle variants update/create/delete
             if (isset($validatedData['variants'])) {
@@ -210,12 +220,12 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return redirect()->route('products.index')->with('success', 'Product berhasil diperbarui.');
+            return redirect()->route('products.index')->with('msg', 'Product berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()
                 ->withInput()
-                ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui produk.']);
+                ->withErrors(['msg' => 'Terjadi kesalahan saat memperbarui produk.']);
         }
     }
 
@@ -238,11 +248,89 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
+            return redirect()->route('products.index')->with('msg', 'Produk berhasil dihapus.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus produk.']);
+            return back()->withErrors(['msg' => 'Terjadi kesalahan saat menghapus produk.']);
         }
+    }
+
+    private function generateQRCodeForProduct(Product $product, $forceRegenerate = false)
+    {
+        $qrCodeDirectory = public_path('qrcodes/products');
+
+        // Buat direktori jika belum ada
+        if (!file_exists($qrCodeDirectory)) {
+            mkdir($qrCodeDirectory, 0755, true);
+        }
+
+        // Hapus QR code lama jika ada dan diminta regenerate
+        if ($forceRegenerate && $product->qr_code_path && file_exists(public_path($product->qr_code_path))) {
+            unlink(public_path($product->qr_code_path));
+        }
+
+        // Konten QR code (bisa disesuaikan)
+        $qrContent = json_encode([
+            'product_id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'url' => route('products.show', $product->id),
+        ]);
+
+        // Nama file
+        $fileName = 'product_' . $product->id . '_' . time() . '.png';
+        $filePath = $qrCodeDirectory . '/' . $fileName;
+
+        // Generate dan simpan QR code
+        QrCode::format('png')->size(300)->margin(2)->color(40, 40, 40)->backgroundColor(255, 255, 255)->generate($qrContent, $filePath);
+
+        // Simpan path relatif ke database
+        $product->update(['qr_code_path' => 'qrcodes/products/' . $fileName]);
+    }
+
+    /**
+     * Generate QR Code untuk produk yang belum memilikinya
+     */
+    public function generateQR(Product $product)
+    {
+        try {
+            if (!$product->qr_code_path) {
+                $this->generateQRCodeForProduct($product);
+                return redirect()->route('products.show', $product->id)->with('msg', 'QR Code berhasil dibuat.');
+            }
+
+            return redirect()->route('products.show', $product->id)->with('info', 'Produk sudah memiliki QR Code.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('products.show', $product->id)
+                ->with('msg', 'Gagal membuat QR Code: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Generate ulang QR Code
+     */
+    public function refreshQR(Product $product)
+    {
+        try {
+            $this->generateQRCodeForProduct($product, true);
+            return redirect()->route('products.show', $product->id)->with('msg', 'QR Code berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('products.show', $product->id)
+                ->with('msg', 'Gagal memperbarui QR Code: ' . $e->getMessage());
+        }
+    }
+
+    public function printQRCode($id)
+    {
+        $product = Product::findOrFail($id);
+
+        if (!$product->qr_code_path) {
+            return redirect()->back()->with('msg', 'QR Code not available for this product');
+        }
+
+        return view('products.partials.qr-print', compact('product'));
     }
 
     /**

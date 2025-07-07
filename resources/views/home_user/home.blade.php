@@ -51,12 +51,6 @@
                 <a href="{{ Auth::check() ? route('products-all.show', $product->id) : route('login') }}"
                     class="home-product-newest-card text-decoration-none text-dark">
 
-                    @if (auth()->check())
-                        <i class="fas fa-heart home-product-newest-wishlist-icon
-                    {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
-                            data-product-id="{{ $product->id }}"></i>
-                    @endif
-
                     <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}"
                         class="home-product-newest-img-top">
                     <div class="home-product-newest-body text-center">
