@@ -1,0 +1,162 @@
+.voucher-claimed-title {
+    font-size: 1.5rem;
+    color: #99bc85;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.voucher-claimed-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+}
+
+.voucher-claimed-col {
+    width: 33.3333%;
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .voucher-claimed-col {
+        width: 100%;
+    }
+}
+
+.voucher-claimed-card {
+    max-width: calc(33.33% - 20px);
+    flex: 1;
+    border: 2px solid #e1e4e8;
+    border-radius: 16px;
+    background-color: #ffffff;
+    position: relative;
+    padding: 20px 25px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    max-width: 320px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #fff;
+    position: relative;
+}
+
+.voucher-claimed-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-top-color: #218838;
+}
+
+.voucher-claimed-code {
+    font-size: 1.5rem;
+    color: #99bc85;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.voucher-claimed-validity {
+    font-size: 1.1rem;
+    color: #28a745;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.voucher-claimed-validity .text-muted {
+    color: #6c757d;
+}
+
+.voucher-claimed-discount {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    background-color: #FF2929;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 8px 16px;
+    transform: rotate(-8deg);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.voucher-claimed-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background-color: #3498db;
+    color: white;
+}
+
+.voucher-claimed-btn-info {
+    background: linear-gradient(145deg, #218838, #1e7e34);
+    color: #ffffff;
+}
+
+.voucher-claimed-btn-lg {
+    font-size: 1.2rem;
+    padding: 15px 30px;
+}
+
+.voucher-claimed-btn-shadow-sm {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voucher-claimed-btn i {
+    margin-right: 10px;
+}
+
+.voucher-claimed-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
+.voucher-claimed-btn:focus {
+    outline: none;
+}
+
+.voucher-claimed-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voucher-claimed-btn:hover {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeInButton {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.voucher-claimed-btn {
+    animation: fadeInButton 0.5s ease-out;
+}
+
+.voucher-claimed-card {
+    animation: voucher-claimed-fadeIn 0.5s ease-in-out;
+}
+
+@keyframes voucher-claimed-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

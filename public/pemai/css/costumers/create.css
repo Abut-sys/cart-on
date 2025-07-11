@@ -1,0 +1,147 @@
+.create-costumers-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.create-costumers-card {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-costumers-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.create-costumers-card-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.create-costumers-btn {
+    text-decoration: none;
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 14px;
+    border-radius: 30px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.create-costumers-btn-return {
+    background-color: #e9e9e9;
+    color: #555;
+}
+
+.create-costumers-btn-return:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.create-costumers-form-group {
+    margin-bottom: 20px;
+}
+
+.create-costumers-form-label {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.create-costumers-form-control {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #f7f7f7;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.create-costumers-form-control:focus {
+    border-color: #28a745;
+    outline: none;
+    box-shadow: none;
+}
+
+.create-costumers-form-text {
+    font-size: 0.875rem;
+    color: #888;
+    margin-top: 5px;
+}
+
+.create-costumers-btn-primary {
+    background-color: #7aa37a;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1rem;
+    border: none;
+}
+
+.create-costumers-btn-primary:hover {
+    background-color: #1e7e34;
+    transform: scale(1.05);
+}
+
+.create-costumers-btn-secondary {
+    background-color: #ff0000;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1rem;
+    border: none;
+}
+
+.create-costumers-btn-secondary:hover {
+    background-color: #d70000;
+    color: white;
+    transform: scale(1.05);
+}
+
+.create-costumers-image-preview {
+    margin-top: 10px;
+    max-width: 100%;
+    max-height: 300px; /* Add a maximum height for the image */
+    object-fit: contain; /* Ensure the image is contained within the defined size */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.create-costumers-btn-success {
+    background-color: #7aa37a;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1rem;
+    border: none;
+}
+
+.create-costumers-btn-success:hover {
+    background-color: #1e7e34;
+    transform: scale(1.05);
+}
+
+@media (max-width: 500px) {
+    .create-costumers-container {
+        padding: 15px;
+    }
+
+    .create-costumers-title {
+        font-size: 20px;
+    }
+
+    .create-costumers-btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}

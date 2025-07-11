@@ -1,125 +1,128 @@
-@extends('layouts.index')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('title', 'Register')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/auth/register.css">
+</head>
 
-@section('content')
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <!-- Card with rounded corners -->
-                <div class="card shadow-lg border-0 rounded" style="border-radius: 20px;">
+<body>
+    <div class="background-circle circle1"></div>
+    <div class="background-circle circle2"></div>
+    <div class="background-circle circle3"></div>
+    <div class="background-circle circle4"></div>
+    <div class="background-circle circle5"></div>
+    <div class="background-circle circle6"></div>
 
-                    <!-- Logo Section -->
-                    <div class="card-header bg-white text-center border-0">
-                        <img src="{{ asset('image/logo.png') }}" alt="Logo" style="width: 200px;">
-                        <h1 class="font-weight-bold">{{ __('Register') }}</h1>
+    <div class="register-card">
+        <img src="{{ asset('image/Logo_baru.png') }}" alt="Logo" class="logo">
+        <h3 class="title">Sign Up</h3>
+        <form action="{{ url('/register') }}" method="POST" id="registerForm">
+            @csrf
+            <div class="mb-3 row">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="email" class="form-control" placeholder="Email" name="email" required>
                     </div>
-
-                    <div class="card-body p-4">
-                        <form method="POST" action="{{ route('register') }}">
-                            @csrf
-
-                            <!-- Name Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="name" class="form-label">{{ __('Name') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <input id="name" type="text"
-                                        class="form-control form-control-lg @error('name') is-invalid @enderror"
-                                        name="name" value="{{ old('name') }}" required autofocus
-                                        placeholder="Enter your name">
-                                    @error('name')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Email Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="email" class="form-label">{{ __('Email Address') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-envelope"></i>
-                                    </span>
-                                    <input id="email" type="email"
-                                        class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}" required placeholder="Enter your email">
-                                    @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Phone Number Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="phone" class="form-label">{{ __('Phone Number') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-phone"></i>
-                                    </span>
-                                    <input id="phone" type="tel"
-                                        class="form-control form-control-lg @error('phone') is-invalid @enderror"
-                                        name="phone" value="{{ old('phone') }}" required
-                                        placeholder="Enter your phone number">
-                                    @error('phone')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Password Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="password" class="form-label">{{ __('Password') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input id="password" type="password"
-                                        class="form-control form-control-lg @error('password') is-invalid @enderror"
-                                        name="password" required placeholder="Create a password">
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Confirm Password Field with Icon -->
-                            <div class="form-group mb-4 position-relative">
-                                <label for="password-confirm" class="form-label">{{ __('Confirm Password') }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input id="password-confirm" type="password" class="form-control form-control-lg"
-                                        name="password_confirmation" required placeholder="Confirm your password">
-                                </div>
-                            </div>
-
-                            <!-- Submit Button with Icon -->
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-success btn-lg btn-block shadow-sm rounded-pill">
-                                    {{ __('Sign Up') }}
-                                </button>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <p class="text-muted">Already have an account? <a href="{{ route('login') }}"
-                                        class="text-primary font-weight-bold">{{ __('Login') }}</a></p>
-                            </div>
-                        </form>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        <input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
+                            id="phoneNumber">
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <input type="text" class="form-control" placeholder="Name" name="name" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="password"
+                        required>
+                    <span class="input-group-text" id="togglePassword">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" class="form-control" placeholder="Confirm Password"
+                        name="password_confirmation" id="confirmPassword" required>
+                    <span class="input-group-text" id="toggleConfirmPassword">
+                        <i class="fas fa-eye" id="eyeConfirmIcon"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-register">
+                    {{ __('Sign Up') }}
+                </button>
+            </div>
+            <div class="text-center text-muted">
+                <span>Already have an account?</span> <a href="{{ route('login') }}"> Sign In</a>
+            </div>
+        </form>
     </div>
-@endsection
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const eyeConfirmIcon = document.getElementById('eyeConfirmIcon');
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            eyeConfirmIcon.classList.toggle('fa-eye-slash');
+        });
+
+        // Phone number functionality
+        const phoneNumberInput = document.getElementById('phoneNumber');
+
+        phoneNumberInput.addEventListener('click', function() {
+            if (this.value === '') {
+                this.value = '+62 ';
+                this.setSelectionRange(4, 4); // Set cursor after +62
+            }
+        });
+
+        phoneNumberInput.addEventListener('focus', function() {
+            if (this.value === '') {
+                this.value = '+62 ';
+                this.setSelectionRange(4, 4);
+            }
+        });
+
+        phoneNumberInput.addEventListener('keydown', function(e) {
+            // Prevent deletion of +62 prefix
+            if ((e.key === 'Backspace' || e.key === 'Delete') && this.selectionStart <= 4) {
+                e.preventDefault();
+            }
+        });
+
+        phoneNumberInput.addEventListener('input', function() {
+            // Ensure +62 prefix is always present
+            if (!this.value.startsWith('+62 ')) {
+                this.value = '+62 ' + this.value.replace(/^\+62\s*/, '');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -200px;
+    height: 100%;
+    width: 200px;
+    background: linear-gradient(to bottom, #ffffff, #f3eeea);
+    color: #99bc85;
+    padding-top: 20px;
+    transition: transform 0.3s ease;
+    z-index: 1001;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.active {
+    transform: translateX(200px);
+}
+
+.logo-sidebar {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-sidebar img {
+    width: 70%;
+    height: auto;
+}
+
+.nav-item,
+.nav-dropdown-item,
+.category-link {
+    margin: 10px 0;
+}
+
+.nav-item a,
+.nav-dropdown-item a,
+.category-link {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 15px;
+    color: #4a7c5b;
+    text-decoration: none;
+    transition: transform 0.3s ease, background-color 0.3s, color 0.3s;
+}
+
+.nav-item a i,
+.nav-dropdown-item a i,
+.category-link i {
+    margin-right: 10px; /* Jarak antara ikon dan teks */
+}
+
+.nav-item a:hover,
+.nav-dropdown-item a:hover,
+.category-link:hover {
+    background-color: #967f61;
+    color: #fff2e1;
+    font-weight: bold;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item a.active,
+.nav-dropdown-item a.active,
+.category-link.active {
+    background-color: #967f61;
+    color: #fff2e1;
+    font-weight: bold;
+}
+
+.logout-container {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.logout-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 15px;
+    background: #ffffffab;
+    color: #4a7c5b;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s ease;
+    max-width: 180px;
+    margin: 0 auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logout-link i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.logout-link:hover {
+    background-color: #cc0000;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.logout-link:active {
+    transform: scale(0.98);
+}
+
+/* --------------------------------------- Main Content --------------------------------------- */
+
+/* Main Content */
+.main-content {
+    margin-left: 220px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
