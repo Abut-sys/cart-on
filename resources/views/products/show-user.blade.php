@@ -1,6 +1,6 @@
 @extends('layouts.index')
 
-@section('content')
+@section('dongol')
     <div class="container my-5">
         <!-- Breadcrumb Navigation -->
         <nav aria-label="breadcrumb" class="mb-4">
@@ -18,15 +18,12 @@
                     <div class="product-gallery p-4">
                         <div class="main-image-container mb-3">
                             <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
-                                 alt="{{ $product->name }}"
-                                 class="main-image img-fluid rounded-3">
+                                alt="{{ $product->name }}" class="main-image img-fluid rounded-3">
                         </div>
                         <div class="thumbnail-scroller d-flex flex-nowrap overflow-auto pb-2">
                             @foreach ($product->images as $image)
-                                <img src="{{ asset('storage/' . $image->image_path) }}"
-                                    class="thumbnail-img me-2 rounded-2"
-                                    alt="Product thumbnail"
-                                    data-full-image="{{ asset('storage/' . $image->image_path) }}">
+                                <img src="{{ asset('storage/' . $image->image_path) }}" class="thumbnail-img me-2 rounded-2"
+                                    alt="Product thumbnail" data-full-image="{{ asset('storage/' . $image->image_path) }}">
                             @endforeach
                         </div>
                     </div>
@@ -48,8 +45,9 @@
                             </div>
                             @if (auth()->check())
                                 <button class="btn btn-outline-danger wishlist-btn p-2"
-                                        data-product-id="{{ $product->id }}">
-                                    <i class="fas fa-heart {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"></i>
+                                    data-product-id="{{ $product->id }}">
+                                    <i
+                                        class="fas fa-heart {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"></i>
                                 </button>
                             @endif
                         </div>
@@ -59,11 +57,12 @@
                             <div class="current-price">
                                 Rp{{ number_format($product->price, 0, ',', '.') }}
                             </div>
-                            @if($product->discount > 0)
+                            @if ($product->discount > 0)
                                 <div class="original-price text-muted">
                                     <del>Rp{{ number_format($product->price + $product->discount, 0, ',', '.') }}</del>
                                     <span class="discount-badge bg-danger ms-2">
-                                        {{ round(($product->discount / ($product->price + $product->discount))) * 100 }}% OFF
+                                        {{ round($product->discount / ($product->price + $product->discount)) * 100 }}%
+                                        OFF
                                     </span>
                                 </div>
                             @endif
@@ -78,8 +77,9 @@
                                     @php $colors = $product->subVariant->pluck('color')->unique(); @endphp
                                     @foreach ($colors as $color)
                                         <button class="color-option btn btn-outline-secondary me-2 mb-2"
-                                                data-color="{{ $color }}">
-                                            <span class="color-dot me-1" style="background-color: {{ $color }}"></span>
+                                            data-color="{{ $color }}">
+                                            <span class="color-dot me-1"
+                                                style="background-color: {{ $color }}"></span>
                                             {{ ucfirst($color) }}
                                         </button>
                                     @endforeach
@@ -93,7 +93,7 @@
                                     @php $sizes = $product->subVariant->pluck('size')->unique(); @endphp
                                     @foreach ($sizes as $size)
                                         <button class="size-option btn btn-outline-secondary me-2 mb-2"
-                                                data-size="{{ $size }}">
+                                            data-size="{{ $size }}">
                                             {{ strtoupper($size) }}
                                         </button>
                                     @endforeach
@@ -109,7 +109,8 @@
                                     <button class="btn btn-outline-secondary quantity-decrease" type="button">
                                         <i class="fas fa-minus"></i>
                                     </button>
-                                    <input type="number" class="form-control text-center quantity-input" value="1" min="1">
+                                    <input type="number" class="form-control text-center quantity-input" value="1"
+                                        min="1">
                                     <button class="btn btn-outline-secondary quantity-increase" type="button">
                                         <i class="fas fa-plus"></i>
                                     </button>
@@ -123,25 +124,34 @@
 
                         <!-- Action Buttons -->
                         <div class="action-buttons mb-4">
-                            <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block me-2">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <input type="hidden" name="quantity" class="quantity-input-hidden">
-                                <input type="hidden" name="color" class="color-input-hidden">
-                                <input type="hidden" name="size" class="size-input-hidden">
-                                <button type="submit" class="btn btn-warning btn-lg add-to-cart-btn">
-                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                </button>
-                            </form>
+                            @auth
+                                <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block me-2">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                    <input type="hidden" name="quantity" class="quantity-input-hidden">
+                                    <input type="hidden" name="color" class="color-input-hidden">
+                                    <input type="hidden" name="size" class="size-input-hidden">
+                                    <button type="submit" class="btn btn-warning btn-lg add-to-cart-btn">
+                                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                    </button>
+                                </form>
 
-                            <form method="GET" action="{{ route('checkout.show', $product->id) }}" class="d-inline-block">
-                                <input type="hidden" name="quantity" class="quantity-input-hidden">
-                                <input type="hidden" name="color" class="color-input-hidden">
-                                <input type="hidden" name="size" class="size-input-hidden">
-                                <button type="submit" class="btn btn-primary btn-lg buy-now-btn">
-                                    <i class="fas fa-bolt me-2"></i>Buy Now
-                                </button>
-                            </form>
+                                <form method="GET" action="{{ route('checkout.show', $product->id) }}"
+                                    class="d-inline-block">
+                                    <input type="hidden" name="quantity" class="quantity-input-hidden">
+                                    <input type="hidden" name="color" class="color-input-hidden">
+                                    <input type="hidden" name="size" class="size-input-hidden">
+                                    <button type="submit" class="btn btn-primary btn-lg buy-now-btn">
+                                        <i class="fas fa-bolt me-2"></i>Buy Now
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login to Purchase
+                                </a>
+                                <small class="d-block mt-2 text-muted">You need to login to add items to cart or make
+                                    purchases</small>
+                            @endauth
                         </div>
 
                         <!-- Product Description with Expand/Collapse -->
@@ -150,13 +160,13 @@
                                 <div class="accordion-item border-0">
                                     <h2 class="accordion-header" id="headingOne">
                                         <button class="accordion-button px-0 bg-transparent shadow-none" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                                                aria-expanded="true" aria-controls="collapseOne">
+                                            data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true"
+                                            aria-controls="collapseOne">
                                             <h6 class="section-title mb-0">Product Description</h6>
                                         </button>
                                     </h2>
                                     <div id="collapseOne" class="accordion-collapse collapse show"
-                                         aria-labelledby="headingOne" data-bs-parent="#descriptionAccordion">
+                                        aria-labelledby="headingOne" data-bs-parent="#descriptionAccordion">
                                         <div class="accordion-body px-0 pt-2">
                                             {{ $product->description }}
                                         </div>
@@ -169,9 +179,12 @@
                         <div class="product-highlights">
                             <h6 class="section-title mb-3">Highlights</h6>
                             <ul class="list-unstyled">
-                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Premium Quality Materials</li>
-                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Free Shipping on Orders Over Rp500.000</li>
-                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> 30-Day Return Policy</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Premium Quality
+                                    Materials</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Free Shipping on
+                                    Orders Over Rp500.000</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> 30-Day Return
+                                    Policy</li>
                             </ul>
                         </div>
                     </div>
@@ -188,247 +201,7 @@
         @endif
     </div>
 
-    <style>
-        /* Main Card Container */
-        .product-card {
-            border-radius: 12px;
-            overflow: hidden;
-            border: none;
-        }
 
-        /* Product Gallery Styles */
-        .product-gallery {
-            background-color: #f9f9f9;
-            height: 100%;
-        }
-
-        .main-image-container {
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .main-image {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-
-        .main-image:hover {
-            transform: scale(1.05);
-        }
-
-        .thumbnail-scroller {
-            scrollbar-width: thin;
-            scrollbar-color: #ddd #f9f9f9;
-        }
-
-        .thumbnail-scroller::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .thumbnail-scroller::-webkit-scrollbar-track {
-            background: #f9f9f9;
-        }
-
-        .thumbnail-scroller::-webkit-scrollbar-thumb {
-            background-color: #ddd;
-            border-radius: 6px;
-        }
-
-        .thumbnail-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .thumbnail-img:hover {
-            border-color: #4CAF50;
-            transform: translateY(-2px);
-        }
-
-        /* Product Details Styles */
-        .product-details {
-            height: 100%;
-        }
-
-        .product-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #333;
-            line-height: 1.2;
-        }
-
-        .sold-count {
-            font-size: 0.9rem;
-        }
-
-        .wishlist-btn {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .wishlist-btn:hover {
-            background-color: rgba(220, 53, 69, 0.1);
-        }
-
-        /* Price Section */
-        .price-section {
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .current-price {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #000000;
-        }
-
-        .original-price {
-            font-size: 1.2rem;
-        }
-
-        .discount-badge {
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        /* Variant Selection */
-        .section-title {
-            font-weight: 600;
-            color: #333;
-            font-size: 1rem;
-        }
-
-        .color-option, .size-option {
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .color-option.active, .size-option.active {
-            background-color: #333;
-            color: white;
-            border-color: #333;
-        }
-
-        .color-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 1px solid #ddd;
-        }
-
-        /* Quantity Selector */
-        .quantity-selector .btn {
-            width: 40px;
-            padding: 0.375rem;
-        }
-
-        .quantity-input {
-            font-weight: 600;
-        }
-
-        .stock-status {
-            display: flex;
-            align-items: center;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .stock-text {
-            margin-left: 5px;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .add-to-cart-btn, .buy-now-btn {
-            min-width: 180px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .add-to-cart-btn:hover {
-            background-color: #e0b420;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .buy-now-btn:hover {
-            background-color: #0b5ed7;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Product Description */
-        .product-description {
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-            padding: 1rem 0;
-        }
-
-        .accordion-button:not(.collapsed) {
-            color: inherit;
-            background-color: transparent;
-        }
-
-        .accordion-button:focus {
-            box-shadow: none;
-            border-color: transparent;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 992px) {
-            .main-image-container {
-                height: 400px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-image-container {
-                height: 350px;
-            }
-
-            .product-title {
-                font-size: 1.6rem;
-            }
-
-            .current-price {
-                font-size: 1.5rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .add-to-cart-btn, .buy-now-btn {
-                width: 100%;
-            }
-        }
-    </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -582,9 +355,11 @@
 
             // Update hidden form fields
             function updateHiddenFields() {
-                document.querySelectorAll('.color-input-hidden').forEach(input => input.value = selectedColor || '');
+                document.querySelectorAll('.color-input-hidden').forEach(input => input.value = selectedColor ||
+                '');
                 document.querySelectorAll('.size-input-hidden').forEach(input => input.value = selectedSize || '');
-                document.querySelectorAll('.quantity-input-hidden').forEach(input => input.value = quantityInput.value);
+                document.querySelectorAll('.quantity-input-hidden').forEach(input => input.value = quantityInput
+                    .value);
             }
 
             // Quantity controls

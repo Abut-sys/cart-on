@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Google Logged In</title>
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/spinner.css">
 </head>
 
 <body>

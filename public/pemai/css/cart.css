@@ -1,0 +1,125 @@
+    .cart-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-left: 6px solid #f5eae2;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .cart-product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    }
+
+    .cart-product-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111;
+    }
+
+    .cart-product-total {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #28a745;
+    margin: 0;
+    text-align: center;
+    }
+
+    .cart-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 6px;
+    margin-right: 4px;
+    }
+
+    .cart-quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 999px;
+    overflow: hidden;
+    width: 110px;
+    height: 34px;
+    background-color: #fff;
+    }
+
+    .cart-quantity-controls .btn {
+    border: none;
+    background-color: transparent;
+    font-size: 0.9rem;
+    width: 30px;
+    padding: 0;
+    color: #000;
+    }
+
+    .cart-quantity-controls .form-control {
+    border: none;
+    text-align: center;
+    font-size: 0.9rem;
+    width: 40px;
+    background: none;
+    height: 32px;
+    padding: 0;
+    }
+
+    .btn-remove {
+    border: none;
+    background: none;
+    color: #dc3545;
+    font-size: 1.2rem;
+    padding: 0;
+    transition: 0.2s;
+    }
+
+    .btn-remove:hover {
+    color: #dc3545;
+    }
+
+    .cart-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background-color: #fff;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.2s ease;
+    margin-top: 4px;
+    position: relative;
+    }
+
+    .cart-checkbox:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+    }
+
+    .cart-checkbox:checked::after {
+    content: "✓";
+    color: white;
+    font-size: 13px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    }
+
+    .cart-checkbox:focus {
+    box-shadow: none;
+    outline: none;
+    }
+
+    .cart-details-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    }

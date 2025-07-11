@@ -353,55 +353,69 @@
 
 /* Brands Section */
 .home-user-shop-by-brands {
-    margin-top: 20px;
+    margin-top: 40px;
     text-align: center;
     margin-bottom: 40px;
+    padding: 0 20px;
 }
 
 .home-user-shop-by-brands h2 {
     color: #fff;
-    font-size: 16px;
+    font-size: 24px;
     font-weight: bold;
     text-align: center;
-    margin-top: 30px;
+    margin-bottom: 20px;
     background-color: #4a7c5b;
     display: inline-block;
-    padding: 5px 10px;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .home-user-brands-container {
-    background-color: #4a7c5b;
-    margin-top: -10px;
-    padding: 15px;
-    border-radius: 30px;
-    justify-content: left;
-    align-items: center;
-    overflow-x: auto;
-    display: flex;
-    gap: 16px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
 }
 
-.home-user-brands-container::-webkit-scrollbar {
-    display: none;
+.home-user-brands-inner {
+    display: flex;
+    gap: 30px;
+    width: max-content;
+    will-change: transform;
+    transition: transform 0.3s ease;
 }
 
 .home-user-brand {
     flex: 0 0 auto;
     cursor: pointer;
     text-align: center;
-    width: 150px;
+    transition: transform 0.3s ease;
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.home-user-brand:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .home-user-brand img {
     width: 150px;
-    height: 120px;
-    object-fit: fill;
-    border-radius: 15px;
+    height: 100px;
+    object-fit: contain;
     user-select: none;
+    filter: grayscale(20%);
+    transition: filter 0.3s ease;
+}
+
+.home-user-brand:hover img {
+    filter: grayscale(0%);
 }
 
 /* Responsive Adjustments */
@@ -445,6 +459,19 @@
     .home-product-newest-card {
         width: 48%;
     }
+
+    .home-user-brands-container {
+        padding: 20px 15px;
+    }
+
+    .home-user-brand {
+        padding: 10px;
+    }
+
+    .home-user-brand img {
+        width: 120px;
+        height: 80px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -466,5 +493,19 @@
 
     .home-product-newest-wishlist-icon:hover::after {
         top: -38px;
+    }
+
+    .home-user-shop-by-brands h2 {
+        font-size: 20px;
+        padding: 8px 15px;
+    }
+
+    .home-user-brands-container {
+        padding: 15px 10px;
+    }
+
+    .home-user-brand img {
+        width: 100px;
+        height: 60px;
     }
 }

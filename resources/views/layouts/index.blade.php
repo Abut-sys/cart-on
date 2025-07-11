@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/navbar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/footer.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/spinner.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
@@ -42,6 +41,12 @@
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/sidebar.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/history.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/pending.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/all.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/cart.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/wishlist.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/allProduct.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profileAdmin.css">
+    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/addressEdit.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
@@ -75,20 +80,6 @@
     @yield('chat')
 
     @yield('admin_chat')
-
-    {{-- loader --}}
-    <div id="customSpinnerLoader"Add commentMore actions
-        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-        style="background: rgba(0,0,0,0.5); z-index: 9999;">
-        <div class="spinner">
-            <div class="outer">
-                <div class="inner tl"></div>
-                <div class="inner tr"></div>
-                <div class="inner br"></div>
-                <div class="inner bl"></div>
-            </div>
-        </div>
-    </div>
 
     {{-- Include Sidebar --}}
     @auth
@@ -125,7 +116,7 @@
     @vite('resources/js/bootstrap.js')
 
     {{-- Loader --}}
-    
+
 
     {{-- notif --}}
     <script>
