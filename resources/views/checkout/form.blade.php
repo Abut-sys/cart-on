@@ -1,5 +1,7 @@
 @extends('layouts.index')
 
+@section('title', 'checkout product')
+
 @section('content')
     <div class="container py-4">
         <div class="checkout-container">
@@ -529,7 +531,7 @@
                                     'Kamu menutup pembayaran sebelum memilih metode. Order dibatalkan.'
                                 );
                                 window.location.href = '{{ route('home.index') }}';
-                               
+
                             }
                         });
                     } else {

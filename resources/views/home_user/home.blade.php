@@ -73,20 +73,27 @@
     </div>
 
     <div class="home-user-shop-by-brands">
-        @foreach ($categories as $category)
-            <h2>Featured {{ $category->name }}</h2>
-            <div class="home-user-brands-container">
-                @forelse ($category->brands as $brand)
+        <h2>Our Featured Brands</h2>
+        <div class="home-user-brands-container">
+            <div class="home-user-brands-inner">
+                @foreach ($brands as $brand)
                     <div class="home-user-brand">
                         <a href="{{ route('products-all.index', ['brand' => $brand->name]) }}">
                             <img src="{{ asset('storage/' . $brand->logo_path) }}" alt="{{ $brand->name }}">
                         </a>
                     </div>
-                @empty
-                    <p>No brands available in this category.</p>
-                @endforelse
+                @endforeach
+
+                {{-- Duplikat isi untuk loop --}}
+                @foreach ($brands as $brand)
+                    <div class="home-user-brand">
+                        <a href="{{ route('products-all.index', ['brand' => $brand->name]) }}">
+                            <img src="{{ asset('storage/' . $brand->logo_path) }}" alt="{{ $brand->name }}">
+                        </a>
+                    </div>
+                @endforeach
             </div>
-        @endforeach
+        </div>
     </div>
 @endsection
 
@@ -124,9 +131,7 @@
             // Set initial positions
             function initializeSlider() {
                 images.forEach((img, index) => {
-                    img.style.transform = translateX($ {
-                        index * 100
-                    } % );
+                    img.style.transform = `translateX(${index * 100}%)`;
                 });
             }
 
@@ -139,9 +144,7 @@
             // Update slider position and active dot
             function updateSlider() {
                 images.forEach((img, index) => {
-                    img.style.transform = translateX($ {
-                        100 * (index - currentIndex)
-                    } % );
+                    img.style.transform = `translateX(${100 * (index - currentIndex)}%)`;
                 });
 
                 // Update active dot
@@ -213,6 +216,51 @@
             // Initialize
             initializeSlider();
 
+            // ==================== INFINITE BRANDS SCROLL ====================
+            const brandsContainer = document.querySelector('.home-user-brands-container');
+            const brandsInner = document.querySelector('.home-user-brands-inner');
+
+            if (brandsContainer && brandsInner) {
+                // Clone brands for infinite effect
+                const brands = document.querySelectorAll('.home-user-brand');
+                brands.forEach(brand => {
+                    const clone = brand.cloneNode(true);
+                    brandsInner.appendChild(clone);
+                });
+
+                // Animation for infinite scroll
+                let scrollSpeed = 1;
+                let scrollPos = 0;
+                const brandWidth = brands[0]?.offsetWidth + 30; // width + gap
+                const containerWidth = brandsContainer.offsetWidth;
+
+                function animateBrands() {
+                    scrollPos += scrollSpeed;
+
+                    // Reset position when scrolled enough
+                    if (scrollPos >= brandWidth * brands.length / 2) {
+                        scrollPos = 0;
+                    }
+
+                    brandsInner.style.transform = `translateX(-${scrollPos}px)`;
+                    requestAnimationFrame(animateBrands);
+                }
+
+                // Start animation
+                setTimeout(() => {
+                    requestAnimationFrame(animateBrands);
+                }, 1000);
+
+                // Pause on hover
+                brandsContainer.addEventListener('mouseenter', () => {
+                    scrollSpeed = 0;
+                });
+
+                brandsContainer.addEventListener('mouseleave', () => {
+                    scrollSpeed = 1;
+                });
+            }
+
             // ==================== WISHLIST HANDLER ====================
             $('.home-product-newest-wishlist-icon').on('click', function(event) {
                 event.preventDefault();
@@ -237,36 +285,6 @@
                     error: function(xhr, status, error) {
                         console.error("AJAX error:", error);
                     }
-                });
-            });
-
-            // ==================== HORIZONTAL SCROLL BRANDS ====================
-            const brandsContainers = document.querySelectorAll('.home-user-brands-container');
-            brandsContainers.forEach(container => {
-                let isDragging = false;
-                let startX;
-                let scrollLeft;
-
-                container.addEventListener('mousedown', (e) => {
-                    isDragging = true;
-                    startX = e.pageX - container.offsetLeft;
-                    scrollLeft = container.scrollLeft;
-                });
-
-                container.addEventListener('mouseleave', () => {
-                    isDragging = false;
-                });
-
-                container.addEventListener('mouseup', () => {
-                    isDragging = false;
-                });
-
-                container.addEventListener('mousemove', (e) => {
-                    if (!isDragging) return;
-                    e.preventDefault();
-                    const x = e.pageX - container.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    container.scrollLeft = scrollLeft - walk;
                 });
             });
         });

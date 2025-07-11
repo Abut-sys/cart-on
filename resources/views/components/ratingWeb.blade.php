@@ -13,6 +13,17 @@
                     </button>
 
                     <div class="modal-body p-4">
+                        <!-- Success Message -->
+                        @if (session('success'))
+                            <div class="alert alert-success border-0 rounded-3 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span>{{ session('success') }}</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Error Messages -->
                         @if ($errors->any())
                             <div class="alert alert-danger border-0 rounded-3 mb-4">
                                 <div class="d-flex align-items-center mb-2">
@@ -34,7 +45,8 @@
                                 <div class="star-rating d-flex justify-content-center align-items-center gap-2">
                                     @for ($i = 1; $i <= 5; $i++)
                                         <div class="star-wrapper position-relative">
-                                            <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" class="star-input">
+                                            <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}"
+                                                   class="star-input" {{ old('rating') == $i ? 'checked' : '' }}>
                                             <label for="star{{ $i }}" class="star-label position-relative d-block" title="{{ $i }} bintang">
                                                 <svg class="star-svg" width="40" height="40" viewBox="0 0 24 24" fill="none">
                                                     <path class="star-path" d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#e0e0e0" stroke-width="1.5" fill="#f5f5f5"/>
@@ -46,7 +58,9 @@
                                     @endfor
                                 </div>
                                 <div class="rating-text mt-3">
-                                    <span id="ratingText" class="text-muted fst-italic">Pilih rating Anda</span>
+                                    <span id="ratingText" class="text-muted fst-italic">
+                                        {{ old('rating') ? 'Rating: ' . old('rating') . ' bintang' : 'Pilih rating Anda' }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -58,15 +72,18 @@
                                 Komentar <span class="text-muted fw-normal">(opsional)</span>
                             </label>
                             <div class="position-relative">
-                                <textarea name="comment" class="form-control border-2 rounded-3 shadow-sm"
+                                <textarea name="comment" class="form-control border-2 rounded-3 shadow-sm @error('comment') is-invalid @enderror"
                                     rows="4"
                                     placeholder="Ceritakan pengalaman Anda... Saran dan kritik sangat membantu kami untuk berkembang!"
-                                    style="resize: none; padding-top: 12px; padding-bottom: 12px;"></textarea>
+                                    style="resize: none; padding-top: 12px; padding-bottom: 12px;">{{ old('comment') }}</textarea>
                                 <div class="position-absolute bottom-0 end-0 p-2">
                                     <small class="text-muted">
-                                        <span id="charCount">0</span>/500
+                                        <span id="charCount">{{ strlen(old('comment', '')) }}</span>/500
                                     </small>
                                 </div>
+                                @error('comment')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -75,7 +92,7 @@
                         <div class="d-grid w-100">
                             <button type="submit" class="btn btn-lg rounded-3 shadow-sm"
                                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;"
-                                disabled id="submitBtn">
+                                {{ !old('rating') ? 'disabled' : '' }} id="submitBtn">
                                 <i class="fas fa-paper-plane me-2"></i>
                                 Kirim Penilaian
                             </button>
@@ -89,7 +106,6 @@
         </div>
     </div>
 
-    <!-- CSS -->
     <style>
         /* Modal Background Transparency */
         .modal {
@@ -277,8 +293,18 @@
                 2: "😐 Tidak Puas",
                 3: "😊 Cukup Puas",
                 4: "😃 Puas",
-                5: "🤤 Ewe Ewe Ewe"
+                5: "🤩 Sangat Puas"
             };
+
+            // Initialize pada page load jika ada old input
+            const checkedRating = document.querySelector('input[name="rating"]:checked');
+            if (checkedRating) {
+                const value = parseInt(checkedRating.value);
+                updateStarDisplay(value);
+                ratingText.textContent = ratingMessages[value];
+                ratingText.style.color = value <= 2 ? '#dc3545' : value <= 3 ? '#ffc107' : '#28a745';
+                submitBtn.disabled = false;
+            }
 
             // Handle star rating
             ratingInputs.forEach((input, index) => {
@@ -287,17 +313,7 @@
                 // Handle click events
                 input.addEventListener('change', function() {
                     const value = parseInt(this.value);
-
-                    // Remove all filled classes first
-                    document.querySelectorAll('.star-wrapper').forEach(wrapper => {
-                        wrapper.classList.remove('filled');
-                    });
-
-                    // Add filled class to stars up to selected rating
-                    for (let i = 0; i < value; i++) {
-                        document.querySelectorAll('.star-wrapper')[i].classList.add('filled');
-                    }
-
+                    updateStarDisplay(value);
                     ratingText.textContent = ratingMessages[value];
                     ratingText.style.color = value <= 2 ? '#dc3545' : value <= 3 ? '#ffc107' : '#28a745';
                     submitBtn.disabled = false;
@@ -311,16 +327,7 @@
                 starWrapper.addEventListener('mouseenter', function() {
                     if (!document.querySelector('input[name="rating"]:checked')) {
                         const hoverValue = parseInt(input.value);
-
-                        // Remove all hover previews first
-                        document.querySelectorAll('.star-wrapper').forEach(wrapper => {
-                            wrapper.classList.remove('hover-preview');
-                        });
-
-                        // Add hover preview to stars up to hovered rating
-                        for (let i = 0; i < hoverValue; i++) {
-                            document.querySelectorAll('.star-wrapper')[i].classList.add('hover-preview');
-                        }
+                        updateHoverPreview(hoverValue);
                     }
                 });
             });
@@ -344,6 +351,27 @@
                         charCount.textContent = 500;
                     }
                 });
+            }
+
+            // Helper functions
+            function updateStarDisplay(value) {
+                document.querySelectorAll('.star-wrapper').forEach(wrapper => {
+                    wrapper.classList.remove('filled');
+                });
+
+                for (let i = 0; i < value; i++) {
+                    document.querySelectorAll('.star-wrapper')[i].classList.add('filled');
+                }
+            }
+
+            function updateHoverPreview(value) {
+                document.querySelectorAll('.star-wrapper').forEach(wrapper => {
+                    wrapper.classList.remove('hover-preview');
+                });
+
+                for (let i = 0; i < value; i++) {
+                    document.querySelectorAll('.star-wrapper')[i].classList.add('hover-preview');
+                }
             }
 
             // Sparkle effect function
@@ -385,19 +413,51 @@
             `;
             document.head.appendChild(sparkleStyle);
 
-            // Modal timing logic
-            const loginTime = new Date("{{ session('login_time') }}");
-            const now = new Date();
-            const diffMs = now - loginTime;
-            const diffMinutes = diffMs / 1000 / 60;
+            // Modal timing logic - cek apakah user sudah pernah rating
+            checkUserRating().then(hasRated => {
+                if (hasRated) {
+                    return; // Jangan tampilkan modal jika sudah rating
+                }
 
-            if (diffMinutes >= 2) {
-                showRatingModal();
-            } else {
-                const waitMs = (2 - diffMinutes) * 60 * 1000;
-                setTimeout(() => {
+                // Tampilkan modal berdasarkan waktu login
+                const loginTime = new Date("{{ session('login_time') }}");
+                const now = new Date();
+                const diffMs = now - loginTime;
+                const diffMinutes = diffMs / 1000 / 60;
+
+                if (diffMinutes >= 2) {
                     showRatingModal();
-                }, waitMs);
+                } else {
+                    const waitMs = (2 - diffMinutes) * 60 * 1000;
+                    setTimeout(() => {
+                        showRatingModal();
+                    }, waitMs);
+                }
+            });
+
+            // Function to check if user has rated
+            async function checkUserRating() {
+                try {
+                    const response = await fetch('{{ route("rating.check") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            information_id: {{ $information->id ?? 1 }}
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.hasRated;
+                    }
+                    return false;
+                } catch (error) {
+                    console.error('Error checking rating:', error);
+                    return false;
+                }
             }
 
             function showRatingModal() {
@@ -421,6 +481,11 @@
                 }
             `;
             document.head.appendChild(modalStyle);
+
+            // Jika ada error, tampilkan modal
+            @if ($errors->any())
+                showRatingModal();
+            @endif
         });
     </script>
 @endif

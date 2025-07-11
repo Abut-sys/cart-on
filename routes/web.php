@@ -90,8 +90,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.address.delete');
     Route::get('/autocomplete/address', [ProfileController::class, 'autocompleteAddress'])->name('autocomplete.address');
 
-    Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
-    Route::get('/rating/check', [RatingController::class, 'check'])->name('rating.check');
+    Route::post('/rating', [RatingController::class, 'store'])->name('rating.store');
+    Route::post('/rating/check', [RatingController::class, 'check'])->name('rating.check');
+    Route::post('/rating/update/{informationId}', [RatingController::class, 'updateRating'])->name('rating.update');
+    Route::get('/rating/stats/{informationId}', [RatingController::class, 'getRatingStats'])->name('rating.stats');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('getNotifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
