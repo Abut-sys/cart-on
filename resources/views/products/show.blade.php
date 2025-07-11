@@ -3,64 +3,185 @@
 @section('title', 'Product Details')
 
 @section('content')
-    <div class="brand-show-container mt-4">
-        <div class="product-show-card shadow-lg">
-            <div class="product-show-card-header d-flex justify-content-between align-items-center">
-                <h2 class="product-show-title mb-0">Product Details</h2>
-                <a href="{{ route('products.index') }}" class="product-show-btn-return">
-                    <i class="fas fa-arrow-left"></i> Return
-                </a>
-            </div>
-            <div class="card-body product-show-card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div id="product-images-gallery">
-                            <div id="main-image">
-                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
-                                    alt="{{ $product->name }}" class="img-fluid product-show-image"
-                                    style="max-width: 100%;">
-                            </div>
-                            <div id="thumbnail-images" class="mt-3" style="overflow-x: auto; white-space: nowrap;">
-                                @foreach ($product->images as $image)
-                                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="Thumbnail"
-                                        class="img-fluid product-show-thumbnail"
-                                        data-full-image="{{ asset('storage/' . $image->image_path) }}"
-                                        style="width: 150px; height: 150px; object-fit: cover; cursor: pointer; margin-right: 15px; display: inline-block;">
-                                @endforeach
-                            </div>
-                        </div>
+    <div class="product-detail-container">
+        <div class="product-detail-card">
+            <!-- Product Header -->
+            <div class="product-header">
+                <div class="breadcrumb-nav">
+                    <a href="{{ route('home.index') }}">Home</a> &gt;
+                    <a href="{{ route('products.index') }}">Products</a> &gt;
+                    <span>{{ $product->name }}</span>
+                </div>
+                <h1 class="product-title">{{ $product->name }}</h1>
+                <div class="product-meta">
+                    <span class="product-brand">{{ $product->brand->name }}</span>
+                    <span class="product-category">{{ $product->subCategory->name }}</span>
+                    <div class="product-rating">
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if ($i <= floor($product->rating))
+                                <i class="fas fa-star"></i>
+                            @elseif ($i - 0.5 <= $product->rating)
+                                <i class="fas fa-star-half-alt"></i>
+                            @else
+                                <i class="far fa-star"></i>
+                            @endif
+                        @endfor
+                        <span>({{ $product->rating_count }} reviews)</span>
                     </div>
-                    <div class="col-md-8">
-                        <h3 class="product-show-title">{{ $product->name }}</h3>
-                        <p class="product-show-price"><strong>Price:</strong> {{ number_format($product->price, 2) }}</p>
-                        <p class="product-show-description"><strong>Description:</strong> {{ $product->description }}</p>
-                        <p class="product-show-subcategory"><strong>Subcategory:</strong> {{ $product->subCategory->name }}</p>
-                        <p class="product-show-brand"><strong>Brand:</strong> {{ $product->brand->name }}</p>
+                </div>
+            </div>
 
-                        <h4 class="product-show-variants-title">Variants:</h4>
-                        <table class="table product-show-variants-table">
+            <!-- Product Content -->
+            <div class="product-content">
+                <!-- Gallery Column -->
+                <div class="gallery-column">
+                    <div class="main-image-container">
+                        <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                            alt="{{ $product->name }}" class="main-image" id="mainProductImage">
+                        <div class="image-badge">Hover to zoom</div>
+                    </div>
+                    <div class="thumbnail-gallery">
+                        @foreach ($product->images as $image)
+                            <div class="thumbnail-container">
+                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="Thumbnail" class="thumbnail"
+                                    data-full-image="{{ asset('storage/' . $image->image_path) }}">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Info Column -->
+                <div class="info-column">
+                    <!-- Price Section -->
+                    <div class="price-section">
+                        @if ($product->old_price)
+                            <div class="old-price">Rp {{ number_format($product->old_price, 0, ',', '.') }}</div>
+                        @endif
+                        <div class="current-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                        @if ($product->old_price)
+                            <div class="discount-badge">
+                                {{ round(100 - ($product->price / $product->old_price) * 100) }}% OFF
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Description -->
+                    <div class="description-section">
+                        <h3>Product Description</h3>
+                        <p>{{ $product->description }}</p>
+                    </div>
+
+                    <!-- Variants -->
+                    <div class="variants-section">
+                        <h3>Available Options</h3>
+                        <table class="variants-table">
+                            <thead>
+                                <tr>
+                                    <th>Color</th>
+                                    <th>Size</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 @foreach ($product->subVariant as $variant)
                                     <tr>
-                                        <td>{{ $variant->color }}</td>
-                                        <td>{{ $variant->size }}</td>
-                                        <td>{{ $variant->stock }}</td>
+                                        <td>
+                                            @if ($variant->color)
+                                                <span class="color-swatch"
+                                                    style="background-color: {{ $variant->color }}"></span>
+                                                {{ $variant->color }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>{{ $variant->size ?: '-' }}</td>
+                                        <td>
+                                            @if ($variant->stock > 5)
+                                                <span class="in-stock">In Stock ({{ $variant->stock }})</span>
+                                            @elseif($variant->stock > 0)
+                                                <span class="low-stock">Low Stock ({{ $variant->stock }})</span>
+                                            @else
+                                                <span class="out-of-stock">Out of Stock</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- QR Code Section -->
+                    <div class="qr-code-section">
+                        <div class="section-header">
+                            <h3>Product QR Code</h3>
+                            <p>Scan this code for quick access to product details</p>
+                        </div>
+
+                        <div class="qr-code-container">
+                            @if ($product->qr_code_path)
+                                <div class="qr-code-display">
+                                    <img src="{{ asset($product->qr_code_path) }}" alt="QR Code" class="qr-code-image">
+                                    <div class="qr-code-actions">
+                                        <a href="{{ asset($product->qr_code_path) }}"
+                                            download="QR-{{ str_replace(' ', '-', $product->name) }}.png"
+                                            class="action-btn download-btn">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                        <a href="{{ route('products.qr.print', $product->id) }}" target="_blank"
+                                            class="action-btn print-btn">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                        <a href="{{ route('products.qr.refresh', $product->id) }}"
+                                            class="action-btn refresh-btn">
+                                            <i class="fas fa-sync-alt"></i> Refresh
+                                        </a>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="no-qr-code">
+                                    <div class="qr-code-placeholder">
+                                        <i class="fas fa-qrcode"></i>
+                                        <p>No QR Code generated</p>
+                                    </div>
+                                    <a href="{{ route('products.qr.generate', $product->id) }}" class="generate-qr-btn">
+                                        <i class="fas fa-plus-circle"></i> Generate QR Code
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Image Zoom Modal -->
+    <div class="modal fade" id="imageZoomModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="" alt="Zoomed Product Image" id="zoomedImage" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        document.querySelectorAll('.product-show-thumbnail').forEach(thumbnail => {
+        // Image gallery functionality
+        document.querySelectorAll('.thumbnail').forEach(thumbnail => {
             thumbnail.addEventListener('click', function() {
-                const mainImage = document.getElementById('main-image').querySelector('img');
+                const mainImage = document.getElementById('mainProductImage');
                 mainImage.src = this.getAttribute('data-full-image');
+
+                // Update active thumbnail
+                document.querySelectorAll('.thumbnail-container').forEach(container => {
+                    container.classList.remove('active');
+                });
+                this.closest('.thumbnail-container').classList.add('active');
             });
         });
+
+        // Initialize first thumbnail as active
+        document.querySelector('.thumbnail-container').classList.add('active');
     </script>
 @endsection

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->float('rating', 2, 1)->default(0);
             $table->unsignedInteger('rating_count')->default(0);
             $table->bigInteger('sales')->default(0);
+            $table->string('qr_code_path')->nullable();
             $table->timestamps();
         });
     }

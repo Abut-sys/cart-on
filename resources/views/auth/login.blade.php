@@ -518,6 +518,112 @@
                 height: 70px;
             }
         }
+
+        /* ========== FAILED LOGIN LOADER STYLES ========== */
+        .lgn-failed-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .lgn-failed-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lgn-failed-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+        }
+
+        .lgn-failed-modal.active .lgn-failed-content {
+            transform: scale(1);
+        }
+
+        .lgn-failed-animation {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .lgn-failed-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff4757, #ff6b81);
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: lgn-shake 0.5s ease-in-out infinite alternate;
+        }
+
+        .lgn-failed-icon::before {
+            content: '!';
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .lgn-failed-text {
+            color: #ff4757;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .lgn-failed-subtext {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .lgn-retry-btn {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .lgn-retry-btn:hover {
+            background: linear-gradient(135deg, #ff6b81, #ff4757);
+            transform: scale(1.05);
+        }
+
+        @keyframes lgn-shake {
+            0% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(5px);
+            }
+        }
     </style>
 </head>
 
@@ -587,6 +693,18 @@
             <div class="lgn-progress-container">
                 <div class="lgn-progress-bar"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Failed Login Modal -->
+    <div id="lgnFailedModal" class="lgn-failed-modal">
+        <div class="lgn-failed-content">
+            <div class="lgn-failed-animation">
+                <div class="lgn-failed-icon"></div>
+            </div>
+            <div class="lgn-failed-text">Login Failed!</div>
+            <div class="lgn-failed-subtext" id="failedMessage">Invalid email or password</div>
+            <button class="lgn-retry-btn" id="lgnRetryBtn">Try Again</button>
         </div>
     </div>
 
@@ -678,6 +796,57 @@
         // Hide loader if there's an error (page reload)
         window.addEventListener('load', function() {
             lgnHideLoader();
+        });
+
+        // ========== FAILED LOGIN FUNCTIONS ==========
+        function lgnShowFailedModal(message) {
+            const modal = document.getElementById('lgnFailedModal');
+            const messageElement = document.getElementById('failedMessage');
+
+            if (message) {
+                messageElement.textContent = message;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function lgnHideFailedModal() {
+            const modal = document.getElementById('lgnFailedModal');
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking retry button
+        document.getElementById('lgnRetryBtn').addEventListener('click', function() {
+            lgnHideFailedModal();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('lgnFailedModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                lgnHideFailedModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                lgnHideFailedModal();
+            }
+        });
+
+        // Show failed modal if there are login errors
+        document.addEventListener('DOMContentLoaded', function() {
+            @if ($errors->any())
+                lgnHideLoader(); // Hide the loading modal if it's showing
+                lgnShowFailedModal("{{ $errors->first() }}");
+            @endif
+        });
+
+        // Modify your form submission to handle failed login attempts
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            // This would normally be handled by your backend response
+            // For demonstration, we'll assume the backend returns an error
+            // In a real application, you would check the response from your AJAX call
         });
     </script>
 </body>

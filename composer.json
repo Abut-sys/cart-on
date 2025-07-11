@@ -16,7 +16,9 @@
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",
         "midtrans/midtrans-php": "^2.6",
-        "pusher/pusher-php-server": "^7.2"
+        "milon/barcode": "^12.0",
+        "pusher/pusher-php-server": "^7.2",
+        "simplesoftwareio/simple-qrcode": "^4.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

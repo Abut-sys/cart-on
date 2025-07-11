@@ -160,6 +160,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('reports/brands/export/excel', [BrandReportController::class, 'exportExcel'])->name('reports.brands.export.excel');
 
     Route::resource('products', ProductController::class);
+    Route::get('/products/{product}/generate-qr', [ProductController::class, 'generateQR'])
+     ->name('products.qr.generate');
+    Route::get('/products/{product}/refresh-qr', [ProductController::class, 'refreshQR'])
+     ->name('products.qr.refresh');
+    Route::get('/products/{product}/print-qr', [ProductController::class, 'printQRCode'])
+     ->name('products.qr.print');
+
     Route::get('reports/products', [ProductReportController::class, 'index'])->name('reports.products.index');
     Route::get('reports/products/export/pdf', [ProductReportController::class, 'exportPdf'])->name('reports.products.export.pdf');
     Route::get('reports/products/export/excel', [ProductReportController::class, 'exportExcel'])->name('reports.products.export.excel');

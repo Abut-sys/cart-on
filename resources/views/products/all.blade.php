@@ -108,7 +108,7 @@
                                     class="card product-user-view-card">
 
                                     @if (auth()->check())
-                                        <i class="fas fa-heart product-user-view-toggle-wishlist-btn 
+                                        <i class="fas fa-heart product-user-view-toggle-wishlist-btn
                         {{ in_array($product->id, $userWishlistIds) ? 'text-danger' : 'text-secondary' }}"
                                             data-product-id="{{ $product->id }}"></i>
                                     @endif
