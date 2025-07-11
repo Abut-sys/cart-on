@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Checkout;
+use App\Models\ClaimVoucher;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SubVariant;
@@ -53,6 +54,14 @@ class CheckoutController extends Controller
                 $query->whereNull('vouchers.end_date')
                     ->orWhere('vouchers.end_date', '>', now());
             })
+            ->whereRaw('
+        claim_voucher.quantity > (
+            SELECT COUNT(*)
+            FROM user_voucher
+            WHERE user_voucher.user_id = claim_voucher.user_id
+            AND user_voucher.voucher_id = claim_voucher.voucher_id
+        )
+    ')
             ->select('vouchers.*')
             ->get();
 
@@ -391,7 +400,7 @@ class CheckoutController extends Controller
 
         $userId = auth()->id();
 
-        $isClaimed = DB::table('claim_voucher')
+        $claim = DB::table('claim_voucher')
             ->where('user_id', $userId)
             ->where('voucher_id', $voucher->id)
             ->first();
@@ -401,22 +410,9 @@ class CheckoutController extends Controller
             ->where('voucher_id', $voucher->id)
             ->count();
 
-        if (!$isClaimed) {
-            $remainingSlot = $voucher->max_per_user - $usedCount;
-            if ($remainingSlot <= 0) {
+        if ($claim) {
+            if ($usedCount >= $voucher->max_per_user) {
                 throw new Exception('Slot max per user sudah habis.');
-            }
-
-            DB::table('claim_voucher')->insert([
-                'user_id' => $userId,
-                'voucher_id' => $voucher->id,
-                'quantity' => $remainingSlot,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        } else {
-            if ($usedCount >= $isClaimed->quantity) {
-                throw new Exception('Slot voucher sudah habis dipakai.');
             }
         }
 
@@ -487,6 +483,26 @@ class CheckoutController extends Controller
             'voucher_id' => $voucher->id,
         ]);
         $voucher->decrementUsage();
+
+        $claim = ClaimVoucher::where('user_id', $user->id)
+            ->where('voucher_id', $voucher->id)
+            ->first();
+
+        $usedCount = UserVoucher::where('user_id', $user->id)
+            ->where('voucher_id', $voucher->id)
+            ->count();
+
+        if (!$claim) {
+            ClaimVoucher::create([
+                'user_id' => $user->id,
+                'voucher_id' => $voucher->id,
+                'quantity' => 1,
+            ]);
+        } else {
+            if ($usedCount > $claim->quantity && $claim->quantity < $voucher->max_per_user) {
+                $claim->increment('quantity', 1);
+            }
+        }
     }
 
     public function checkVoucher(Request $request)
@@ -535,49 +551,89 @@ class CheckoutController extends Controller
         $apiKey = config('rajaongkir.api_key');
         $originCity = config('rajaongkir.origin_city');
 
-        if (!$destinationCityId) {
-            return response()->json(['error' => 'ID kota tujuan tidak ditemukan untuk alamat ini.'], 400);
-        }
+        if ($destinationCityId) {
+            $costResponse = Http::withHeaders([
+                'key' => $apiKey,
+                'content-type' => 'application/x-www-form-urlencoded',
+            ])->asForm()->post('https://api.rajaongkir.com/starter/cost', [
+                'origin' => $originCity,
+                'destination' => $destinationCityId,
+                'weight' => $weight,
+                'courier' => $request->courier,
+            ]);
 
-        $costResponse = Http::withHeaders([
-            'key' => $apiKey,
-            'content-type' => 'application/x-www-form-urlencoded',
-        ])->asForm()->post('https://api.rajaongkir.com/starter/cost', [
-            'origin' => $originCity,
-            'destination' => $destinationCityId,
-            'weight' => $weight,
-            'courier' => $request->courier,
-        ]);
+            if ($costResponse->successful()) {
+                $results = $costResponse->json()['rajaongkir'];
 
-        if ($costResponse->successful()) {
-            $results = $costResponse->json()['rajaongkir'];
+                if ($results['status']['code'] == 200 && !empty($results['results'])) {
+                    if ($request->filled('service')) {
+                        $cost = collect($results['results'][0]['costs'])
+                            ->firstWhere('service', $request->service);
 
-            if ($results['status']['code'] == 200 && !empty($results['results'])) {
-                if ($request->filled('service')) {
-                    $cost = collect($results['results'][0]['costs'])
-                        ->firstWhere('service', $request->service);
-
-                    if ($cost) {
-                        return response()->json(['cost' => $cost['cost'][0]['value']]);
+                        if ($cost) {
+                            return response()->json(['cost' => $cost['cost'][0]['value']]);
+                        } else {
+                            return response()->json(['error' => 'Service tidak ditemukan untuk kurir ini'], 404);
+                        }
                     } else {
-                        return response()->json(['error' => 'Service tidak ditemukan untuk kurir ini'], 404);
+                        $formattedCosts = collect($results['results'][0]['costs'])->map(function ($item) {
+                            return [
+                                'service' => $item['service'],
+                                'description' => $item['description'],
+                                'cost' => $item['cost'][0]['value'],
+                            ];
+                        });
+                        return response()->json($formattedCosts);
                     }
                 } else {
-                    $formattedCosts = collect($results['results'][0]['costs'])->map(function ($item) {
-                        return [
-                            'service' => $item['service'],
-                            'description' => $item['description'],
-                            'cost' => $item['cost'][0]['value'],
-                        ];
-                    });
-                    return response()->json($formattedCosts);
+                    return response()->json(['error' => $results['status']['description']], $results['status']['code']);
                 }
             } else {
-                return response()->json(['error' => $results['status']['description']], $results['status']['code']);
+                return response()->json(['error' => 'Gagal mendapatkan biaya pengiriman dari API: ' . $costResponse->body()], $costResponse->status());
             }
         } else {
-            return response()->json(['error' => 'Gagal mendapatkan biaya pengiriman dari API: ' . $costResponse->body()], $costResponse->status());
+            $storeLat = config('shipping.origin_latitude');
+            $storeLng = config('shipping.origin_longitude');
+
+            if (!$address->latitude || !$address->longitude) {
+                return response()->json(['error' => 'Alamat belum punya koordinat, mohon update!'], 400);
+            }
+
+            $distance = $this->calculateHaversineDistance(
+                $storeLat,
+                $storeLng,
+                $address->latitude,
+                $address->longitude
+            );
+
+            $costPerKm = 3000;
+            $finalCost = ceil($distance) * $costPerKm;
+
+            return response()->json([
+                [
+                    'service' => strtoupper($request->courier) . '_CUSTOM',
+                    'description' => ' ' . round($distance, 2) . ' km',
+                    'cost' => $finalCost,
+                ]
+            ]);
         }
+    }
+
+    private function calculateHaversineDistance($lat1, $lng1, $lat2, $lng2)
+    {
+        $earthRadius = 6371; // Km
+
+        $latFrom = deg2rad($lat1);
+        $lngFrom = deg2rad($lng1);
+        $latTo = deg2rad($lat2);
+        $lngTo = deg2rad($lng2);
+
+        $latDelta = $latTo - $latFrom;
+        $lngDelta = $lngTo - $lngFrom;
+
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lngDelta / 2), 2)));
+        return $earthRadius * $angle;
     }
 
     public function cancelOrder(Request $request)
