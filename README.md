@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://cart-on.smartinsistem.com/" target="_blank">
-    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="320" alt="Cart-On Logo">
+    <img src="{{ asset('image/Logo_baru.png') }}" width="320" alt="Cart-On Logo">
   </a>
 </p>
 
