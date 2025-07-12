@@ -63,7 +63,6 @@
 ## Dokumentasi
 
 - [Laravel Documentation](https://laravel.com/docs)
-- [Cart-On Wiki](https://github.com/Abut-sys/cart-on/wiki) *(coming soon)*
 
 ## Kontribusi
 
