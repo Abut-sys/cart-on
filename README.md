@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://cart-on.smartinsistem.com/" target="_blank">
-    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Cart-On Logo">
+    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="320" alt="Cart-On Logo">
   </a>
 </p>
 
@@ -11,24 +11,39 @@
   <a href="https://packagist.org/packages/abut-sys/cart-on"><img src="https://img.shields.io/packagist/l/abut-sys/cart-on" alt="License"></a>
 </p>
 
-# Cart-On
+<h1 align="center">Cart-On</h1>
 
-**Cart-On** adalah aplikasi online shop berbasis Laravel yang menyediakan solusi e-commerce modern, mudah digunakan, dan dapat dikembangkan sesuai kebutuhan bisnis Anda.
+<p align="center">
+  <b>Solusi e-commerce modern berbasis Laravel, mudah digunakan, fleksibel, dan siap dikembangkan sesuai kebutuhan bisnis Anda.</b>
+</p>
 
-🔗 [Demo Online](https://cart-on.smartinsistem.com/)  
-🔗 [Repository GitHub](https://github.com/Abut-sys/cart-on)
+<p align="center">
+  🔗 <a href="https://cart-on.smartinsistem.com/">Demo Online</a> &nbsp;|&nbsp;
+  🔗 <a href="https://github.com/Abut-sys/cart-on">Repository GitHub</a>
+</p>
 
-## Fitur Utama
+---
 
-- Manajemen produk & kategori
-- Keranjang belanja dinamis
-- Checkout & integrasi pembayaran
-- Riwayat pesanan & notifikasi email
-- Dashboard admin & laporan penjualan
-- Otentikasi dan otorisasi pengguna
-- Responsive & mudah dikustomisasi
+## 🚀 Fitur Utama
 
-## Instalasi
+- **Manajemen Produk & Kategori**  
+  CRUD produk, kategori, stok, dan harga.
+- **Keranjang Belanja Dinamis**  
+  Pengelolaan keranjang secara real-time.
+- **Checkout & Integrasi Pembayaran**  
+  Mendukung berbagai metode pembayaran.
+- **Riwayat Pesanan & Notifikasi Email**  
+  Pantau status pesanan dan notifikasi otomatis.
+- **Dashboard Admin & Laporan Penjualan**  
+  Statistik penjualan dan pengelolaan toko.
+- **Otentikasi & Otorisasi Pengguna**  
+  Sistem login, register, dan hak akses.
+- **Desain Responsif & Mudah Dikustomisasi**  
+  Tampilan modern, mobile-friendly, dan mudah diubah.
+
+---
+
+## ⚡ Instalasi Cepat
 
 1. **Clone repository**
    ```bash
@@ -60,17 +75,28 @@
    php artisan serve
    ```
 
-## Dokumentasi
+---
+
+## 📚 Dokumentasi
 
 - [Laravel Documentation](https://laravel.com/docs)
+- [Cart-On Wiki](https://github.com/Abut-sys/cart-on/wiki) *(coming soon)*
 
-## Kontribusi
+---
 
-Kontribusi sangat terbuka! Silakan buat pull request atau buka issue untuk diskusi fitur/bug.
+## 🤝 Kontribusi
 
-## Lisensi
+Kontribusi sangat terbuka!  
+Silakan fork, buat branch baru, dan ajukan pull request.  
+Lihat [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan lengkap.
 
-Cart-On dirilis di bawah [MIT License](https://opensource.org/licenses/MIT).
+Laporkan bug atau request fitur melalui [GitHub Issues](https://github.com/Abut-sys/cart-on/issues).
+
+---
+
+## 📄 Lisensi
+
+Cart-On dirilis di bawah [MIT License](LICENSE).
 
 ---
 
