@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\QrController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
@@ -20,21 +21,21 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AdminChatController;
-use App\Http\Controllers\BrandReportController;
 use App\Http\Controllers\CostumersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListOrderController;
 use App\Http\Controllers\ProductAllController;
+use App\Http\Controllers\BrandReportController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\OrderReportController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\WaitingPaymentController;
-use App\Http\Controllers\CategoryProductController;
-use App\Http\Controllers\CategoryReportController;
 use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\VoucherReportController;
+use App\Http\Controllers\CategoryReportController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\WaitingPaymentController;
 use PhpOffice\PhpSpreadsheet\Calculation\Category;
+use App\Http\Controllers\CategoryProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,6 +169,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
      ->name('products.qr.refresh');
     Route::get('/products/{product}/print-qr', [ProductController::class, 'printQRCode'])
      ->name('products.qr.print');
+    Route::get('/scan', [QrController::class, 'scan'])->name('qr.scan');
 
     Route::get('reports/products', [ProductReportController::class, 'index'])->name('reports.products.index');
     Route::get('reports/products/export/pdf', [ProductReportController::class, 'exportPdf'])->name('reports.products.export.pdf');

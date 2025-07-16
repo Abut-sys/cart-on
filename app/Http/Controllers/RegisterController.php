@@ -133,7 +133,7 @@ class RegisterController extends Controller
                 session()->forget(['otp', 'verification_email', 'verification_phone', 'otp_created_at']);
 
                 // Redirect user to login page
-                return redirect()->route('login')->with('success', 'Registration successful! You can now login.');
+                return redirect()->route('login')->with('msg', 'Registration successful! You can now login.');
             }
         }
 
@@ -160,7 +160,7 @@ class RegisterController extends Controller
         if ($user) {
             // Send new OTP
             $this->sendOtp($user);
-            return redirect()->route('verify-otp')->with('success', 'OTP has been resent!');
+            return redirect()->route('verify-otp')->with('msg', 'OTP has been resent!');
         }
 
         return redirect()

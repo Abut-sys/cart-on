@@ -69,6 +69,18 @@
     margin: 0 auto;
 }
 
+.scan-btn {
+    background-color: #9ba49b;
+    margin-left: 8px;
+}
+
+.scan-btn:hover {
+    background-color: #9ba49b;
+    transform: translateY(-2px);
+    color: white;
+}
+
+
 .product-index-btn-add {
     position: absolute;
     top: 10px;

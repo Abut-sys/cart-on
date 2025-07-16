@@ -6,50 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CartON')</title>
-    <link href="{{ asset('/') }}assets/css/bootstrap.min.css" rel="stylesheet"
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="{{ asset('/') }}assets/plugin/fontawasome/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/navbar.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/sidebar.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/footer.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/dashboard/app.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/create.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/costumers/index.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/index.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/create.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/edit.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/show.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/index.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/create.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/categories/edit.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/index.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/create.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/edit.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/brands/show.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/index.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/create.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/edit.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/claim.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/vouchers/claimed.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/edit.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/orders/index.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/home_user/home.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/sidebar.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/history.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/pending.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/all.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/cart.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/wishlist.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/products/allProduct.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profileAdmin.css">
-    <link rel="stylesheet" href="{{ asset('/') }}pemai/css/profile/addressEdit.css">
+    <link href="{{ asset('assets/plugin/fontawasome/css/all.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('pemai/css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/dashboard/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/costumers/create.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/costumers/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/products/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/products/create.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/products/edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/products/show.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/categories/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/categories/create.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/categories/edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/brands/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/brands/create.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/brands/edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/brands/show.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/vouchers/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/vouchers/create.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/vouchers/edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/vouchers/claim.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/vouchers/claimed.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/profile/edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/orders/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/home_user/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/profile/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/profile/history.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/profile/pending.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/products/all.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/cart.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/wishlist.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/products/allProduct.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/profileAdmin.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/profile/addressEdit.css') }}">
+    <link rel="stylesheet" href="{{ asset('pemai/css/checkout.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
+    @stack('styles')
 </head>
 
 <body>

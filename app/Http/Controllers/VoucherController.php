@@ -92,7 +92,7 @@ class VoucherController extends Controller
 
         Voucher::create($validatedData);
 
-        return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully!');
+        return redirect()->route('vouchers.index')->with('msg', 'Voucher created successfully!');
     }
 
     public function edit(Voucher $voucher)
@@ -126,14 +126,14 @@ class VoucherController extends Controller
         $voucher->update($validatedData);
         $voucher->updateStatus();
 
-        return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully!');
+        return redirect()->route('vouchers.index')->with('msg', 'Voucher updated successfully!');
     }
 
     public function destroy(Voucher $voucher)
     {
         $voucher->delete();
 
-        return redirect()->route('vouchers.index')->with('success', 'Voucher deleted successfully!');
+        return redirect()->route('vouchers.index')->with('msg', 'Voucher deleted successfully!');
     }
 
     public function claim()

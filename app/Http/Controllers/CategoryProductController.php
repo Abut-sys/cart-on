@@ -11,7 +11,7 @@ class CategoryProductController extends Controller
     public function index(Request $request)
     {
         $searchable = ['id', 'name'];
-        
+
         $query = CategoryProduct::with('subCategories');
 
         if ($request->filled('search')) {
@@ -66,7 +66,7 @@ class CategoryProductController extends Controller
             }
         }
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
+        return redirect()->route('categories.index')->with('msg', 'Kategori berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -122,13 +122,13 @@ class CategoryProductController extends Controller
         }
 
         // Redirect back to the index page with a success message
-        return redirect()->route('categories.index')->with('success', 'Kategori dan sub kategori berhasil diperbarui.');
+        return redirect()->route('categories.index')->with('msg', 'Kategori dan sub kategori berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $category = CategoryProduct::findOrFail($id);
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');
+        return redirect()->route('categories.index')->with('msg', 'Kategori berhasil dihapus.');
     }
 }

@@ -352,38 +352,38 @@
     transition: all 0.3s;
     border: none;
     cursor: pointer;
+    color: white;
 }
 
 .download-btn {
     background: #4a90e2;
-    color: white;
 }
 
 .download-btn:hover {
     background: #3a7bc8;
     transform: translateY(-2px);
+    color: white;
 }
 
 .print-btn {
     background: #2ecc71;
-    color: white;
 }
 
 .print-btn:hover {
     background: #27ae60;
     transform: translateY(-2px);
+    color: white;
 }
 
 .refresh-btn {
     background: #f39c12;
-    color: white;
 }
 
 .refresh-btn:hover {
     background: #e67e22;
     transform: translateY(-2px);
+    color: white;
 }
-
 .no-qr-code {
     text-align: center;
     padding: 20px;

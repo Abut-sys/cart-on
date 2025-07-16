@@ -20,6 +20,9 @@
                 <div class="d-flex gap-2">
                     <button type="submit" class="product-index-btn-filter">Search</button>
                     <a href="{{ route('products.index') }}" class="product-index-btn-reset">Reset</a>
+                    <a href="{{ route('qr.scan') }}" class="btn btn-outline-success">
+                        <i class="fas fa-camera"></i> Scan QR
+                    </a>
                 </div>
             </div>
         </form>
