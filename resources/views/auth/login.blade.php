@@ -94,6 +94,8 @@
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                lgnHideLoader(); // Hide the loading modal if it's showing
+                lgnShowFailedModal("{{ $errors->first() }}");
                 Swal.fire({
                     title: 'Error!',
                     text: "{{ $errors->first() }}",
@@ -116,122 +118,7 @@
         </script>
     @endif
 
-    <script>
-        // Toggle Password Visibility
-        const togglePassword = document.getElementById("togglePassword");
-        const passwordField = document.getElementById("password");
-        const eyeIcon = document.getElementById("eyeIcon");
-
-        togglePassword.addEventListener("click", function() {
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                eyeIcon.classList.remove("fa-eye");
-                eyeIcon.classList.add("fa-eye-slash");
-            } else {
-                passwordField.type = "password";
-                eyeIcon.classList.remove("fa-eye-slash");
-                eyeIcon.classList.add("fa-eye");
-            }
-        });
-
-        // ========== MODAL LOADER FUNCTIONS ==========
-        function lgnShowLoader() {
-            const modal = document.getElementById('lgnloaderModal');
-            modal.classList.add('active');
-        }
-
-        function lgnHideLoader() {
-            const modal = document.getElementById('lgnloaderModal');
-            modal.classList.remove('active');
-        }
-
-        function lgnShowLoaderWithDelay(seconds = 5) {
-            lgnShowLoader();
-            setTimeout(() => {
-                lgnHideLoader();
-            }, seconds * 1000);
-        }
-
-        // Show loader when form is submitted
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            lgnShowLoader();
-        });
-
-        // Show loader when Google login is clicked
-        document.getElementById('googleLoginBtn').addEventListener('click', function(e) {
-            lgnShowLoader();
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('lgnloaderModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                lgnHideLoader();
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                lgnHideLoader();
-            }
-        });
-
-        // Hide loader if there's an error (page reload)
-        window.addEventListener('load', function() {
-            lgnHideLoader();
-        });
-
-        // ========== FAILED LOGIN FUNCTIONS ==========
-        function lgnShowFailedModal(message) {
-            const modal = document.getElementById('lgnFailedModal');
-            const messageElement = document.getElementById('failedMessage');
-
-            if (message) {
-                messageElement.textContent = message;
-            }
-
-            modal.classList.add('active');
-        }
-
-        function lgnHideFailedModal() {
-            const modal = document.getElementById('lgnFailedModal');
-            modal.classList.remove('active');
-        }
-
-        // Close modal when clicking retry button
-        document.getElementById('lgnRetryBtn').addEventListener('click', function() {
-            lgnHideFailedModal();
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('lgnFailedModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                lgnHideFailedModal();
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                lgnHideFailedModal();
-            }
-        });
-
-        // Show failed modal if there are login errors
-        document.addEventListener('DOMContentLoaded', function() {
-            @if ($errors->any())
-                lgnHideLoader(); // Hide the loading modal if it's showing
-                lgnShowFailedModal("{{ $errors->first() }}");
-            @endif
-        });
-
-        // Modify your form submission to handle failed login attempts
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            // This would normally be handled by your backend response
-            // For demonstration, we'll assume the backend returns an error
-            // In a real application, you would check the response from your AJAX call
-        });
-    </script>
+    <script src="{{ asset('/') }}pemai/js/auth/login.js"></script>
 </body>
 
 </html>

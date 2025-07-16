@@ -27,7 +27,8 @@
 
                     <div class="create-costumers-form-group mb-4">
                         <label for="phone_number" class="create-costumers-form-label">Phone Number</label>
-                        <input type="text" name="phone_number" id="phone_number" class="create-costumers-form-control" required>
+                        <input type="text" name="phone_number" id="phone_number" class="create-costumers-form-control"
+                            required>
                     </div>
 
                     <div class="create-costumers-form-group mb-4">
@@ -40,44 +41,32 @@
 
                     <div class="create-costumers-form-group mb-4">
                         <label for="password" class="create-costumers-form-label">Password</label>
-                        <input type="password" name="password" id="password" class="create-costumers-form-control" required>
+                        <input type="password" name="password" id="password" class="create-costumers-form-control"
+                            required>
                     </div>
 
                     <div class="create-costumers-form-group mb-4">
                         <label for="password_confirmation" class="create-costumers-form-label">Confirm Password</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" class="create-costumers-form-control" required>
+                        <input type="password" name="password_confirmation" id="password_confirmation"
+                            class="create-costumers-form-control" required>
                     </div>
 
                     <div class="create-costumers-form-group mb-4">
                         <label for="image" class="create-costumers-form-label">User Image</label>
-                        <input type="file" class="create-costumers-form-control-file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-                        <img id="image-preview" src="" alt="Image Preview" class="create-costumers-image-preview" style="display:none;">
+                        <input type="file" class="create-costumers-form-control-file" id="image" name="image"
+                            accept="image/*" onchange="previewImage(event)">
+                        <img id="image-preview" src="" alt="Image Preview" class="create-costumers-image-preview"
+                            style="display:none;">
                     </div>
 
                     <div class="mt-4">
-                        <button type="submit" class="create-costumers-btn create-costumers-btn-success w-100">Confirm</button>
+                        <button type="submit"
+                            class="create-costumers-btn create-costumers-btn-success w-100">Confirm</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <script>
-        function previewImage(event) {
-            const imagePreview = document.getElementById('image-preview');
-            const file = event.target.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            } else {
-                imagePreview.src = '';
-                imagePreview.style.display = 'none';
-            }
-        }
-    </script>
+    <script src="{{ asset('js/imagePreview.js') }}"></script>
 @endsection

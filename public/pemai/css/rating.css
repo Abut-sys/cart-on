@@ -1,0 +1,171 @@
+/* Modal Background Transparency */
+.modal {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.modal-content {
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Custom Close Button */
+.btn-close {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    opacity: 1;
+}
+
+.btn-close:hover {
+    background: rgba(220, 53, 69, 0.1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+.btn-close i {
+    color: #6c757d;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.btn-close:hover i {
+    color: #dc3545;
+}
+
+/* Star Rating Styles */
+.star-rating-container {
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(248, 249, 255, 0.8) 0%, rgba(255, 245, 245, 0.8) 100%);
+    border-radius: 15px;
+    border: 2px solid rgba(240, 240, 240, 0.6);
+    backdrop-filter: blur(5px);
+}
+
+.star-wrapper {
+    transition: transform 0.2s ease;
+}
+
+.star-input {
+    display: none;
+}
+
+.star-label {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.star-svg {
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.star-fill {
+    transform: scale(0);
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.star-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 193, 7, 0.3) 0%, transparent 70%);
+    scale: 0;
+    transition: scale 0.3s ease;
+}
+
+/* Hover Effects */
+.star-label:hover {
+    transform: scale(1.1);
+}
+
+.star-label:hover .star-svg {
+    filter: drop-shadow(0 4px 8px rgba(255, 193, 7, 0.3));
+}
+
+.star-label:hover .star-pulse {
+    scale: 1;
+    animation: pulse 0.6s ease-out;
+}
+
+/* Selected State */
+.star-wrapper.filled .star-fill {
+    transform: scale(1);
+}
+
+.star-wrapper.filled .star-label {
+    transform: scale(1.05);
+}
+
+.star-wrapper.filled .star-svg {
+    filter: drop-shadow(0 4px 12px rgba(255, 193, 7, 0.5));
+}
+
+/* Hover effect - show preview of rating */
+.star-rating:hover .star-wrapper.hover-preview .star-fill {
+    transform: scale(1);
+    opacity: 0.7;
+}
+
+.star-rating:hover .star-wrapper.hover-preview .star-svg {
+    filter: drop-shadow(0 2px 8px rgba(255, 193, 7, 0.3));
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { scale: 0; opacity: 1; }
+    100% { scale: 1.5; opacity: 0; }
+}
+
+@keyframes starPop {
+    0% { transform: scale(0) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+.star-wrapper.filled .star-fill {
+    animation: starPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Form Enhancements */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .star-svg {
+        width: 35px;
+        height: 35px;
+    }
+
+    .star-pulse {
+        width: 45px;
+        height: 45px;
+    }
+
+    .btn-close {
+        width: 30px;
+        height: 30px;
+    }
+
+    .btn-close i {
+        font-size: 12px;
+    }
+}

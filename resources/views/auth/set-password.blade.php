@@ -8,6 +8,7 @@
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('/') }}pemai/css/auth/set-password.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -57,47 +58,14 @@
 
 
     @if (session('msg'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Success!',
-                    text: "{{ session('msg') }}",
-                    icon: 'success',
-                    confirmButtonText: 'Return'
-                });
-            });
-        </script>
+        <div data-success-message="{{ session('msg') }}" style="display: none;"></div>
     @endif
+
     @if ($errors->any())
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Error!',
-                    text: "{{ $errors->first() }}",
-                    icon: 'error',
-                    confirmButtonText: 'Try Again'
-                });
-            });
-        </script>
+        <div data-error-message="{{ $errors->first() }}" style="display: none;"></div>
     @endif
 
-    <script>
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            eyeIcon.classList.toggle('fa-eye-slash');
-        });
-
-        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-            const eyeConfirmIcon = document.getElementById('eyeConfirmIcon');
-            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            confirmPasswordInput.setAttribute('type', type);
-            eyeConfirmIcon.classList.toggle('fa-eye-slash');
-        });
-    </script>
+    <script src="{{ asset('/') }}pemai/js/auth/set-password.js"></script>
 </body>
 
 </html>

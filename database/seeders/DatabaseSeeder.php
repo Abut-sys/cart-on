@@ -30,5 +30,10 @@ class DatabaseSeeder extends Seeder
             'role' => "user",
             'email_verified_at' => now(),
         ]);
+
+        // Call Information seeder
+        $this->call([
+            InformationSeeder::class,
+        ]);
     }
 }

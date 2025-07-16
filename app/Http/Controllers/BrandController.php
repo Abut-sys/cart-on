@@ -15,7 +15,7 @@ class BrandController extends Controller
     public function index(Request $request)
     {
         $searchable = ['id', 'name', 'category'];
-        
+
         $query = Brand::with('categoryProduct');
 
         if ($request->filled('search')) {
@@ -75,7 +75,7 @@ class BrandController extends Controller
 
         Brand::create($data);
 
-        return redirect()->route('brands.index')->with('success', 'Brand created successfully.');
+        return redirect()->route('brands.index')->with('msg', 'Brand created successfully.');
     }
 
     /**
@@ -121,7 +121,7 @@ class BrandController extends Controller
 
         $brand->update($data);
 
-        return redirect()->route('brands.index')->with('success', 'Brand updated successfully.');
+        return redirect()->route('brands.index')->with('msg', 'Brand updated successfully.');
     }
 
     /**
@@ -135,6 +135,6 @@ class BrandController extends Controller
 
         $brand->delete();
 
-        return redirect()->route('brands.index')->with('success', 'Brand deleted successfully.');
+        return redirect()->route('brands.index')->with('msg', 'Brand deleted successfully.');
     }
 }

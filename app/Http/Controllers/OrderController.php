@@ -74,7 +74,7 @@ class OrderController extends Controller
         $admins = User::where('role', 'admin')->get();
         Notification::send($admins, new OrderStatusUpdatedNotification($order, $oldOrderStatus, $oldPaymentStatus));
 
-        return back()->with('success', 'Status berhasil diperbarui.');
+        return back()->with('msg', 'Status berhasil diperbarui.');
     }
 
     public function updateTracking(Request $request, Order $order)
@@ -86,6 +86,6 @@ class OrderController extends Controller
         $order->tracking_number = $request->tracking_number;
         $order->save();
 
-        return back()->with('success', 'Nomor resi berhasil diperbarui.');
+        return back()->with('msg', 'Nomor resi berhasil diperbarui.');
     }
 }

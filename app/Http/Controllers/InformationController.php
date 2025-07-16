@@ -30,7 +30,7 @@ class InformationController extends Controller
             'about_us' => $request->about_us,
         ]);
 
-        return redirect()->back()->with('success', 'Informasi berhasil disimpan.');
+        return redirect()->back()->with('msg', 'Informasi berhasil disimpan.');
     }
 
     public function index()

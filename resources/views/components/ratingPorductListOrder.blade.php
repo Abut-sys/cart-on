@@ -43,7 +43,8 @@
 
                                         <div class="rating-section mb-3">
                                             <label class="form-label mb-2 fw-semibold text-dark">Rating</label>
-                                            <div class="star-rating d-flex gap-1" data-product-id="{{ $product->id }}">
+                                            <div class="star-rating d-flex gap-1"
+                                                data-product-id="{{ $product->id }}">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     <i class="fas fa-star star-icon" data-rating="{{ $i }}"
                                                         style="font-size: 24px; color: #ddd; cursor: pointer; transition: color 0.2s ease;"></i>
@@ -77,108 +78,5 @@
     </div>
 </div>
 
-<style>
-    .star-rating .star-icon:hover,
-    .star-rating .star-icon.active {
-        color: #ffc107 !important;
-        transform: scale(1.1);
-    }
-
-    .star-rating .star-icon:hover~.star-icon {
-        color: #ddd !important;
-    }
-
-    .product-rating-card {
-        transition: box-shadow 0.2s ease;
-    }
-
-    .product-rating-card:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .modal-content {
-        border: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const starRatings = document.querySelectorAll('.star-rating');
-
-        starRatings.forEach(rating => {
-            const stars = rating.querySelectorAll('.star-icon');
-            const hiddenInput = rating.parentElement.querySelector('.rating-input');
-
-            stars.forEach((star, index) => {
-                star.addEventListener('click', function () {
-                    const ratingValue = index + 1;
-                    hiddenInput.value = ratingValue;
-
-                    stars.forEach((s, i) => {
-                        if (i < ratingValue) {
-                            s.style.color = '#ffc107';
-                            s.classList.add('active');
-                        } else {
-                            s.style.color = '#ddd';
-                            s.classList.remove('active');
-                        }
-                    });
-                });
-
-                star.addEventListener('mouseenter', function () {
-                    const hoverValue = index + 1;
-                    stars.forEach((s, i) => {
-                        if (i < hoverValue) {
-                            s.style.color = '#ffc107';
-                        } else {
-                            s.style.color = '#ddd';
-                        }
-                    });
-                });
-            });
-
-            rating.addEventListener('mouseleave', function () {
-                const currentRating = parseInt(hiddenInput.value) || 0;
-                stars.forEach((s, i) => {
-                    if (i < currentRating) {
-                        s.style.color = '#ffc107';
-                    } else {
-                        s.style.color = '#ddd';
-                    }
-                });
-            });
-        });
-
-        document.querySelectorAll('[id^="ratingModal"]').forEach(modal => {
-            modal.addEventListener('hidden.bs.modal', function () {
-                const starRatings = modal.querySelectorAll('.star-rating');
-                starRatings.forEach(rating => {
-                    const stars = rating.querySelectorAll('.star-icon');
-                    const hiddenInput = rating.parentElement.querySelector('.rating-input');
-
-                    hiddenInput.value = 0;
-                    stars.forEach(star => {
-                        star.style.color = '#ddd';
-                        star.classList.remove('active');
-                    });
-                });
-
-                const textareas = modal.querySelectorAll('textarea');
-                textareas.forEach(textarea => {
-                    textarea.value = '';
-                });
-            });
-        });
-    });
-</script>
+<link rel="stylesheet" href="{{ asset('pemai/css/ratingProduct.css') }}">
+<script src="{{ asset('js/ratingProduct.js') }}"></script>

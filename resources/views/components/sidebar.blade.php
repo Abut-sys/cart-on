@@ -17,7 +17,7 @@
         <div class="nav-dropdown-item category-container">
             <a href="#"
                 class="category-link d-flex justify-content-between align-items-center {{ request()->is('categories/*') ? 'active' : '' }}"
-                onclick="toggleCategoryDropdown(event)">
+                onclick="SidebarHandler.toggleCategoryDropdown(event)">
                 <span><i class="fas fa-shapes me-2"></i> Category</span>
                 <i id="categoryArrow" class="bi bi-caret-down-fill transition-transform"></i>
             </a>
@@ -44,7 +44,7 @@
         <div class="nav-dropdown-item report-container">
             <a href="#"
                 class="report-link d-flex justify-content-between align-items-center {{ request()->is('report/*') ? 'active' : '' }}"
-                onclick="toggleReportDropdown(event)">
+                onclick="SidebarHandler.toggleReportDropdown(event)">
                 <span><i class="fas fa-file-alt me-2"></i> Report</span>
                 <i id="reportArrow" class="bi bi-caret-down-fill transition-transform"></i>
             </a>
@@ -53,7 +53,7 @@
                 <a href="{{ route('reports.products.index') }}" class="dropdown-item ps-4">
                     <i class="fas fa-box me-2"></i> Product Report
                 </a>
-                 <a href="{{ route('reports.categories.index') }}" class="dropdown-item ps-4">
+                <a href="{{ route('reports.categories.index') }}" class="dropdown-item ps-4">
                     <i class="bi bi-tags-fill me-2"></i> Category Report
                 </a>
                 <a href="{{ route('reports.brands.index') }}" class="dropdown-item ps-4">
@@ -86,43 +86,15 @@
     @endif
 </div>
 
-<!-- Script untuk toggle dropdown pada menu Category -->
 <script>
-    function toggleCategoryDropdown(event) {
-        event.preventDefault();
-        const dropdown = document.getElementById('categoryDropdown');
-        const arrow = document.getElementById('categoryArrow');
-
-        const isVisible = dropdown.style.display === 'block';
-        arrow.classList.toggle('rotate', !isVisible);
-
-    }
-
-    function toggleReportDropdown(event) {
-        event.preventDefault();
-        const dropdown = document.getElementById('reportDropdown');
-        const arrow = document.getElementById('reportArrow');
-
-        const isVisible = dropdown.style.display === 'flex';
-        dropdown.style.display = isVisible ? 'none' : 'flex';
-        arrow.classList.toggle('rotate', !isVisible);
-    }
-
-    @if (Auth::check() && Auth::user()->role == 'admin')
-        // Set flag bahwa ini adalah login baru
-        sessionStorage.setItem("isNewLogin", "true");
-
-        // Tambahkan class ke body untuk menandai user sudah login dan admin
-        document.body.classList.add("logged-in", "admin");
-    @endif
+    window.isAdmin = @json(Auth::check() && Auth::user()->role == 'admin');
 </script>
 
-<style>
-    .transition-transform {
-        transition: transform 0.3s ease;
-    }
+<script src="{{ asset('js/sidebar.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = new SidebarHandler();
+    });
+</script>
 
-    .rotate {
-        transform: rotate(180deg);
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('pemai/css/sidebarAdmin.css') }}">

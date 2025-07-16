@@ -78,7 +78,7 @@ class CostumersController extends Controller
             'image_url' => $imagePath,
         ]);
 
-        return redirect()->route('costumers.index')->with('success', 'User added successfully.');
+        return redirect()->route('costumers.index')->with('msg', 'User added successfully.');
     }
 
     public function destroy($id)
@@ -89,6 +89,6 @@ class CostumersController extends Controller
         }
         $user->delete();
 
-        return redirect()->route('costumers.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('costumers.index')->with('msg', 'User deleted successfully.');
     }
 }
